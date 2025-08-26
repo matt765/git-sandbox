@@ -9,7 +9,7 @@ body {
 body {
   color: var(--text-primary);
   /* background: var(--background-gradient); */
-   background-color: #181c1f;
+   background-color: rgb(23, 26, 30);
   font-family: Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

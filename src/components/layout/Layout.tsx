@@ -9,7 +9,7 @@ interface LayoutProps {
 export const Layout = ({ children }: LayoutProps) => {
   return (
     <>
-      <GradientCanvas />
+      {/* <GradientCanvas /> */}
       <Navbar />
       <main className={styles.mainWrapper}>
         <div className={styles.contentWrapper}>{children}</div>
