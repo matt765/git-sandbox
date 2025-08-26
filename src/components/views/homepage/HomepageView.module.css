@@ -1,0 +1,40 @@
+/* src/components/views/homepage/HomepageView.module.css */
+.grid {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  padding: 2rem;
+  gap: 1.5rem;
+  grid-template-columns: 1fr 1fr 0.8fr;
+  grid-template-rows: 4fr auto 1fr 1fr auto;
+  grid-template-areas:
+    "branchTree branchTree console"
+    "branchTree branchTree stash"
+    "mainButtons advancedButtons resetButtons"
+    "mainButtons advancedButtons resetButtons"
+    "commandLine commandLine commandLine";
+  background-color: rgb(255, 255, 255, 0.01);
+
+}
+
+.branchTree {
+  grid-area: branchTree;
+}
+.console {
+  grid-area: console;
+}
+.stash {
+  grid-area: stash;
+}
+.mainButtons {
+  grid-area: mainButtons;
+}
+.advancedButtons {
+  grid-area: advancedButtons;
+}
+.resetButtons {
+  grid-area: resetButtons;
+}
+.commandLine {
+  grid-area: commandLine;
+}

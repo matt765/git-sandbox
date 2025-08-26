@@ -1,0 +1,88 @@
+/* src/styles/tokens.css */
+
+/* ----------------------------------------- */
+/* ---           DEFAULT THEME           --- */
+/* ---            (Charcoal)             --- */
+/* ----------------------------------------- */
+:root,
+[data-theme="charcoal"] {
+  /* FONTS */
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  /* TEXT COLORS */
+  --text-primary: #ededed;
+  --text-secondary: #a1a1a1;
+
+  /* BACKGROUNDS */
+  --background-gradient: linear-gradient(30deg, 
+  rgba(15, 18, 20, 1) 0%, 
+  rgba(21, 23, 26, 1) 25%, /* <-- Dodany punkt */
+  rgba(27, 29, 32, 1) 50%, 
+  rgba(42, 42, 44, 1) 75%, /* <-- Dodany punkt */
+  rgba(56, 54, 55, 1) 100%
+);
+  /* BORDERS & GLOW */
+  --border-color: rgba(255, 255, 255, 0.1);
+  --container-glow: inset 0 0 0 1px var(--border-color);
+
+  /* SHADOW (dla głównego kontenera) */
+  --shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+
+  --box-border-radius: 12px;
+}
+
+/* ----------------------------------------- */
+/* ---           Midnight THEME          --- */
+/* ----------------------------------------- */
+[data-theme="midnight"] {
+  /* FONTS */
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  /* TEXT COLORS */
+  --text-primary: #f0f0f0;
+  --text-secondary: #b0b0b0;
+
+  /* BACKGROUNDS */
+  --background-gradient: linear-gradient(
+    135deg,
+    #000000 0%,
+    #1c1c1c 50%,
+    #3c096c 100%
+  );
+
+  /* BORDERS & GLOW */
+  --border-color: rgba(200, 160, 255, 0.5);
+  --container-glow: inset 0 0 0 1px var(--border-color);
+
+  /* SHADOW (dla głównego kontenera) */
+  --shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+
+  --box-border-radius: 12px;
+}
+
+/* ----------------------------------------- */
+/* ---          Snowlight THEME          --- */
+/* ----------------------------------------- */
+[data-theme="snowlight"] {
+  /* FONTS */
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  /* TEXT COLORS */
+  --text-primary: #2c3e50;
+  --text-secondary: #7f8c8d;
+
+  /* BACKGROUNDS */
+  --background-gradient: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+
+  /* BORDERS & GLOW */
+  --border-color: rgba(44, 62, 80, 0.4);
+  --container-glow: inset 0 0 0 1px var(--border-color);
+
+  /* SHADOW (dla głównego kontenera) */
+  --shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+
+  --box-border-radius: 12px;
+}

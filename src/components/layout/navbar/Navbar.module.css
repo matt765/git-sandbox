@@ -1,0 +1,47 @@
+/* src/components/layout/navbar/Navbar.module.css */
+.navbar {
+  width: 100%;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--text-primary);
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.logo {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.actions a {
+  color: var(--text-primary);
+  transition: color 0.2s ease;
+}
+
+.actions a:hover {
+  color: var(--text-secondary);
+}
+
+.themeButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: var(--text-primary);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.themeButton:hover {
+  color: var(--text-secondary);
+  transform: scale(1.1);
+}

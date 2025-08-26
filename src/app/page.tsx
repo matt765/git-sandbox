@@ -1,3 +1,5 @@
+import { HomepageView } from "@/components/views/homepage/HomepageView";
+
 export default function Home() {
-  return <div>hello there</div>;
+  return <HomepageView />;
 }
