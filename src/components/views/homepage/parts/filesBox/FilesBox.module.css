@@ -1,0 +1,35 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  padding: 16px;
+  gap: 12px;
+}
+
+.commitInput {
+  width: 100%;
+  background-color: var(--background-secondary);
+  border: 1px solid #555;
+  border-radius: 4px;
+  padding: 8px;
+  color: var(--text-primary);
+  font-family: inherit;
+}
+
+.commitInput:focus {
+  outline: none;
+  border-color: #007acc;
+}
+
+.buttonWrapper {
+  width: 100%;
+}
+
+.changesContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+  flex-grow: 1;
+}

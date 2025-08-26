@@ -1,0 +1,52 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 6px 0;
+  gap: 8px;
+  text-align: left;
+}
+
+.arrow {
+  font-size: 0.6rem;
+  transition: transform 0.2s ease-in-out;
+}
+
+.arrow.open {
+  transform: rotate(0deg);
+}
+
+.arrow:not(.open) {
+  transform: rotate(-90deg);
+}
+
+.title {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+  flex-grow: 1;
+}
+
+.count {
+  background-color: var(--background-secondary);
+  border-radius: 8px;
+  padding: 2px 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+}
