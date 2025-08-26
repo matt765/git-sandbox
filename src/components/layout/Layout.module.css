@@ -8,8 +8,8 @@
 }
 
 .contentWrapper {
-  width: 70vw;
-  height: 80vh;
+  width: 65vw;
+  height: 85vh;
 
   box-shadow: var(--container-glow);
   border-radius: 20px;

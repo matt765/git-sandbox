@@ -1,12 +1,14 @@
+"use client";
+
 import { ContentBox } from "@/components/layout/contentBox/ContentBox";
 import styles from "./HomepageView.module.css";
 import { BranchTree } from "./parts/branchTree/BranchTree";
 import { CommandLine } from "./parts/commandLine/CommandLine";
-import { Console } from "./parts/console/Console";
-import { Stash } from "./parts/stash/Stash";
+import { Console } from "./parts/filesBox/FilesBox";
+
 import { MainButtons } from "./parts/mainButtons/MainButtons";
 import { AdvancedButtons } from "./parts/advancedButtons/AdvancedButtons";
-import { ResetButtons } from "./parts/resetButtons/ResetButtons";
+import { LogHistory } from "./parts/logHistory/LogHistory";
 
 export const HomepageView = () => {
   return (
@@ -23,7 +25,7 @@ export const HomepageView = () => {
       </div>
       <div className={styles.stash}>
         <ContentBox>
-          <Stash />
+          <CommandLine />
         </ContentBox>
       </div>
       <div className={styles.mainButtons}>
@@ -38,14 +40,14 @@ export const HomepageView = () => {
       </div>
       <div className={styles.resetButtons}>
         <ContentBox>
-          <ResetButtons />
+          <LogHistory />
         </ContentBox>
       </div>
-      <div className={styles.commandLine}>
+      {/* <div className={styles.commandLine}>
         <ContentBox>
           <CommandLine />
         </ContentBox>
-      </div>
+      </div> */}
     </div>
   );
 };

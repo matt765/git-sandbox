@@ -6,7 +6,7 @@
   padding: 2rem;
   gap: 1.5rem;
   grid-template-columns: 1fr 1fr 0.8fr;
-  grid-template-rows: 4fr auto 1fr 1fr auto;
+  grid-template-rows: 6fr auto 1fr 1fr auto;
   grid-template-areas:
     "branchTree branchTree console"
     "branchTree branchTree stash"
