@@ -27,7 +27,7 @@ export const Navbar = () => {
   return (
     <nav className={styles.navbar}>
       <div className={styles.logo}>
-        <span>git sandbox</span>
+        <span>Git Sandbox</span>
       </div>
       <div className={styles.actions}>
         <a

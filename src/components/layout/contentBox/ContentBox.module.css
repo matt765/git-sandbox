@@ -1,6 +1,6 @@
 /* src/components/layout/contentBox/ContentBox.module.css */
 .box {
-  background: rgb(255,255,255,0.03); /* Ustawiamy tło na przezroczyste, aby nie zasłaniać gradientu */
+  background: rgb(255,255,255,0.01);
   box-shadow: var(--container-glow);
   border-radius: var(--box-border-radius);
   padding: 1.5rem;
