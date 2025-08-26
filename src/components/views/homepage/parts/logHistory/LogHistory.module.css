@@ -1,0 +1,24 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  gap: 8px;
+}
+
+.logsContainer {
+  flex-grow: 1;
+  background-color: var(--background-secondary);
+  border: 1px solid #555;
+  border-radius: 4px;
+  padding: 8px;
+  overflow-y: auto;
+  font-family: "Fira Code", monospace, sans-serif;
+  font-size: 0.8rem;
+}
+
+.logEntry {
+  margin: 0 0 4px 0;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+}
