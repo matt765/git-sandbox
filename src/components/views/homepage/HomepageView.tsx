@@ -14,7 +14,7 @@ export const HomepageView = () => {
   return (
     <div className={styles.grid}>
       <div className={styles.branchTree}>
-        <ContentBox>
+        <ContentBox noPadding>
           <BranchTree />
         </ContentBox>
       </div>
@@ -43,11 +43,6 @@ export const HomepageView = () => {
           <LogHistory />
         </ContentBox>
       </div>
-      {/* <div className={styles.commandLine}>
-        <ContentBox>
-          <CommandLine />
-        </ContentBox>
-      </div> */}
     </div>
   );
 };

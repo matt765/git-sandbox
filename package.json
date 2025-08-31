@@ -2,7 +2,7 @@
   "name": "git-sandbox",
   "version": "1.0.1",
   "private": true,
-  "license": "AGPL-3.0-only",
+  "license": "(AGPL-3.0-only OR LicenseRef-Commercial)",
   "description": "Interactive Git Playground",
   "author": {
     "name": "matt765",
@@ -20,7 +20,8 @@
     "next-themes": "^0.4.6",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "three": "^0.179.1"
+    "three": "^0.179.1",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

@@ -1,6 +1,5 @@
-/* src/components/layout/contentBox/ContentBox.module.css */
 .box {
-  background: rgb(255,255,255,0.01);
+  background: rgb(255, 255, 255, 0.01);
   box-shadow: var(--container-glow);
   border-radius: var(--box-border-radius);
   padding: 1.2rem;
@@ -11,5 +10,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+}
 
+.noPadding {
+  padding: 0;
 }

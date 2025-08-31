@@ -4,7 +4,6 @@
   width: 100%;
   height: 100%;
   padding: 16px;
-  gap: 12px;
 }
 
 .commitInput {
@@ -15,6 +14,7 @@
   padding: 8px;
   color: var(--text-primary);
   font-family: inherit;
+  margin-bottom: 12px;
 }
 
 .commitInput:focus {
@@ -24,6 +24,7 @@
 
 .buttonWrapper {
   width: 100%;
+  margin-bottom: 12px;
 }
 
 .changesContainer {
@@ -32,4 +33,27 @@
   gap: 16px;
   overflow-y: auto;
   flex-grow: 1;
+  min-height: 0; /* KLUCZOWA POPRAWKA: Umożliwia scrollowanie */
+}
+
+.footer {
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color);
+}
+
+.addButton {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px;
+  width: 100%;
+  border-radius: 4px;
+}
+
+.addButton:hover {
+  background-color: var(--background-secondary);
 }

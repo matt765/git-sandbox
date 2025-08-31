@@ -1,168 +1,372 @@
+import { useGitStore, Commit } from "@/store/gitStore";
 import styles from "./BranchTree.module.css";
+import {
+  useMemo,
+  useState,
+  useRef,
+  WheelEvent,
+  MouseEvent,
+  useEffect,
+} from "react";
+
+// ... (Interfejsy Node, Edge, Label, TooltipData pozostają bez zmian)
+interface Node {
+  id: string;
+  message: string;
+  x: number;
+  y: number;
+  color: string;
+  depth: number;
+  commitData: Commit;
+}
+
+interface Edge {
+  key: string;
+  path: string;
+  color: string;
+}
+
+interface Label {
+  name: string;
+  x: number;
+  y: number;
+  color: string;
+  isHead: boolean;
+  commitId: string;
+}
+
+interface TooltipData {
+  x: number;
+  y: number;
+  commit: Commit;
+}
+
+const Y_STEP = 80;
+const X_STEP = 150;
+const PADDING_X = 150;
+const PADDING_Y = 100;
+const LABEL_ROW_Y = 40;
+const GRAY_COLOR = "#4a5568";
+
+const LANE_COLORS = ["#38b2ac", "#a78bfa", "#f6ad55", "#ec4899"];
 
 export const BranchTree = () => {
+  const commits = useGitStore((state) => state.commits);
+  const branches = useGitStore((state) => state.branches);
+  const head = useGitStore((state) => state.HEAD);
+
+  const [tooltip, setTooltip] = useState<TooltipData | null>(null);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [scale, setScale] = useState(1);
+
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const isPanning = useRef(false);
+  const panStart = useRef({ x: 0, y: 0 });
+  const hasDragged = useRef(false);
+
+  // Efekt do wyśrodkowania widoku na starcie
+  useEffect(() => {
+    if (wrapperRef.current) {
+      const wrapperWidth = wrapperRef.current.offsetWidth;
+      // Proste oszacowanie szerokości grafu
+      const numLanes = Object.keys(branches).length;
+      const contentWidth = PADDING_X + numLanes * X_STEP;
+
+      const initialX = (wrapperWidth - contentWidth) / 2;
+      setPan({ x: initialX, y: 40 });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Uruchamiamy tylko raz po zamontowaniu komponentu
+
+  // ... (useMemo z całą logiką obliczania grafu pozostaje bez zmian)
+  const { nodes, edges, labels } = useMemo(() => {
+    const branchNames = Object.keys(branches);
+    const laneAssignments = new Map<string, number>(
+      branchNames.map((name, i) => [name, i])
+    );
+    const colorAssignments = new Map<string, string>(
+      branchNames.map((name, i) => [name, LANE_COLORS[i % LANE_COLORS.length]])
+    );
+    const commitList = Object.values(commits);
+    const commitDepths = new Map<string, number>();
+    const getDepth = (commitId: string | null): number => {
+      if (!commitId || !commits[commitId]) return -1;
+      if (commitDepths.has(commitId)) return commitDepths.get(commitId)!;
+      const parentIds = Array.isArray(commits[commitId].parent)
+        ? (commits[commitId].parent as string[])
+        : [commits[commitId].parent as string].filter(Boolean);
+      const maxParentDepth =
+        parentIds.length > 0
+          ? Math.max(...parentIds.map((p) => getDepth(p)))
+          : -1;
+      const depth = maxParentDepth + 1;
+      commitDepths.set(commitId, depth);
+      return depth;
+    };
+    commitList.forEach((c) => getDepth(c.id));
+    const nodeMap = new Map<string, Node>();
+    const calculatedNodes: Node[] = [];
+    const commitToBranch = new Map<string, string>();
+    branchNames.forEach((branchName) => {
+      let currentId: string | null = branches[branchName].commitId;
+      while (currentId && !commitToBranch.has(currentId)) {
+        commitToBranch.set(currentId, branchName);
+        const parent: string | string[] | null | undefined =
+          commits[currentId]?.parent;
+        currentId = Array.isArray(parent) ? parent[0] : parent ?? null;
+      }
+    });
+    commitList.forEach((commit) => {
+      const branchName = commitToBranch.get(commit.id) || "main";
+      const lane = laneAssignments.get(branchName) ?? 0;
+      const depth = commitDepths.get(commit.id) ?? 0;
+      const node: Node = {
+        id: commit.id,
+        message: commit.message,
+        x: PADDING_X + lane * X_STEP,
+        y: PADDING_Y + depth * Y_STEP,
+        color: colorAssignments.get(branchName) ?? LANE_COLORS[0],
+        depth: depth,
+        commitData: commit,
+      };
+      calculatedNodes.push(node);
+      nodeMap.set(commit.id, node);
+    });
+    const calculatedLabels: Label[] = branchNames.map((name) => {
+      const commitId = branches[name].commitId;
+      const node = nodeMap.get(commitId);
+      const x = node
+        ? node.x
+        : PADDING_X + (laneAssignments.get(name) ?? 0) * X_STEP;
+      return {
+        name,
+        x,
+        y: LABEL_ROW_Y,
+        color: colorAssignments.get(name) ?? LANE_COLORS[0],
+        isHead: head.type === "branch" && head.name === name,
+        commitId,
+      };
+    });
+    const calculatedEdges: Edge[] = [];
+    const lanes = new Map<number, Node[]>();
+    calculatedNodes.forEach((node) => {
+      if (!lanes.has(node.x)) lanes.set(node.x, []);
+      lanes.get(node.x)!.push(node);
+    });
+    lanes.forEach((nodesOnLane) => {
+      nodesOnLane.sort((a, b) => a.y - b.y);
+      for (let i = 0; i < nodesOnLane.length - 1; i++) {
+        const startNode = nodesOnLane[i];
+        const endNode = nodesOnLane[i + 1];
+        calculatedEdges.push({
+          key: `gray-trunk-${startNode.id}-${endNode.id}`,
+          path: `M ${startNode.x} ${startNode.y} L ${endNode.x} ${endNode.y}`,
+          color: GRAY_COLOR,
+        });
+      }
+    });
+    commitList.forEach((commit) => {
+      const parentIds = commit.parent
+        ? Array.isArray(commit.parent)
+          ? commit.parent
+          : [commit.parent]
+        : [];
+      parentIds.forEach((parentId) => {
+        if (nodeMap.has(commit.id) && nodeMap.has(parentId)) {
+          const childNode = nodeMap.get(commit.id)!;
+          const parentNode = nodeMap.get(parentId)!;
+          let path;
+          if (childNode.x === parentNode.x) {
+            path = `M ${parentNode.x} ${parentNode.y} L ${childNode.x} ${childNode.y}`;
+          } else {
+            path = `M ${parentNode.x} ${parentNode.y} C ${parentNode.x} ${
+              parentNode.y + Y_STEP / 2
+            }, ${childNode.x} ${childNode.y - Y_STEP / 2}, ${childNode.x} ${
+              childNode.y
+            }`;
+          }
+          calculatedEdges.push({
+            key: `${parentId}-${commit.id}`,
+            path,
+            color: childNode.color,
+          });
+        }
+      });
+    });
+    calculatedLabels.forEach((label) => {
+      const nodesOnLane = (lanes.get(label.x) || []).sort((a, b) => a.y - b.y);
+      if (nodesOnLane.length > 0) {
+        const firstNode = nodesOnLane[0];
+        const color = firstNode.depth === 0 ? label.color : GRAY_COLOR;
+        calculatedEdges.push({
+          key: `label-trunk-${label.name}`,
+          path: `M ${label.x} ${label.y + 15} L ${firstNode.x} ${firstNode.y}`,
+          color: color,
+        });
+      }
+    });
+    return {
+      nodes: calculatedNodes,
+      edges: calculatedEdges,
+      labels: calculatedLabels,
+    };
+  }, [commits, branches, head]);
+
+  const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
+    if (e.button !== 0) return; // Aktywuj tylko dla lewego przycisku myszy
+    e.preventDefault();
+    isPanning.current = true;
+    panStart.current = { x: e.clientX - pan.x, y: e.clientY - pan.y };
+    hasDragged.current = false;
+    e.currentTarget.style.cursor = "grabbing";
+  };
+
+  const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
+    if (!isPanning.current) return;
+    hasDragged.current = true;
+    setPan({
+      x: e.clientX - panStart.current.x,
+      y: e.clientY - panStart.current.y,
+    });
+  };
+
+  const handleMouseUp = (e: MouseEvent<HTMLDivElement>) => {
+    if (!isPanning.current) return;
+    isPanning.current = false;
+    e.currentTarget.style.cursor = "grab";
+  };
+
+  const handleWheel = (e: WheelEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const scaleAmount = -e.deltaY * 0.001;
+    setScale((prevScale) =>
+      Math.min(Math.max(prevScale + scaleAmount, 0.2), 2)
+    );
+  };
+
+  const handleNodeClick = (node: Node) => {
+    if (hasDragged.current) return;
+    setTooltip({ x: node.x, y: node.y, commit: node.commitData });
+  };
+
   return (
     <div className={styles.container}>
-      <div className={styles.graphWrapper}>
-        <div className={styles.graphContainer}>
-          <svg className={styles.svgCanvas}>
-            {/* Main branch lines */}
-            <line
-              x1="100"
-              y1="91"
-              x2="100"
-              y2="151"
-              stroke="#4a5568"
-              strokeWidth="2"
-            />
-            <line
-              x1="100"
-              y1="179"
-              x2="100"
-              y2="239"
-              stroke="#4a5568"
-              strokeWidth="2"
-            />
-            <line
-              x1="100"
-              y1="267"
-              x2="100"
-              y2="327"
-              stroke="#4a5568"
-              strokeWidth="2"
-            />
-
-            {/* Feature branch lines */}
-            <path
-              d="M 100 165 C 150 165, 200 115, 250 115"
-              stroke="#4a5568"
-              strokeWidth="2"
-              fill="none"
-            />
-            <line
-              x1="250"
-              y1="131"
-              x2="250"
-              y2="191"
-              stroke="#4a5568"
-              strokeWidth="2"
-            />
-
-            {/* HEAD dashed line */}
-            <line
-              x1="340"
-              y1="80"
-              x2="262"
-              y2="100"
-              stroke="#a78bfa"
-              strokeWidth="2"
-              strokeDasharray="5,5"
-            />
+      <div
+        ref={wrapperRef}
+        className={styles.graphWrapper}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+        onWheel={handleWheel}
+      >
+        <div
+          className={styles.pannableContainer}
+          style={{
+            transform: `translate(${pan.x}px, ${pan.y}px) scale(${scale})`,
+          }}
+        >
+          {/* ... reszta JSX pozostaje bez zmian ... */}
+          <svg className={styles.svgCanvas} overflow="visible">
+            {edges.map((edge) => (
+              <path
+                key={edge.key}
+                d={edge.path}
+                stroke={edge.color}
+                strokeWidth="2"
+                fill="none"
+              />
+            ))}
           </svg>
 
-          {/* main branch */}
-          <div
-            className={`${styles.branchLabel} ${styles.labelMain}`}
-            style={{ top: "35px", left: "75px" }}
-          >
-            main
-          </div>
-          <div
-            className={styles.commitNode}
-            style={{ top: "80px", left: "90px" }}
-          >
+          {labels.map((label) => (
             <div
-              className={`${styles.commitCircle} ${styles.commitCircleMain}`}
-            ></div>
-            <span className={styles.commitHash} style={{ left: "25px" }}>
-              a568e1
-            </span>
-          </div>
-          <div
-            className={styles.commitNode}
-            style={{ top: "168px", left: "90px" }}
-          >
-            <div
-              className={`${styles.commitCircle} ${styles.commitCircleMain}`}
-            ></div>
-          </div>
-          <div
-            className={styles.inlineCommitHash}
-            style={{ top: "154px", left: "30px" }}
-          >
-            7a19bf
-          </div>
+              key={label.name}
+              className={styles.labelWrapper}
+              style={{ top: `${label.y - 15}px`, left: `${label.x}px` }}
+            >
+              <div
+                className={styles.branchLabel}
+                style={{ backgroundColor: label.color }}
+              >
+                {label.name}
+              </div>
+              {label.isHead && <div className={styles.headLabel}>HEAD</div>}
+            </div>
+          ))}
 
-          <div
-            className={styles.commitNode}
-            style={{ top: "256px", left: "90px" }}
-          >
-            <div
-              className={`${styles.commitCircle} ${styles.commitCircleMain}`}
-            ></div>
-            <span className={styles.commitHash} style={{ left: "25px" }}>
-              3009a
-            </span>
-          </div>
-          <div
-            className={styles.commitNode}
-            style={{ top: "328px", left: "90px" }}
-          >
-            <div
-              className={`${styles.commitCircle} ${styles.commitCircleYellow}`}
-            ></div>
-            <span className={styles.commitHash} style={{ left: "25px" }}>
-              f9821b
-            </span>
-          </div>
-          <div
-            className={styles.versionTag}
-            style={{ top: "200px", left: "55px" }}
-          >
-            v1.0
-          </div>
-
-          {/* feature branch */}
-          <div
-            className={`${styles.branchLabel} ${styles.labelFeature}`}
-            style={{ top: "45px", left: "225px" }}
-          >
-            feature
-          </div>
-          <div
-            className={styles.headLabel}
-            style={{ top: "65px", left: "340px" }}
-          >
-            HEAD
-          </div>
-
-          <div
-            className={styles.commitNode}
-            style={{ top: "120px", left: "240px" }}
-          >
-            <div
-              className={`${styles.commitCircle} ${styles.commitCircleFeature}`}
-            ></div>
-          </div>
-          <div
-            className={styles.inlineCommitHash}
-            style={{ top: "107px", left: "160px" }}
-          >
-            c4553b
-          </div>
-
-          <div
-            className={styles.commitNode}
-            style={{ top: "200px", left: "240px" }}
-          >
-            <div
-              className={`${styles.commitCircle} ${styles.commitCircleFeature}`}
-            ></div>
-            <span className={styles.commitHash} style={{ left: "25px" }}>
-              3009a
-            </span>
-          </div>
+          {nodes.map((node) => {
+            const isReversed = node.depth % 2 !== 0;
+            const transform = isReversed
+              ? `translate(calc(-100% + 11px), -50%)`
+              : `translate(-11px, -50%)`;
+            return (
+              <div
+                key={node.id}
+                className={styles.commitNodeWrapper}
+                style={{
+                  top: `${node.y}px`,
+                  left: `${node.x}px`,
+                  transform: transform,
+                  cursor: "pointer",
+                }}
+                onClick={() => handleNodeClick(node)}
+              >
+                {isReversed ? (
+                  <>
+                    <div className={styles.inlineCommitHash}>{node.id}</div>
+                    <div className={styles.commitLine} />
+                    <div
+                      className={styles.commitCircle}
+                      style={{ borderColor: node.color }}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <div
+                      className={styles.commitCircle}
+                      style={{ borderColor: node.color }}
+                    />
+                    <div className={styles.commitLine} />
+                    <div className={styles.inlineCommitHash}>{node.id}</div>
+                  </>
+                )}
+              </div>
+            );
+          })}
         </div>
+
+        {tooltip && (
+          <>
+            <div
+              className={styles.tooltipBackdrop}
+              onClick={() => setTooltip(null)}
+            />
+            <div
+              className={styles.tooltip}
+              style={{
+                top: `${tooltip.y * scale + pan.y + 20}px`,
+                left: `${tooltip.x * scale + pan.x}px`,
+              }}
+            >
+              <div className={styles.tooltipHeader}>Commit Details</div>
+              <div className={styles.tooltipRow}>
+                <strong>Hash:</strong> {tooltip.commit.id}
+              </div>
+              <div className={styles.tooltipRow}>
+                <strong>Message:</strong> {tooltip.commit.message}
+              </div>
+              <div className={styles.tooltipRow}>
+                <strong>Files Changed:</strong>
+                <ul>
+                  {tooltip.commit.files.map((file) => (
+                    <li key={file.id}>{file.name}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

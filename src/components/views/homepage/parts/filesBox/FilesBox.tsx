@@ -1,55 +1,75 @@
 import { useState } from "react";
-
+import { useGitStore } from "@/store/gitStore";
 import { ChangesSection } from "./ChangesSection";
 import styles from "./FilesBox.module.css";
 import { ContainedButton } from "@/components/common/ContainedButton";
-
-const initialFiles = [
-  { id: 1, name: "Code1.tsx", isStaged: true },
-  { id: 2, name: "Code2.tsx", isStaged: false },
-  { id: 3, name: "styles.css", isStaged: false },
-];
+import { AddIcon } from "@/assets/icons/AddIcon";
 
 export const Console = () => {
-  const [files, setFiles] = useState(initialFiles);
+  const [message, setMessage] = useState("");
+  const {
+    commit,
+    workingDirectory,
+    stagingArea,
+    stageFile,
+    unstageFile,
+    addFile,
+  } = useGitStore();
 
-  const handleToggleStage = (fileId: number) => {
-    setFiles((prevFiles) =>
-      prevFiles.map((file) =>
-        file.id === fileId ? { ...file, isStaged: !file.isStaged } : file
-      )
-    );
+  const handleCommit = () => {
+    commit(message);
+    setMessage("");
   };
 
-  const handleDeleteFile = (fileId: number) => {
-    setFiles((prevFiles) => prevFiles.filter((file) => file.id !== fileId));
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
+      handleCommit();
+    }
   };
 
-  const stagedFiles = files.filter((file) => file.isStaged);
-  const unstagedFiles = files.filter((file) => !file.isStaged);
+  const stagedFilesForDisplay = stagingArea.map((file) => ({
+    ...file,
+    isStaged: true,
+  }));
+  const unstagedFilesForDisplay = workingDirectory.map((file) => ({
+    ...file,
+    isStaged: false,
+  }));
 
   return (
     <div className={styles.container}>
       <input
         className={styles.commitInput}
         placeholder="Message (Ctrl+Enter to commit)"
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        onKeyDown={handleKeyDown}
       />
       <div className={styles.buttonWrapper}>
-        <ContainedButton>Commit</ContainedButton>
+        <ContainedButton
+          onClick={handleCommit}
+          disabled={stagingArea.length === 0}
+        >
+          Commit
+        </ContainedButton>
       </div>
       <div className={styles.changesContainer}>
         <ChangesSection
           title="Staged Changes"
-          files={stagedFiles}
-          onFileAction={handleToggleStage}
+          files={stagedFilesForDisplay}
+          onFileAction={(id) => unstageFile(id)}
         />
         <ChangesSection
           title="Changes"
-          files={unstagedFiles}
-          onFileAction={handleToggleStage}
-          onDeleteFile={handleDeleteFile}
+          files={unstagedFilesForDisplay}
+          onFileAction={(id) => stageFile(id)}
           hideCount={true}
         />
+      </div>
+      <div className={styles.footer}>
+        <button className={styles.addButton} onClick={addFile}>
+          {/* <AddIcon /> */}+ Add new file
+        </button>
       </div>
     </div>
   );

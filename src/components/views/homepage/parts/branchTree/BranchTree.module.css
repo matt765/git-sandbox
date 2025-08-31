@@ -1,33 +1,32 @@
 .container {
   width: 100%;
   height: 100%;
-  padding: 1.5rem;
+
   box-sizing: border-box;
   color: #e2e8f0;
   display: flex;
   flex-direction: column;
 }
 
-.title {
-  font-size: 1.25rem;
-  font-weight: 500;
-  margin-bottom: 2rem;
-  align-self: flex-start;
-}
-
 .graphWrapper {
   flex-grow: 1;
   width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  position: relative; /* Potrzebne do pozycjonowania tooltipa */
+  overflow: hidden; /* KLUCZOWA ZMIANA: Ogranicza widoczność drzewka do ramki */
+  cursor: grab; /* Zmiana kursora, aby sugerować interaktywność */
+}
+
+.pannableContainer {
+  position: relative; /* Wewnętrzny kontener, który będzie przesuwany */
+  width: 100%;
+  height: 100%;
+  transform-origin: 0 0; /* Ustawia punkt odniesienia dla skalowania */
 }
 
 .graphContainer {
-  position: relative;
+  /* Ten kontener nie jest już potrzebny, ale zostawiamy na wypadek przyszłych zastosowań */
+  /* Jego rolę przejmuje pannableContainer i graphWrapper */
   font-family: "Roboto Mono", monospace;
-  width: 450px; /* Stała szerokość dla precyzyjnego pozycjonowania */
-  height: 400px; /* Stała wysokość dla precyzyjnego pozycjonowania */
 }
 
 .svgCanvas {
@@ -40,83 +39,111 @@
   overflow: visible;
 }
 
-.commitNode {
+.commitNodeWrapper {
   position: absolute;
-  width: 22px;
-  height: 22px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transform: translateY(-50%);
+  z-index: 10;
+  pointer-events: auto; /* Zapewnia, że commity są klikalne */
 }
 
+/* ... reszta stylów (commitCircle, commitLine itd.) pozostaje bez zmian ... */
+
 .commitCircle {
-  width: 100%;
-  height: 100%;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   border: 2px solid;
   background-color: #1e293b;
   box-sizing: border-box;
+  flex-shrink: 0;
 }
 
-.commitCircleMain {
-  border-color: #38b2ac;
-}
-
-.commitCircleFeature {
-  border-color: #6c7381;
-}
-
-.commitCircleYellow {
-  border-color: #f6c848;
-  background-color: transparent;
-}
-
-.commitHash {
-  position: absolute;
-  white-space: nowrap;
-  font-size: 0.9rem;
-  color: #cbd5e1;
-  top: 50%;
-  transform: translateY(-50%);
+.commitLine {
+  width: 30px;
+  height: 2px;
+  background-color: #4a5568;
 }
 
 .inlineCommitHash {
-  position: absolute;
   background-color: #262d3d;
   border: 1px solid #4a5568;
   color: #94a3b8;
   border-radius: 4px;
-  padding: 1px 6px;
+  padding: 2px 6px;
   font-size: 0.85rem;
   white-space: nowrap;
 }
 
-.branchLabel {
+.labelWrapper {
   position: absolute;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  z-index: 10;
+}
+
+.branchLabel {
   padding: 0.2rem 0.8rem;
   border-radius: 9999px;
   font-size: 0.8rem;
   font-weight: 500;
-  color: #0d1117;
-}
-
-.labelMain {
-  background-color: #38b2ac;
-}
-
-.labelFeature {
-  background-color: #a78bfa;
+  color: #ffffff;
+  white-space: nowrap;
+  width: fit-content;
 }
 
 .headLabel {
-  position: absolute;
   padding: 0.2rem 0.6rem;
   border-radius: 4px;
   background-color: #4a5568;
   font-size: 0.8rem;
   font-weight: bold;
   color: #e2e8f0;
+  white-space: nowrap;
 }
 
-.versionTag {
-  position: absolute;
+/* Tooltip Styles */
+.tooltipBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 40;
+}
+
+.tooltip {
+  position: absolute; /* Pozycjonowany względem graphWrapper */
+  background-color: #2d3748;
+  border: 1px solid #4a5568;
+  border-radius: 6px;
+  padding: 12px;
+  color: #e2e8f0;
   font-size: 0.9rem;
-  color: #94a3b8;
+  z-index: 50;
+  min-width: 250px;
+  transform: translate(-50%, 0);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  pointer-events: none; /* Zapobiega przechwytywaniu zdarzeń myszy przez tooltip */
+}
+
+.tooltipHeader {
+  font-weight: bold;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #4a5568;
+  padding-bottom: 4px;
+}
+
+.tooltipRow {
+  margin-bottom: 4px;
+}
+
+.tooltipRow ul {
+  padding-left: 18px;
+  margin: 4px 0 0 0;
 }
