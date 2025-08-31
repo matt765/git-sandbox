@@ -1,5 +1,7 @@
 .box {
-  background: rgb(255, 255, 255, 0.01);
+  background: var(--content-box-background);
+  backdrop-filter: var(--content-box-backdrop-filter);
+  -webkit-backdrop-filter: var(--content-box-backdrop-filter);
   box-shadow: var(--container-glow);
   border-radius: var(--box-border-radius);
   padding: 1.2rem;

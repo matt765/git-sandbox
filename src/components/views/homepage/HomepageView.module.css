@@ -12,7 +12,9 @@
     "mainButtons advancedButtons resetButtons"
     "mainButtons advancedButtons resetButtons"
     "commandLine commandLine commandLine";
-  background-color: rgba(188, 188, 188, 0.01);
+  background-color: var(--homepage-grid-background);
+  backdrop-filter: var(--homepage-grid-backdrop-filter);
+  -webkit-backdrop-filter: var(--homepage-grid-backdrop-filter);
 }
 
 .branchTree {
@@ -20,7 +22,7 @@
 }
 .console {
   grid-area: console;
-  overflow: hidden; /* Ustawia sztywną granicę dla zawartości, co pozwala na wewnętrzne scrollowanie */
+  overflow: hidden;
 }
 .stash {
   grid-area: stash;
