@@ -2,7 +2,7 @@
   "name": "git-sandbox",
   "version": "1.0.1",
   "private": true,
-  "license": "(AGPL-3.0-only OR LicenseRef-Commercial)",
+  "license": "AGPL-3.0-only",
   "description": "Interactive Git Playground",
   "author": {
     "name": "matt765",

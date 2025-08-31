@@ -1,20 +1,25 @@
+// src/components/layout/navbar/Navbar.tsx
 "use client";
 
 import { useTheme } from "next-themes";
-
+import { useEffect, useState } from "react";
 import styles from "./Navbar.module.css";
-import { GithubIcon } from "@/assets/icons/GithubIcon";
-import { ThemeIcon } from "@/assets/icons/ThemeIcon";
-import { useEffect } from "react";
+import { UserMenu } from "../userMenu/UserMenu";
+import { Modal } from "@/components/common/Modal";
+import { AboutModal } from "../userMenu/aboutModal/AboutModal";
+import { ChangelogModal } from "../userMenu/changelogModal/ChangelogModal";
 
 const THEMES = ["charcoal", "midnight", "snowlight"];
 
 export const Navbar = () => {
   const { theme, setTheme } = useTheme();
+  const [isLoadRepoModalOpen, setIsLoadRepoModalOpen] = useState(false);
+  const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
+  const [isChangelogModalOpen, setIsChangelogModalOpen] = useState(false);
 
   useEffect(() => {
     if (theme && !THEMES.includes(theme)) {
-      setTheme('charcoal');
+      setTheme("charcoal");
     }
   }, [theme, setTheme]);
 
@@ -25,27 +30,41 @@ export const Navbar = () => {
   };
 
   return (
-    <nav className={styles.navbar}>
-      <div className={styles.logo}>
-        <span>Git Sandbox</span>
-      </div>
-      <div className={styles.actions}>
-        <a
-          href="https://github.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="GitHub repository"
-        >
-          <GithubIcon />
-        </a>
-        <button
-          onClick={cycleTheme}
-          className={styles.themeButton}
-          aria-label="Change theme"
-        >
-          <ThemeIcon />
-        </button>
-      </div>
-    </nav>
+    <>
+      <nav className={styles.navbar}>
+        <div className={styles.logo}>
+          <span>Git Sandbox</span>
+        </div>
+        <div className={styles.actions}>
+          <UserMenu
+            onLoadRepoClick={() => setIsLoadRepoModalOpen(true)}
+            onThemeCycle={cycleTheme}
+            onAboutClick={() => setIsAboutModalOpen(true)}
+            onChangelogClick={() => setIsChangelogModalOpen(true)}
+          />
+        </div>
+      </nav>
+
+      <Modal
+        isOpen={isLoadRepoModalOpen}
+        onClose={() => setIsLoadRepoModalOpen(false)}
+        title="Load Remote Repository"
+      >
+        <p>
+          This is a placeholder for the repository loading feature. Soon you
+          will be able to paste a GitHub URL here.
+        </p>
+      </Modal>
+
+      <AboutModal
+        isOpen={isAboutModalOpen}
+        onClose={() => setIsAboutModalOpen(false)}
+      />
+
+      <ChangelogModal
+        isOpen={isChangelogModalOpen}
+        onClose={() => setIsChangelogModalOpen(false)}
+      />
+    </>
   );
 };

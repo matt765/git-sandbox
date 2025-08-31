@@ -1,0 +1,86 @@
+.container {
+  position: relative;
+}
+
+.iconButton {
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: background-color 0.2s ease, border-color 0.2s ease,
+    transform 0.2s ease, color 0.2s ease;
+}
+
+.iconButton:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: var(--text-primary);
+  transform: scale(1.1);
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  background-color: var(--modal-background);
+  border: 1px solid var(--border-color);
+  border-radius: var(--box-border-radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  width: 200px;
+  z-index: 1100;
+  overflow: hidden;
+  animation: menuFadeIn 0.2s ease-out;
+}
+
+.menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.menu li a,
+.menu li button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: none;
+  color: var(--text-primary);
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.menu li a {
+  text-decoration: none;
+}
+
+.menu li a:hover,
+.menu li button:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.separator {
+  height: 1px;
+  background-color: var(--border-color);
+  margin: 0.5rem 0;
+}
+
+@keyframes menuFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

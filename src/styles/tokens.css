@@ -1,9 +1,3 @@
-/* src/styles/tokens.css */
-
-/* ----------------------------------------- */
-/* ---           DEFAULT THEME           --- */
-/* ---            (Charcoal)             --- */
-/* ----------------------------------------- */
 :root,
 [data-theme="charcoal"] {
   /* FONTS */
@@ -15,13 +9,14 @@
   --text-secondary: #a1a1a1;
 
   /* BACKGROUNDS */
-  --background-gradient: linear-gradient(30deg, 
-  rgba(15, 18, 20, 1) 0%, 
-  rgba(21, 23, 26, 1) 25%, /* <-- Dodany punkt */
-  rgba(27, 29, 32, 1) 50%, 
-  rgba(42, 42, 44, 1) 75%, /* <-- Dodany punkt */
-  rgba(56, 54, 55, 1) 100%
-);
+  --background-gradient: linear-gradient(
+    30deg,
+    rgba(15, 18, 20, 1) 0%,
+    rgba(21, 23, 26, 1) 25%,
+    rgba(27, 29, 32, 1) 50%,
+    rgba(42, 42, 44, 1) 75%,
+    rgba(56, 54, 55, 1) 100%
+  );
   /* BORDERS & GLOW */
   --border-color: rgba(255, 255, 255, 0.1);
   --container-glow: inset 0 0 0 1px var(--border-color);
@@ -30,11 +25,16 @@
   --shadow: 0 0 20px rgba(0, 0, 0, 0.4);
 
   --box-border-radius: 12px;
+
+  /* MODAL */
+  --modal-overlay: rgba(0, 0, 0, 0.6);
+  --modal-background: #25282c;
+  --modal-header-background: #1e2023;
+
+  /* ACCENT */
+  --color-accent: #50e4df;
 }
 
-/* ----------------------------------------- */
-/* ---           Midnight THEME          --- */
-/* ----------------------------------------- */
 [data-theme="midnight"] {
   /* FONTS */
   --font-sans: var(--font-geist-sans);
@@ -60,11 +60,16 @@
   --shadow: 0 0 20px rgba(0, 0, 0, 0.4);
 
   --box-border-radius: 12px;
+
+  /* MODAL */
+  --modal-overlay: rgba(0, 0, 0, 0.7);
+  --modal-background: #1a1a2e;
+  --modal-header-background: #161628;
+
+  /* ACCENT */
+  --color-accent: #9f7aea;
 }
 
-/* ----------------------------------------- */
-/* ---          Snowlight THEME          --- */
-/* ----------------------------------------- */
 [data-theme="snowlight"] {
   /* FONTS */
   --font-sans: var(--font-geist-sans);
@@ -85,4 +90,12 @@
   --shadow: 0 0 20px rgba(0, 0, 0, 0.2);
 
   --box-border-radius: 12px;
+
+  /* MODAL */
+  --modal-overlay: rgba(44, 62, 80, 0.5);
+  --modal-background: #fdfdfd;
+  --modal-header-background: #f1f3f5;
+
+  /* ACCENT */
+  --color-accent: #3498db;
 }
