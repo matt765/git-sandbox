@@ -1,11 +1,9 @@
-// src/components/layout/navbar/Navbar.tsx
 "use client";
 
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import styles from "./Navbar.module.css";
 import { UserMenu } from "../userMenu/UserMenu";
-import { Modal } from "@/components/common/Modal";
 import { AboutModal } from "../userMenu/aboutModal/AboutModal";
 import { ChangelogModal } from "../userMenu/changelogModal/ChangelogModal";
 
@@ -44,23 +42,10 @@ export const Navbar = () => {
           />
         </div>
       </nav>
-
-      <Modal
-        isOpen={isLoadRepoModalOpen}
-        onClose={() => setIsLoadRepoModalOpen(false)}
-        title="Load Remote Repository"
-      >
-        <p>
-          This is a placeholder for the repository loading feature. Soon you
-          will be able to paste a GitHub URL here.
-        </p>
-      </Modal>
-
       <AboutModal
         isOpen={isAboutModalOpen}
         onClose={() => setIsAboutModalOpen(false)}
       />
-
       <ChangelogModal
         isOpen={isChangelogModalOpen}
         onClose={() => setIsChangelogModalOpen(false)}

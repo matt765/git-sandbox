@@ -46,29 +46,23 @@ export const AboutModal = ({ isOpen, onClose }: AboutModalProps) => {
         </div>
         <div className={styles.content}>
           <p>
-            <strong>Welcome to Git Sandbox!</strong> This is an interactive
-            playground designed to help you learn and master Git in a safe,
-            visual environment. No need to worry about messing up a real
-            project.
+            Git Sandbox is an interactive playground designed to help you learn
+            and master Git in a safe, visual environment. No need to worry about
+            messing up a real project.
           </p>
           <p>
-            Experiment with a wide range of commands like <code>add</code>,{" "}
-            <code>commit</code>, <code>branch</code>, <code>merge</code>, and{" "}
-            <code>rebase</code>. Every action you take is instantly reflected in
-            the visual graph, helping you build a strong mental model of how Git
-            works.
-          </p>
-          <p>
-            This project is open-source. For more information, to report an
-            issue, or to contribute, please visit the official{" "}
+            This project is open-source. If you want to support this project and
+            its future development with new features and improvements, you can
+            report an issue, contribute code or use
             <a
-              href="https://github.com/matt765/git-sandbox"
+              href="https://buymeacoffee.com/matt765"
               target="_blank"
               rel="noopener noreferrer"
             >
-              GitHub repository
+              Buy Me A Coffeeservice
             </a>
-            .
+            Every contribution is greatly appreciated.<br /> <br />I hope you find the
+            application helpful.<br /><br /> ~matt765
           </p>
         </div>
       </div>

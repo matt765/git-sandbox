@@ -61,7 +61,7 @@ export const UserMenu = ({
               </button>
             </li>
             <li>
-              <button onClick={onThemeCycle}>Cycle Theme</button>
+              <button onClick={onThemeCycle}>Switch theme</button>
             </li>
             <li className={styles.separator}></li>
             <li>
