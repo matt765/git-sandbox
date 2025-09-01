@@ -1,9 +1,12 @@
+// Console.tsx (lub FilesBox.tsx)
 import { useState } from "react";
 import { useGitStore } from "@/store/gitStore";
 import { ChangesSection } from "./ChangesSection";
 import styles from "./FilesBox.module.css";
 import { ContainedButton } from "@/components/common/ContainedButton";
 import { AddIcon } from "@/assets/icons/AddIcon";
+import { PaintbrushIcon } from "@/assets/icons/PaintbrushIcon";
+import { ResetIcon } from "@/assets/icons/ResetIcon";
 
 export const Console = () => {
   const [message, setMessage] = useState("");
@@ -14,6 +17,10 @@ export const Console = () => {
     stageFile,
     unstageFile,
     addFile,
+    resetApp,
+    stageAllFiles,
+    unstageAllFiles,
+    discardAllChanges,
   } = useGitStore();
 
   const handleCommit = () => {
@@ -58,18 +65,42 @@ export const Console = () => {
           title="Staged Changes"
           files={stagedFilesForDisplay}
           onFileAction={(id) => unstageFile(id)}
+          onHeaderAction={unstageAllFiles}
+          headerActionIcon="-"
         />
         <ChangesSection
           title="Changes"
           files={unstagedFilesForDisplay}
           onFileAction={(id) => stageFile(id)}
           hideCount={true}
+          onHeaderAction={stageAllFiles}
+          headerActionIcon="+"
         />
       </div>
       <div className={styles.footer}>
-        <button className={styles.addButton} onClick={addFile}>
-          {/* <AddIcon /> */}+ Add new file
-        </button>
+        <div className={styles.footerActions}>
+          <button
+            className={styles.iconButton}
+            onClick={addFile}
+            title="Add new file"
+          >
+            <AddIcon />
+          </button>
+          <button
+            className={styles.iconButton}
+            onClick={discardAllChanges}
+            title="Discard all changes"
+          >
+            <PaintbrushIcon />
+          </button>
+          <button
+            className={styles.iconButton}
+            onClick={resetApp}
+            title="Reset app to default"
+          >
+            <ResetIcon />
+          </button>
+        </div>
       </div>
     </div>
   );

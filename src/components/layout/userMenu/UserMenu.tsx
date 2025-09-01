@@ -56,11 +56,6 @@ export const UserMenu = ({
         <div className={styles.menu}>
           <ul>
             <li>
-              <button onClick={() => handleOptionClick(onLoadRepoClick)}>
-                Load remote repo
-              </button>
-            </li>
-            <li>
               <button onClick={onThemeCycle}>Switch theme</button>
             </li>
             <li className={styles.separator}></li>

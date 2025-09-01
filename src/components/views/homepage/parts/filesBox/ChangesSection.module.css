@@ -1,6 +1,14 @@
+/* ChangesSection.module.css */
 .container {
   display: flex;
   flex-direction: column;
+  width: 100%;
+}
+
+.headerWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
   width: 100%;
 }
 
@@ -15,6 +23,7 @@
   padding: 6px 0;
   gap: 8px;
   text-align: left;
+  flex-grow: 1;
 }
 
 .arrow {
@@ -38,12 +47,32 @@
   flex-grow: 1;
 }
 
-.count {
-  background-color: var(--background-secondary);
-  border-radius: 8px;
-  padding: 2px 8px;
-  font-size: 0.8rem;
-  font-weight: 600;
+.headerActionButton {
+  background: none;
+  border: none; /* Usunięto ramkę */
+  color: var(--text-secondary);
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 2px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+  margin-left: 8px;
+  font-weight: 800; /* Pogrubiona czcionka */
+  font-size: 1.1rem; /* Powiększona czcionka */
+}
+
+.headerWrapper:hover .headerActionButton {
+  opacity: 1;
+  visibility: visible;
+}
+
+.headerActionButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .content {

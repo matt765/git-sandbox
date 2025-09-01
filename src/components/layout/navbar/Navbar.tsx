@@ -7,7 +7,8 @@ import { UserMenu } from "../userMenu/UserMenu";
 import { AboutModal } from "../userMenu/aboutModal/AboutModal";
 import { ChangelogModal } from "../userMenu/changelogModal/ChangelogModal";
 
-const THEMES = ["charcoal", "midnight", "snowlight"];
+// const THEMES = ["charcoal", "midnight", "snowlight"];
+const THEMES = ["charcoal", "snowlight"];
 
 export const Navbar = () => {
   const { theme, setTheme } = useTheme();

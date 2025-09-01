@@ -4,6 +4,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  /* background-color: rgb(0,0,0,0.3); */
 }
 
 .contentWrapper {
@@ -11,7 +12,7 @@
   height: 85vh;
   border-radius: 20px;
   overflow: hidden;
-  background-color: var(--content-background);
+
   border: 1px solid var(--border-color);
   box-shadow: var(--shadow);
 }

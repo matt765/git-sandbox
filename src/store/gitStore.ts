@@ -1,3 +1,4 @@
+// src/store/gitStore.ts
 import { create } from "zustand";
 
 // --- INTERFACES ---
@@ -32,14 +33,19 @@ interface GitActions {
   stageFile: (id: number) => void;
   unstageFile: (id: number) => void;
   addFile: () => void;
+  resetApp: () => void;
+  stageAllFiles: () => void;
+  unstageAllFiles: () => void;
+  discardAllChanges: () => void;
 }
 
 // --- HELPER FUNCTIONS ---
 const generateHash = () => Math.random().toString(36).substring(2, 8);
-let fileIdCounter = 3;
+let fileIdCounter = 7;
 
 // --- INITIAL STATE ---
 const initialState: GitState = {
+  // ... (reszta stanu bez zmian)
   commits: {
     f9821b: {
       id: "f9821b",
@@ -97,20 +103,15 @@ export const useGitStore = create<GitState & GitActions>((set, get) => ({
 
   commit: (message: string) => {
     const state = get();
-    if (!message || state.stagingArea.length === 0) {
-      return;
-    }
-
+    if (!message || state.stagingArea.length === 0) return;
     const parentId = state.branches[state.HEAD.name].commitId;
     const newCommitId = generateHash();
-
     const newCommit: Commit = {
       id: newCommitId,
       parent: parentId,
       message,
-      files: [...state.stagingArea], // ZAPISUJEMY TYLKO PLIKI ZE STAGING AREA
+      files: [...state.stagingArea],
     };
-
     set({
       commits: { ...state.commits, [newCommitId]: newCommit },
       branches: {
@@ -120,7 +121,7 @@ export const useGitStore = create<GitState & GitActions>((set, get) => ({
           commitId: newCommitId,
         },
       },
-      stagingArea: [], // Czyszczenie staged files po commicie
+      stagingArea: [],
       logs: [...state.logs, `Created commit ${newCommitId}: "${message}"`],
     });
   },
@@ -152,8 +153,25 @@ export const useGitStore = create<GitState & GitActions>((set, get) => ({
         id: fileIdCounter,
         name: `Component-${fileIdCounter}.tsx`,
       };
-      return {
-        workingDirectory: [...state.workingDirectory, newFile],
-      };
+      return { workingDirectory: [...state.workingDirectory, newFile] };
     }),
+
+  discardAllChanges: () => set({ workingDirectory: [], stagingArea: [] }),
+
+  stageAllFiles: () =>
+    set((state) => ({
+      stagingArea: [...state.stagingArea, ...state.workingDirectory],
+      workingDirectory: [],
+    })),
+
+  unstageAllFiles: () =>
+    set((state) => ({
+      workingDirectory: [...state.workingDirectory, ...state.stagingArea],
+      stagingArea: [],
+    })),
+
+  resetApp: () => {
+    fileIdCounter = 7;
+    set(initialState);
+  },
 }));

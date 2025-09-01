@@ -67,8 +67,8 @@
   --color-accent: #9f7aea;
 
   /* LAYOUT & CONTENT */
-  --content-background: rgba(19, 19, 19, 0.04);
-  --homepage-grid-background: rgba(19, 19, 19, 0.04);
+  --content-background: rgba(57, 56, 56, 0.24);
+  --homepage-grid-background: rgba(79, 107, 123, 0.04);
   --content-box-background: rgba(255, 255, 255, 0.01);
   --content-box-backdrop-filter: blur(0px);
   --homepage-grid-backdrop-filter: blur(30px);

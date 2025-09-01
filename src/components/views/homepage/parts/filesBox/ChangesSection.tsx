@@ -1,3 +1,4 @@
+// ChangesSection.tsx
 import { useState } from "react";
 import styles from "./ChangesSection.module.css";
 import { FileItem } from "./FileItem";
@@ -14,6 +15,8 @@ interface ChangesSectionProps {
   onFileAction: (id: number) => void;
   onDeleteFile?: (id: number) => void;
   hideCount?: boolean;
+  onHeaderAction?: () => void;
+  headerActionIcon?: "+" | "-";
 }
 
 export const ChangesSection = ({
@@ -22,6 +25,8 @@ export const ChangesSection = ({
   onFileAction,
   onDeleteFile,
   hideCount = false,
+  onHeaderAction,
+  headerActionIcon,
 }: ChangesSectionProps) => {
   const [isOpen, setIsOpen] = useState(true);
 
@@ -31,13 +36,27 @@ export const ChangesSection = ({
 
   return (
     <div className={styles.container}>
-      <button className={styles.header} onClick={() => setIsOpen(!isOpen)}>
-        <span className={`${styles.arrow} ${isOpen ? styles.open : ""}`}>
-          ▼
-        </span>
-        <span className={styles.title}>{title}</span>
-        {/* {!hideCount && <span className={styles.count}>{files.length}</span>} */}
-      </button>
+      <div className={styles.headerWrapper}>
+        <button className={styles.header} onClick={() => setIsOpen(!isOpen)}>
+          <span className={`${styles.arrow} ${isOpen ? styles.open : ""}`}>
+            ▼
+          </span>
+          <span className={styles.title}>{title}</span>
+        </button>
+        {onHeaderAction && headerActionIcon && (
+          <button
+            className={styles.headerActionButton}
+            onClick={onHeaderAction}
+            title={
+              headerActionIcon === "+"
+                ? "Stage all changes"
+                : "Unstage all changes"
+            }
+          >
+            {headerActionIcon}
+          </button>
+        )}
+      </div>
       {isOpen && (
         <div className={styles.content}>
           {files.map((file) => (
