@@ -1,37 +1,32 @@
 # Contributing Guide
 
-Hi there! 👋 First of all — thank you for considering contributing to this project. Every bit of help is appreciated and valued.
+Hi there! 👋 Thanks for checking out this project.  
+Every form of contribution is valuable — whether it’s sharing ideas, supporting development, or helping with translations.
 
-This guide is here to explain how contributions work and to make sure we're all on the same page when it comes to collaboration and licensing.
+Below are the main ways to get involved:
 
-## Contributor License Agreement (CLA)
 
-Before a contribution can be accepted, signing the project's Contributor License Agreement (CLA) is required.
+## 1. Share Feedback and Ideas 💡
 
-**Why do we need this?**
-This project uses a dual-license model (AGPL-3.0 and Commercial). To ensure the necessary rights are in place to include contributions in both versions, a CLA is required. The CLA is a simple agreement that grants the project owner a license to the contribution, allowing the code to be distributed under both licenses. This protects the contributor, the project, and its users.
+- Use the **[Discussions](../../discussions)** tab on GitHub to share feedback, suggestions, or ideas for improvement.
+- Open an **Issue** if you’ve found a bug or something doesn’t work as expected.
 
-**How to sign?**
-The process is automated. When you open your first Pull Request, a bot will comment with a link to sign the CLA. It's a quick, one-time process.
 
-## How to Contribute
+## 2. Support Development ❤️
 
-1.  Fork the repo.
-2.  Create a feature branch (`git checkout -b feature/your-awesome-feature`).
-3.  Make your changes.
-4.  Commit your changes (`git commit -m 'Add some awesome feature'`).
-5.  Push to the branch (`git push origin feature/your-awesome-feature`).
-6.  Open a Pull Request. The CLA bot will guide you from there if needed.
+If you’d like to support continued work on the project, you can do so through [**GitHub Sponsors**](https://github.com/sponsors/matt765).
 
-## Other Ways to Support the Project
 
-Even if you're not contributing code, there are still valuable ways to get involved:
+## 3. Contribute Translations 🌍
 
-- **Open an issue** with feedback, suggestions, or bug reports — your input helps improve the project for everyone.
-- **Support the project** through [GitHub Sponsors](https://github.com/sponsors/matt765) to help keep development active.
+Translations make the app more accessible to people worldwide.  
+Pull requests may be submitted for adding new languages or improving existing ones in the `i18n/` folder.
 
-Every form of support means a lot and helps keep this project alive and growing.
+### Licensing for Translations
 
-## A Note of Thanks
+By submitting translations, the contributor agrees that:
 
-Thanks again for taking the time to contribute!
+1. The contribution is dedicated to the public domain under **CC0-1.0**
+2. The contributor confirms authorship of the translation and that it does not infringe third-party rights.
+3. These terms apply **only to translations**.  All other parts of the project remain licensed under **AGPL-3.0**.
+
