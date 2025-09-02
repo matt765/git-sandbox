@@ -25,7 +25,10 @@ export const FileItem = ({
             <DeleteIcon />
           </button>
         )}
-        <button className={styles.actionButton} onClick={onActionClick}>
+        <button 
+          className={styles.actionButton}
+          onClick={onActionClick}
+        >
           {isStaged ? "-" : "+"}
         </button>
       </div>

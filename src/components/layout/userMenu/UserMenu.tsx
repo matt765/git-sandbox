@@ -5,7 +5,6 @@ import styles from "./UserMenu.module.css";
 import { HamburgerIcon } from "@/assets/icons/HamburgerIcon";
 
 interface UserMenuProps {
-  onLoadRepoClick: () => void;
   onThemeCycle: () => void;
   onAboutClick: () => void;
   onChangelogClick: () => void;
@@ -13,7 +12,6 @@ interface UserMenuProps {
 }
 
 export const UserMenu = ({
-  onLoadRepoClick,
   onThemeCycle,
   onAboutClick,
   onChangelogClick,
@@ -58,6 +56,11 @@ export const UserMenu = ({
         <div className={styles.menu}>
           <ul>
             <li>
+              <button onClick={() => handleOptionClick(onAboutClick)}>
+                About Project
+              </button>
+            </li>
+            <li>
               <button onClick={() => handleOptionClick(onChangelogClick)}>
                 Changelog
               </button>
@@ -65,11 +68,6 @@ export const UserMenu = ({
             <li>
               <button onClick={() => handleOptionClick(onContributeClick)}>
                 Contribute
-              </button>
-            </li>
-            <li>
-              <button onClick={() => handleOptionClick(onAboutClick)}>
-                About Project
               </button>
             </li>
             <li>

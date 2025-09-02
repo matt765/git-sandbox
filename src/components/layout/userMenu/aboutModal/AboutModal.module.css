@@ -52,13 +52,11 @@
   cursor: pointer;
   line-height: 1;
   padding: 0.25rem;
-  transition: color 0.2s ease, transform 0.2s ease;
   z-index: 10;
 }
 
 .closeButton:hover {
   color: var(--text-primary);
-  transform: rotate(90deg);
 }
 
 .content {

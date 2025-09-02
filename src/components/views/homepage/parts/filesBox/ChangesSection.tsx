@@ -24,7 +24,6 @@ export const ChangesSection = ({
   files,
   onFileAction,
   onDeleteFile,
-  hideCount = false,
   onHeaderAction,
   headerActionIcon,
 }: ChangesSectionProps) => {

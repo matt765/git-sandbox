@@ -13,7 +13,6 @@ const THEMES = ["charcoal", "snowlight"];
 
 export const Navbar = () => {
   const { theme, setTheme } = useTheme();
-  const [isLoadRepoModalOpen, setIsLoadRepoModalOpen] = useState(false);
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
   const [isChangelogModalOpen, setIsChangelogModalOpen] = useState(false);
   const [isContributeModalOpen, setIsContributeModalOpen] = useState(false);
@@ -38,7 +37,6 @@ export const Navbar = () => {
         </div>
         <div className={styles.actions}>
           <UserMenu
-            onLoadRepoClick={() => setIsLoadRepoModalOpen(true)}
             onThemeCycle={cycleTheme}
             onAboutClick={() => setIsAboutModalOpen(true)}
             onChangelogClick={() => setIsChangelogModalOpen(true)}
