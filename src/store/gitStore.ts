@@ -15,6 +15,7 @@ export interface Commit {
 interface Branch {
   name: string;
   commitId: string;
+  position: number;
 }
 interface GitState {
   commits: Record<string, Commit>;
@@ -33,12 +34,16 @@ interface GitActions {
   resetApp: () => void;
   stageAllFiles: () => void;
   unstageAllFiles: () => void;
-  discardAllChanges: () => void;
-  // Nowe akcje
+  discardAllChanges: () => void; // Nowe akcje
   cherryPick: (commitId: string) => void;
   revert: (commitId: string) => void;
   reset: (commitId: string, mode: "soft" | "mixed" | "hard") => void;
-  amend: (newMessage?: string) => void;
+  amend: (newMessage?: string) => void; // Advanced actions
+  merge: (sourceBranch: string) => void;
+  rebase: (targetBranch: string) => void;
+  createBranch: (name: string) => void;
+  deleteBranch: (name: string) => void;
+  switchBranch: (name: string) => void;
 }
 
 // --- HELPER FUNCTIONS --- (bez zmian)
@@ -86,8 +91,8 @@ const initialState: GitState = {
     },
   },
   branches: {
-    main: { name: "main", commitId: "a568e1" },
-    feature: { name: "feature", commitId: "d8e9f0" },
+    main: { name: "main", commitId: "a568e1", position: 0 },
+    feature: { name: "feature", commitId: "d8e9f0", position: 1 },
   },
   HEAD: { type: "branch", name: "feature" },
   logs: [
@@ -100,9 +105,8 @@ const initialState: GitState = {
 
 // --- STORE ---
 export const useGitStore = create<GitState & GitActions>((set, get) => ({
-  ...initialState,
+  ...initialState, // --- Istniejące akcje --- (bez zmian)
 
-  // --- Istniejące akcje --- (bez zmian)
   commit: (message: string) => {
     const state = get();
     if (!message || state.stagingArea.length === 0) return;
@@ -168,9 +172,8 @@ export const useGitStore = create<GitState & GitActions>((set, get) => ({
   resetApp: () => {
     fileIdCounter = 7;
     set(initialState);
-  },
+  }, // --- Nowe akcje ---
 
-  // --- Nowe akcje ---
   cherryPick: (commitId: string) => {
     const state = get();
     const pickedCommit = state.commits[commitId];
@@ -204,38 +207,51 @@ export const useGitStore = create<GitState & GitActions>((set, get) => ({
     if (!revertedCommit) return;
 
     const currentCommitId = state.branches[state.HEAD.name].commitId;
-    const currentCommit = state.commits[currentCommitId];
-    
-    // Find what the reverted commit's parent had (to understand what was changed)
-    const revertedParentCommit = revertedCommit.parent 
-      ? state.commits[Array.isArray(revertedCommit.parent) ? revertedCommit.parent[0] : revertedCommit.parent]
+    const currentCommit = state.commits[currentCommitId]; // Find what the reverted commit's parent had (to understand what was changed)
+
+    const revertedParentCommit = revertedCommit.parent
+      ? state.commits[
+          Array.isArray(revertedCommit.parent)
+            ? revertedCommit.parent[0]
+            : revertedCommit.parent
+        ]
       : null;
-    
+
     let revertedFiles: GitFile[];
-    
+
     if (revertedParentCommit) {
       // Remove files that were added by the reverted commit
       // and restore files that were in the parent but removed by the reverted commit
-      const currentFileIds = new Set(currentCommit.files.map(f => f.id));
-      const revertedFileIds = new Set(revertedCommit.files.map(f => f.id));
-      const revertedParentFileIds = new Set(revertedParentCommit.files.map(f => f.id));
-      
-      // Start with current files
-      let resultFiles = [...currentCommit.files];
-      
-      // Remove files that were added by the reverted commit (but weren't in its parent)
-      const addedByReverted = revertedCommit.files.filter(f => !revertedParentFileIds.has(f.id));
-      resultFiles = resultFiles.filter(f => !addedByReverted.some(af => af.id === f.id));
-      
-      // Add back files that were in the reverted commit's parent but removed by the reverted commit
-      const removedByReverted = revertedParentCommit.files.filter(f => !revertedFileIds.has(f.id));
-      resultFiles = [...resultFiles, ...removedByReverted.filter(f => !currentFileIds.has(f.id))];
-      
+      const currentFileIds = new Set(currentCommit.files.map((f) => f.id));
+      const revertedFileIds = new Set(revertedCommit.files.map((f) => f.id));
+      const revertedParentFileIds = new Set(
+        revertedParentCommit.files.map((f) => f.id)
+      ); // Start with current files
+
+      let resultFiles = [...currentCommit.files]; // Remove files that were added by the reverted commit (but weren't in its parent)
+
+      const addedByReverted = revertedCommit.files.filter(
+        (f) => !revertedParentFileIds.has(f.id)
+      );
+      resultFiles = resultFiles.filter(
+        (f) => !addedByReverted.some((af) => af.id === f.id)
+      ); // Add back files that were in the reverted commit's parent but removed by the reverted commit
+
+      const removedByReverted = revertedParentCommit.files.filter(
+        (f) => !revertedFileIds.has(f.id)
+      );
+      resultFiles = [
+        ...resultFiles,
+        ...removedByReverted.filter((f) => !currentFileIds.has(f.id)),
+      ];
+
       revertedFiles = resultFiles;
     } else {
       // If no parent (initial commit), reverting means removing all files from that commit
-      const revertedFileIds = new Set(revertedCommit.files.map(f => f.id));
-      revertedFiles = currentCommit.files.filter(f => !revertedFileIds.has(f.id));
+      const revertedFileIds = new Set(revertedCommit.files.map((f) => f.id));
+      revertedFiles = currentCommit.files.filter(
+        (f) => !revertedFileIds.has(f.id)
+      );
     }
 
     const newCommitId = generateHash();
@@ -268,7 +284,7 @@ export const useGitStore = create<GitState & GitActions>((set, get) => ({
       commitId: commitId,
     };
 
-    let newState: Partial<GitState> = {
+    const newState: Partial<GitState> = {
       branches: { ...state.branches, [state.HEAD.name]: newBranchState },
       logs: [...state.logs, `Reset current branch to ${commitId} (${mode})`],
     };
@@ -295,10 +311,10 @@ export const useGitStore = create<GitState & GitActions>((set, get) => ({
       parent: oldCommit.parent,
       message: newMessage || oldCommit.message,
       files: [...oldCommit.files, ...state.stagingArea],
-    };
+    }; // Remove old commit and add new one // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
-    // Remove old commit and add new one
-    const { [oldCommitId]: removedCommit, ...remainingCommits } = state.commits;
+    const { [oldCommitId]: _removedCommit, ...remainingCommits } =
+      state.commits;
 
     set({
       commits: { ...remainingCommits, [newCommitId]: newCommit },
@@ -311,6 +327,112 @@ export const useGitStore = create<GitState & GitActions>((set, get) => ({
       },
       stagingArea: [],
       logs: [...state.logs, `Amended commit ${oldCommitId} -> ${newCommitId}`],
+    });
+  }, // Advanced actions
+
+  merge: (sourceBranch: string) => {
+    const state = get();
+    if (!state.branches[sourceBranch] || sourceBranch === state.HEAD.name)
+      return;
+
+    const currentCommitId = state.branches[state.HEAD.name].commitId;
+    const sourceCommitId = state.branches[sourceBranch].commitId;
+    const newCommitId = generateHash();
+
+    const currentCommit = state.commits[currentCommitId];
+    const sourceCommit = state.commits[sourceCommitId]; // Merge files (simple approach - combine all files)
+
+    const allFiles = [...currentCommit.files];
+    sourceCommit.files.forEach((sourceFile) => {
+      if (!allFiles.some((f) => f.id === sourceFile.id)) {
+        allFiles.push(sourceFile);
+      }
+    });
+
+    const mergeCommit: Commit = {
+      id: newCommitId,
+      parent: [currentCommitId, sourceCommitId],
+      message: `Merge branch '${sourceBranch}' into ${state.HEAD.name}`,
+      files: allFiles,
+    };
+
+    set({
+      commits: { ...state.commits, [newCommitId]: mergeCommit },
+      branches: {
+        ...state.branches,
+        [state.HEAD.name]: {
+          ...state.branches[state.HEAD.name],
+          commitId: newCommitId,
+        },
+      },
+      logs: [
+        ...state.logs,
+        `Merged branch '${sourceBranch}' into ${state.HEAD.name}`,
+      ],
+    });
+  },
+
+  rebase: (targetBranch: string) => {
+    const state = get();
+    if (!state.branches[targetBranch] || targetBranch === state.HEAD.name)
+      return;
+
+    const targetCommitId = state.branches[targetBranch].commitId;
+
+    set({
+      branches: {
+        ...state.branches,
+        [state.HEAD.name]: {
+          ...state.branches[state.HEAD.name],
+          commitId: targetCommitId,
+        },
+      },
+      logs: [...state.logs, `Rebased ${state.HEAD.name} onto ${targetBranch}`],
+    });
+  },
+
+  createBranch: (name: string) => {
+    const state = get();
+    if (state.branches[name]) return; // Branch already exists
+
+    const currentCommitId = state.branches[state.HEAD.name].commitId; // Find the first available position (lane)
+
+    const existingPositions = new Set(
+      Object.values(state.branches).map((b) => b.position)
+    );
+    let nextPosition = 0;
+    while (existingPositions.has(nextPosition)) {
+      nextPosition++;
+    }
+
+    set({
+      branches: {
+        ...state.branches,
+        [name]: { name, commitId: currentCommitId, position: nextPosition },
+      },
+      logs: [...state.logs, `Created branch '${name}'`],
+    });
+  },
+
+  deleteBranch: (name: string) => {
+    const state = get();
+    if (!state.branches[name] || name === state.HEAD.name) return; // Can't delete current branch // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
+    const { [name]: _deletedBranch, ...remainingBranches } = state.branches;
+
+    set({
+      branches: remainingBranches,
+      logs: [...state.logs, `Deleted branch '${name}'`],
+    });
+  },
+
+  switchBranch: (name: string) => {
+    const state = get();
+    if (!state.branches[name] || name === state.HEAD.name) return;
+
+    set({
+      HEAD: { type: "branch", name },
+      logs: [...state.logs, `Switched to branch '${name}'`],
     });
   },
 }));

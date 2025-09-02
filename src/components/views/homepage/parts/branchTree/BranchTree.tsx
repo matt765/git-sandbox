@@ -1,3 +1,4 @@
+// src/components/views/homepage/parts/branchTree/BranchTree.tsx
 import { useGitStore, Commit } from "@/store/gitStore";
 import styles from "./BranchTree.module.css";
 import {
@@ -9,7 +10,7 @@ import {
   useEffect,
 } from "react";
 
-// ... (Interfejsy Node, Edge, Label, TooltipData pozostają bez zmian)
+// --- INTERFACES --- (bez zmian)
 interface Node {
   id: string;
   message: string;
@@ -64,28 +65,32 @@ export const BranchTree = () => {
   const panStart = useRef({ x: 0, y: 0 });
   const hasDragged = useRef(false);
 
-  // Efekt do wyśrodkowania widoku na starcie
   useEffect(() => {
     if (wrapperRef.current) {
       const wrapperWidth = wrapperRef.current.offsetWidth;
-      // Proste oszacowanie szerokości grafu
       const numLanes = Object.keys(branches).length;
       const contentWidth = PADDING_X + numLanes * X_STEP;
 
       const initialX = (wrapperWidth - contentWidth) / 2;
       setPan({ x: initialX, y: 40 });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Uruchamiamy tylko raz po zamontowaniu komponentu
+    } // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  // ... (useMemo z całą logiką obliczania grafu pozostaje bez zmian)
   const { nodes, edges, labels } = useMemo(() => {
     const branchNames = Object.keys(branches);
+
+    const sortedBranchNames = [...branchNames].sort((a, b) => {
+      return branches[a].position - branches[b].position;
+    });
+
     const laneAssignments = new Map<string, number>(
-      branchNames.map((name, i) => [name, i])
+      sortedBranchNames.map((name, i) => [name, i])
     );
     const colorAssignments = new Map<string, string>(
-      branchNames.map((name, i) => [name, LANE_COLORS[i % LANE_COLORS.length]])
+      sortedBranchNames.map((name, i) => [
+        name,
+        LANE_COLORS[i % LANE_COLORS.length],
+      ])
     );
     const commitList = Object.values(commits);
     const commitDepths = new Map<string, number>();
@@ -106,11 +111,29 @@ export const BranchTree = () => {
     commitList.forEach((c) => getDepth(c.id));
     const nodeMap = new Map<string, Node>();
     const calculatedNodes: Node[] = [];
+
     const commitToBranch = new Map<string, string>();
-    branchNames.forEach((branchName) => {
+
+    if (branches.main) {
+      let currentId: string | null = branches.main.commitId;
+      while (currentId && commits[currentId]) {
+        if (!commitToBranch.has(currentId)) {
+          commitToBranch.set(currentId, "main");
+        }
+        const parent: string | string[] | null | undefined =
+          commits[currentId]?.parent;
+        currentId = Array.isArray(parent) ? parent[0] : parent ?? null;
+      }
+    }
+
+    sortedBranchNames.forEach((branchName) => {
+      if (branchName === "main") return;
+
       let currentId: string | null = branches[branchName].commitId;
-      while (currentId && !commitToBranch.has(currentId)) {
-        commitToBranch.set(currentId, branchName);
+      while (currentId && commits[currentId]) {
+        if (!commitToBranch.has(currentId)) {
+          commitToBranch.set(currentId, branchName);
+        }
         const parent: string | string[] | null | undefined =
           commits[currentId]?.parent;
         currentId = Array.isArray(parent) ? parent[0] : parent ?? null;
@@ -132,12 +155,10 @@ export const BranchTree = () => {
       calculatedNodes.push(node);
       nodeMap.set(commit.id, node);
     });
-    const calculatedLabels: Label[] = branchNames.map((name) => {
+    const calculatedLabels: Label[] = sortedBranchNames.map((name) => {
       const commitId = branches[name].commitId;
-      const node = nodeMap.get(commitId);
-      const x = node
-        ? node.x
-        : PADDING_X + (laneAssignments.get(name) ?? 0) * X_STEP;
+      const lane = laneAssignments.get(name) ?? 0;
+      const x = PADDING_X + lane * X_STEP;
       return {
         name,
         x,
@@ -148,6 +169,34 @@ export const BranchTree = () => {
       };
     });
     const calculatedEdges: Edge[] = [];
+
+    sortedBranchNames.forEach((branchName) => {
+      const branchCommitId = branches[branchName].commitId;
+      const existingNode = nodeMap.get(branchCommitId);
+
+      if (existingNode && commitToBranch.get(branchCommitId) !== branchName) {
+        const lane = laneAssignments.get(branchName) ?? 0;
+        const markerNode: Node = {
+          id: `${branchName}-marker-${branchCommitId}`,
+          message: existingNode.message,
+          x: PADDING_X + lane * X_STEP,
+          y: existingNode.y,
+          color: colorAssignments.get(branchName) ?? LANE_COLORS[0],
+          depth: existingNode.depth,
+          commitData: existingNode.commitData,
+        };
+        calculatedNodes.push(markerNode);
+
+        if (existingNode.x !== markerNode.x) {
+          calculatedEdges.push({
+            key: `branch-connection-${branchName}-${branchCommitId}`,
+            path: `M ${existingNode.x} ${existingNode.y} L ${markerNode.x} ${markerNode.y}`,
+            color: colorAssignments.get(branchName) ?? LANE_COLORS[0],
+          });
+        }
+      }
+    });
+
     const lanes = new Map<number, Node[]>();
     calculatedNodes.forEach((node) => {
       if (!lanes.has(node.x)) lanes.set(node.x, []);
@@ -213,7 +262,7 @@ export const BranchTree = () => {
   }, [commits, branches, head]);
 
   const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
-    if (e.button !== 0) return; // Aktywuj tylko dla lewego przycisku myszy
+    if (e.button !== 0) return;
     e.preventDefault();
     isPanning.current = true;
     panStart.current = { x: e.clientX - pan.x, y: e.clientY - pan.y };
@@ -251,6 +300,7 @@ export const BranchTree = () => {
 
   return (
     <div className={styles.container}>
+      <div className={styles.branchInfo}>branch: {head.name}</div> 
       <div
         ref={wrapperRef}
         className={styles.graphWrapper}
@@ -266,7 +316,6 @@ export const BranchTree = () => {
             transform: `translate(${pan.x}px, ${pan.y}px) scale(${scale})`,
           }}
         >
-          {/* ... reszta JSX pozostaje bez zmian ... */}
           <svg className={styles.svgCanvas} overflow="visible">
             {edges.map((edge) => (
               <path
@@ -278,7 +327,6 @@ export const BranchTree = () => {
               />
             ))}
           </svg>
-
           {labels.map((label) => (
             <div
               key={label.name}
@@ -289,12 +337,11 @@ export const BranchTree = () => {
                 className={styles.branchLabel}
                 style={{ backgroundColor: label.color }}
               >
-                {label.name}
+                {label.name} 
               </div>
-              {label.isHead && <div className={styles.headLabel}>HEAD</div>}
+              {label.isHead && <div className={styles.headLabel}>HEAD</div>} 
             </div>
           ))}
-
           {nodes.map((node) => {
             const isReversed = node.depth % 2 !== 0;
             const transform = isReversed
@@ -315,7 +362,7 @@ export const BranchTree = () => {
                 {isReversed ? (
                   <>
                     <div className={styles.inlineCommitHash}>{node.id}</div>
-                    <div className={styles.commitLine} />
+                    <div className={styles.commitLine} /> 
                     <div
                       className={styles.commitCircle}
                       style={{ borderColor: node.color }}
@@ -327,15 +374,14 @@ export const BranchTree = () => {
                       className={styles.commitCircle}
                       style={{ borderColor: node.color }}
                     />
-                    <div className={styles.commitLine} />
-                    <div className={styles.inlineCommitHash}>{node.id}</div>
+                    <div className={styles.commitLine} /> 
+                    <div className={styles.inlineCommitHash}>{node.id}</div> 
                   </>
                 )}
               </div>
             );
           })}
         </div>
-
         {tooltip && (
           <>
             <div
@@ -349,15 +395,15 @@ export const BranchTree = () => {
                 left: `${tooltip.x * scale + pan.x}px`,
               }}
             >
-              <div className={styles.tooltipHeader}>Commit Details</div>
+              <div className={styles.tooltipHeader}>Commit Details</div> 
               <div className={styles.tooltipRow}>
-                <strong>Hash:</strong> {tooltip.commit.id}
+                <strong>Hash:</strong> {tooltip.commit.id} 
               </div>
               <div className={styles.tooltipRow}>
-                <strong>Message:</strong> {tooltip.commit.message}
+                <strong>Message:</strong> {tooltip.commit.message} 
               </div>
               <div className={styles.tooltipRow}>
-                <strong>Files Changed:</strong>
+                <strong>Files Changed:</strong> 
                 <ul>
                   {tooltip.commit.files.map((file) => (
                     <li key={file.id}>{file.name}</li>
