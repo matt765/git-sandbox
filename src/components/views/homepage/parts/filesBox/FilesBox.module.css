@@ -4,7 +4,7 @@
   flex-direction: column;
   width: 100%;
   height: 100%;
-  padding: 16px;
+  padding: 8px; /* Zmniejszono z 10px o kolejne 2px (0.1rem) */
 }
 
 .commitInput {

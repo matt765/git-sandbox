@@ -9,16 +9,34 @@
 .logsContainer {
   flex-grow: 1;
   background-color: var(--background-secondary);
-  border: 1px solid #555;
+  border: 1px solid rgba(85, 85, 85, 0.5); /* Przyciemniona ramka o 50% */
   border-radius: 4px;
   padding: 8px;
   overflow-y: auto;
   font-family: "Fira Code", monospace, sans-serif;
   font-size: 0.8rem;
+  scroll-behavior: smooth; /* tylko scroll, bez global transition */
 }
 
 .logEntry {
   margin: 0 0 4px 0;
   color: var(--text-secondary);
   white-space: pre-wrap;
+  opacity: 1;
+  transform: translateY(0);
+  will-change: transform, opacity; /* hint dla FLIP */
+}
+
+/* Nowy log - prosty fade-in bez jakichkolwiek przesunięć */
+.newLogEntry {
+  animation: fadeInOnly 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeInOnly {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }

@@ -33,7 +33,7 @@ export const Navbar = () => {
     <>
       <nav className={styles.navbar}>
         <div className={styles.logo}>
-          <span>Git Sandbox</span>
+          {/* <span>Git Sandbox</span> */}
         </div>
         <div className={styles.actions}>
           <UserMenu
