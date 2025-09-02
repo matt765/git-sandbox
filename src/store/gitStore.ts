@@ -276,27 +276,59 @@ export const useGitStore = create<GitState & GitActions>((set, get) => ({
   },
 
   reset: (commitId: string, mode: "soft" | "mixed" | "hard") => {
-    const state = get();
-    if (!state.commits[commitId]) return;
+    set((state) => {
+      if (!state.commits[commitId]) return {};
 
-    const newBranchState = {
-      ...state.branches[state.HEAD.name],
-      commitId: commitId,
-    };
+      const newBranchState = {
+        ...state.branches[state.HEAD.name],
+        commitId: commitId,
+      };
 
-    const newState: Partial<GitState> = {
-      branches: { ...state.branches, [state.HEAD.name]: newBranchState },
-      logs: [...state.logs, `Reset current branch to ${commitId} (${mode})`],
-    };
+      const newState: Partial<GitState> = {
+        branches: { ...state.branches, [state.HEAD.name]: newBranchState },
+        logs: [...state.logs, `Reset current branch to ${commitId} (${mode})`],
+      };
 
-    if (mode === "mixed" || mode === "hard") {
-      newState.stagingArea = [];
-    }
-    if (mode === "hard") {
-      newState.workingDirectory = [];
-    }
+      if (mode === "mixed" || mode === "hard") {
+        const filesToUnstage = [...state.stagingArea];
+        newState.stagingArea = [];
 
-    set(newState);
+        if (mode === "mixed") {
+          const oldHeadCommitId = state.branches[state.HEAD.name].commitId;
+          const changesToApply: GitFile[] = [];
+
+          let currentCommitId: string | null = oldHeadCommitId;
+
+          while (currentCommitId && currentCommitId !== commitId) {
+            const currentCommit: Commit | undefined =
+              state.commits[currentCommitId];
+            if (!currentCommit) break;
+            changesToApply.push(...currentCommit.files);
+            const parent: string | string[] | null = currentCommit.parent;
+            currentCommitId = Array.isArray(parent) ? parent[0] : parent;
+          }
+
+          // POPRAWKA: Łączymy pliki z working dir, unstaged i te z resetu
+          const combinedFiles = [
+            ...state.workingDirectory,
+            ...filesToUnstage,
+            ...changesToApply,
+          ];
+
+          // Usuwamy duplikaty, aby każdy plik był unikalny
+          newState.workingDirectory = Array.from(
+            new Map(combinedFiles.map((file) => [file.id, file])).values()
+          );
+        }
+      }
+
+      if (mode === "hard") {
+        newState.workingDirectory = [];
+        newState.stagingArea = [];
+      }
+
+      return newState;
+    });
   },
 
   amend: (newMessage?: string) => {

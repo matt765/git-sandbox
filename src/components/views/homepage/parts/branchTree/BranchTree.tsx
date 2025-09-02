@@ -395,7 +395,7 @@ export const BranchTree = () => {
                 left: `${tooltip.x * scale + pan.x}px`,
               }}
             >
-              <div className={styles.tooltipHeader}>Commit Details</div> 
+              <h4 className={styles.tooltipHeader}>Commit Details</h4>
               <div className={styles.tooltipRow}>
                 <strong>Hash:</strong> {tooltip.commit.id} 
               </div>

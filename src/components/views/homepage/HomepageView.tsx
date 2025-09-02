@@ -4,7 +4,7 @@ import { ContentBox } from "@/components/layout/contentBox/ContentBox";
 import styles from "./HomepageView.module.css";
 import { BranchTree } from "./parts/branchTree/BranchTree";
 import { CommandLine } from "./parts/commandLine/CommandLine";
-import { Console } from "./parts/filesBox/FilesBox";
+import { FilesBox } from "./parts/filesBox/FilesBox";
 
 import { MainButtons } from "./parts/mainButtons/MainButtons";
 import { AdvancedButtons } from "./parts/advancedButtons/AdvancedButtons";
@@ -20,7 +20,7 @@ export const HomepageView = () => {
       </div>
       <div className={styles.console}>
         <ContentBox>
-          <Console />
+          <FilesBox />
         </ContentBox>
       </div>
       <div className={styles.stash}>

@@ -4,7 +4,7 @@
   flex-direction: column;
   width: 100%;
   height: 100%;
-  padding: 8px; /* Zmniejszono z 10px o kolejne 2px (0.1rem) */
+  padding: 8px;
 }
 
 .commitInput {
@@ -16,11 +16,16 @@
   color: var(--text-primary);
   font-family: inherit;
   margin-bottom: 12px;
+  transition: border-color 0.2s ease-in-out;
 }
 
 .commitInput:focus {
   outline: none;
   border-color: #007acc;
+}
+
+.commitInput.error {
+  border-color: #e53e3e;
 }
 
 .buttonWrapper {

@@ -1,5 +1,5 @@
-// Console.tsx (lub FilesBox.tsx)
-import { useState } from "react";
+// FilesBox.tsx
+import { useState, useRef } from "react";
 import { useGitStore } from "@/store/gitStore";
 import { ChangesSection } from "./ChangesSection";
 import styles from "./FilesBox.module.css";
@@ -7,9 +7,19 @@ import { ContainedButton } from "@/components/common/ContainedButton";
 import { AddIcon } from "@/assets/icons/AddIcon";
 import { PaintbrushIcon } from "@/assets/icons/PaintbrushIcon";
 import { ResetIcon } from "@/assets/icons/ResetIcon";
+import { useClickOutside } from "@/hooks/useClickOutside";
 
-export const Console = () => {
+export const FilesBox = () => {
   const [message, setMessage] = useState("");
+  const [hasValidationError, setHasValidationError] = useState(false);
+  const commitInputRef = useRef<HTMLInputElement>(null);
+
+  useClickOutside(commitInputRef, () => {
+    if (hasValidationError) {
+      setHasValidationError(false);
+    }
+  });
+
   const {
     commit,
     workingDirectory,
@@ -24,13 +34,31 @@ export const Console = () => {
   } = useGitStore();
 
   const handleCommit = () => {
+    if (!message.trim()) {
+      setHasValidationError(true);
+      return;
+    }
     commit(message);
     setMessage("");
+    setHasValidationError(false);
+  };
+
+  const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (hasValidationError) {
+      setHasValidationError(false);
+    }
+    setMessage(e.target.value);
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    // Commit tylko przy Ctrl/Cmd + Enter
     if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault();
       handleCommit();
+    }
+    // Zwykły Enter nic nie robi (zapobiegamy domyślnemu zachowaniu, np. submitowi formularza)
+    else if (event.key === "Enter") {
+      event.preventDefault();
     }
   };
 
@@ -46,10 +74,13 @@ export const Console = () => {
   return (
     <div className={styles.container}>
       <input
-        className={styles.commitInput}
+        ref={commitInputRef}
+        className={`${styles.commitInput} ${
+          hasValidationError ? styles.error : ""
+        }`}
         placeholder="Message (Ctrl+Enter to commit)"
         value={message}
-        onChange={(e) => setMessage(e.target.value)}
+        onChange={handleMessageChange}
         onKeyDown={handleKeyDown}
       />
       <div className={styles.buttonWrapper}>
@@ -60,6 +91,7 @@ export const Console = () => {
           Commit
         </ContainedButton>
       </div>
+      {/* ... reszta komponentu bez zmian ... */}
       <div className={styles.changesContainer}>
         <ChangesSection
           title="Staged Changes"
