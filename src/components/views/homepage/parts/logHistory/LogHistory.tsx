@@ -1,23 +1,27 @@
-import styles from "./LogHistory.module.css";
+// src/components/views/HomepageView/parts/logHistory/LogHistory.tsx
+import { useEffect, useRef } from "react";
+import { useGitStore } from "@/store/gitStore";
 import { SectionTitle } from "@/components/common/SectionTitle";
-
-const mockLogs = [
-  "Initialized Git repository.",
-  'Created commit a1b2c3d: "Initial commit"',
-  "Switched to a new branch 'feature/login'",
-  'Created commit f4g5h6i: "Add login form"',
-];
+import styles from "./LogHistory.module.css";
 
 export const LogHistory = () => {
+  const logs = useGitStore((state) => state.logs);
+  const logsEndRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    logsEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [logs]);
+
   return (
     <div className={styles.container}>
       <SectionTitle>History</SectionTitle>
       <div className={styles.logsContainer}>
-        {mockLogs.map((log, index) => (
+        {logs.map((log, index) => (
           <p key={index} className={styles.logEntry}>
             {log}
           </p>
         ))}
+        <div ref={logsEndRef} />
       </div>
     </div>
   );

@@ -21,7 +21,7 @@
   --box-border-radius: 12px;
 
   /* MODAL */
-  --modal-overlay: rgba(0, 0, 0, 0.6);
+  --modal-overlay: rgba(0, 0, 0, 0.75);
   --modal-background: #25282c;
   --modal-header-background: #1e2023;
 
@@ -59,7 +59,7 @@
   --box-border-radius: 12px;
 
   /* MODAL */
-  --modal-overlay: rgba(0, 0, 0, 0.7);
+  --modal-overlay: rgba(0, 0, 0, 0.8);
   --modal-background: #1a1a2e;
   --modal-header-background: #161628;
 
@@ -96,7 +96,7 @@
   --box-border-radius: 12px;
 
   /* MODAL */
-  --modal-overlay: rgba(0, 0, 0, 0.4);
+  --modal-overlay: rgba(0, 0, 0, 0.55);
   --modal-background: #ffffff;
   --modal-header-background: #f8f9fa;
 

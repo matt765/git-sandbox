@@ -2,18 +2,18 @@
 
 import React, { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import styles from "./ChangelogModal.module.css";
+import styles from "./ContributeModal.module.css";
 import { useClickOutside } from "@/hooks/useClickOutside";
-import { useChangelog } from "@/hooks/useChangelog";
+import { useContributing } from "@/hooks/useContributing";
 
-interface ChangelogModalProps {
+interface ContributeModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export const ChangelogModal = ({ isOpen, onClose }: ChangelogModalProps) => {
+export const ContributeModal = ({ isOpen, onClose }: ContributeModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
-  const { formattedContent, isLoading, error } = useChangelog();
+  const { formattedContent, isLoading, error } = useContributing();
 
   useClickOutside(modalRef, onClose);
 
@@ -53,7 +53,7 @@ export const ChangelogModal = ({ isOpen, onClose }: ChangelogModalProps) => {
     <div className={styles.backdrop}>
       <div ref={modalRef} className={styles.modalPanel}>
         <div className={styles.modalHeader}>
-          <h2 className={styles.title}>Changelog</h2>
+          <h2 className={styles.title}>Contributing guide</h2>
           <button
             onClick={onClose}
             className={styles.closeButton}

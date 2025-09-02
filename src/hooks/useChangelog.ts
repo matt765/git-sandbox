@@ -1,4 +1,6 @@
-import { useState, useEffect, useMemo } from "react";
+import { useMemo } from "react";
+// Import the CHANGELOG.md file directly
+import changelogMd from "../../CHANGELOG.md";
 
 const formatMarkdownToHtml = (text: string): string => {
   if (!text) return "";
@@ -40,49 +42,22 @@ const formatMarkdownToHtml = (text: string): string => {
   return html;
 };
 
-export const useChangelog = (isOpen: boolean) => {
-  const [rawContent, setRawContent] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (isOpen) {
-      const fetchChangelog = async () => {
-        setIsLoading(true);
-        setError(null);
-        try {
-          const response = await fetch(
-            "https://raw.githubusercontent.com/matt765/git-sandbox/main/CHANGELOG.md"
-          );
-          if (!response.ok) {
-            throw new Error(
-              `Failed to fetch changelog: ${response.statusText}`
-            );
-          }
-          let text = await response.text();
-          text = text.replace(/^#\s*Changelog\s*/i, "");
-          setRawContent(text);
-        } catch (err) {
-          setError(
-            err instanceof Error ? err.message : "An unknown error occurred"
-          );
-        } finally {
-          setIsLoading(false);
-        }
-      };
-
-      fetchChangelog();
-    }
-  }, [isOpen]);
+export const useChangelog = () => {
+  // Remove the first H1 title from the markdown content
+  const processedContent = useMemo(() => {
+    let text = changelogMd;
+    text = text.replace(/^#\s*Changelog\s*/i, "");
+    return text;
+  }, []);
 
   const formattedContent = useMemo(
-    () => formatMarkdownToHtml(rawContent),
-    [rawContent]
+    () => formatMarkdownToHtml(processedContent),
+    [processedContent]
   );
 
   return {
     formattedContent,
-    isLoading,
-    error,
+    isLoading: false,
+    error: null,
   };
 };

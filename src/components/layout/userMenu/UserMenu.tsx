@@ -9,6 +9,7 @@ interface UserMenuProps {
   onThemeCycle: () => void;
   onAboutClick: () => void;
   onChangelogClick: () => void;
+  onContributeClick: () => void;
 }
 
 export const UserMenu = ({
@@ -16,6 +17,7 @@ export const UserMenu = ({
   onThemeCycle,
   onAboutClick,
   onChangelogClick,
+  onContributeClick,
 }: UserMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -56,12 +58,13 @@ export const UserMenu = ({
         <div className={styles.menu}>
           <ul>
             <li>
-              <button onClick={onThemeCycle}>Switch theme</button>
-            </li>
-            <li className={styles.separator}></li>
-            <li>
               <button onClick={() => handleOptionClick(onChangelogClick)}>
                 Changelog
+              </button>
+            </li>
+            <li>
+              <button onClick={() => handleOptionClick(onContributeClick)}>
+                Contribute
               </button>
             </li>
             <li>
@@ -69,6 +72,10 @@ export const UserMenu = ({
                 About Project
               </button>
             </li>
+            <li>
+              <button onClick={onThemeCycle}>Switch theme</button>
+            </li>
+            <li className={styles.separator}></li>
             <li>
               <a
                 href="https://github.com/matt765/git-sandbox/discussions"
@@ -82,7 +89,6 @@ export const UserMenu = ({
             <li>
               <button>Video Guide</button>
             </li>
-            <li className={styles.separator}></li>
             <li>
               <a
                 href="https://github.com/matt765/git-sandbox"

@@ -8,9 +8,10 @@ import { useClickOutside } from "@/hooks/useClickOutside";
 interface AboutModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onContributeClick: () => void;
 }
 
-export const AboutModal = ({ isOpen, onClose }: AboutModalProps) => {
+export const AboutModal = ({ isOpen, onClose, onContributeClick }: AboutModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
 
   useClickOutside(modalRef, onClose);
@@ -35,7 +36,7 @@ export const AboutModal = ({ isOpen, onClose }: AboutModalProps) => {
     <div className={styles.backdrop}>
       <div ref={modalRef} className={styles.modalPanel}>
         <div className={styles.modalHeader}>
-          <h2 className={styles.title}>About Git Sandbox</h2>
+          <h2 className={styles.title}>About project</h2>
           <button
             onClick={onClose}
             className={styles.closeButton}
@@ -52,16 +53,17 @@ export const AboutModal = ({ isOpen, onClose }: AboutModalProps) => {
           </p>
           <p>
             This project is open-source. If you want to support this project and
-            its future development with new features and improvements, you can
-            report an issue, contribute code or use
-            <a
-              href="https://buymeacoffee.com/matt765"
-              target="_blank"
-              rel="noopener noreferrer"
+            its future development with new features and improvements, read{" "}
+            <button
+              onClick={() => {
+                onClose();
+                onContributeClick();
+              }}
+              className={styles.linkButton}
             >
-              Buy Me A Coffeeservice
-            </a>
-            Every contribution is greatly appreciated.<br /> <br />I hope you find the
+              the contributing guide
+            </button>
+            . Every contribution is greatly appreciated.<br /> <br />I hope you find the
             application helpful.<br /><br /> ~matt765
           </p>
         </div>

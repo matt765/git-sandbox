@@ -6,6 +6,7 @@ import styles from "./Navbar.module.css";
 import { UserMenu } from "../userMenu/UserMenu";
 import { AboutModal } from "../userMenu/aboutModal/AboutModal";
 import { ChangelogModal } from "../userMenu/changelogModal/ChangelogModal";
+import { ContributeModal } from "../userMenu/contributeModal/ContributeModal";
 
 // const THEMES = ["charcoal", "midnight", "snowlight"];
 const THEMES = ["charcoal", "snowlight"];
@@ -15,6 +16,7 @@ export const Navbar = () => {
   const [isLoadRepoModalOpen, setIsLoadRepoModalOpen] = useState(false);
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
   const [isChangelogModalOpen, setIsChangelogModalOpen] = useState(false);
+  const [isContributeModalOpen, setIsContributeModalOpen] = useState(false);
 
   useEffect(() => {
     if (theme && !THEMES.includes(theme)) {
@@ -40,16 +42,22 @@ export const Navbar = () => {
             onThemeCycle={cycleTheme}
             onAboutClick={() => setIsAboutModalOpen(true)}
             onChangelogClick={() => setIsChangelogModalOpen(true)}
+            onContributeClick={() => setIsContributeModalOpen(true)}
           />
         </div>
       </nav>
       <AboutModal
         isOpen={isAboutModalOpen}
         onClose={() => setIsAboutModalOpen(false)}
+        onContributeClick={() => setIsContributeModalOpen(true)}
       />
       <ChangelogModal
         isOpen={isChangelogModalOpen}
         onClose={() => setIsChangelogModalOpen(false)}
+      />
+      <ContributeModal
+        isOpen={isContributeModalOpen}
+        onClose={() => setIsContributeModalOpen(false)}
       />
     </>
   );

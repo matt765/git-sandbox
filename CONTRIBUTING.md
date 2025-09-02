@@ -1,9 +1,7 @@
-# Contributing Guide
+# Contributing guide
 
 Hi there! 👋 Thanks for checking out this project.  
-Every form of contribution is valuable — whether it’s sharing ideas, supporting development, or helping with translations.
-
-Below are the main ways to get involved:
+Every form of contribution is valuable. Below are the main ways to get involved:
 
 
 ## 1. Share Feedback and Ideas 💡
