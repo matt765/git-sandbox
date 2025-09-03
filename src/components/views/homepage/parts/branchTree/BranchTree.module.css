@@ -8,6 +8,65 @@
   flex-direction: column;
 }
 
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(23, 26, 30, 0.8);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+.modalContentWrapper {
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 0;
+  background-color: var(--homepage-grid-background);
+  overflow: hidden;
+  position: relative;
+}
+.modalContentWrapper .container {
+  border-radius: 0;
+}
+.modalContentWrapper .branchInfo {
+  font-size: 18px;
+  top: 16px;
+  left: 16px;
+}
+.fullscreenButton,
+.closeButton {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 20;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0);
+  border: none;
+  padding: 6px;
+  border-radius: 6px;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, color 0.2s;
+}
+.fullscreenButton:hover,
+.closeButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+}
+.closeButton {
+  top: 12px;
+  right: 12px;
+}
+
+/* --- ORIGINAL STYLES (Vertical Default) --- */
 .branchInfo {
   position: absolute;
   top: 8px;
@@ -16,31 +75,28 @@
   color: #9ca3af;
   font-family: "Roboto Mono", monospace;
   z-index: 20;
-  background: rgba(255,255,255,0);
+  background: rgba(255, 255, 255, 0);
   padding: 4px 8px;
-  border-radius: 16px;
-  
+  border-radius: 6px;
+  backdrop-filter: blur(14px);
 }
-
 .graphWrapper {
   flex-grow: 1;
   width: 100%;
-  position: relative; /* Potrzebne do pozycjonowania tooltipa */
-  overflow: hidden; /* KLUCZOWA ZMIANA: Ogranicza widoczność drzewka do ramki */
-  cursor: grab; /* Zmiana kursora, aby sugerować interaktywność */
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  cursor: grab;
 }
-
 .pannableContainer {
-  position: relative; /* Wewnętrzny kontener, który będzie przesuwany */
+  position: relative;
   width: 100%;
   height: 100%;
-  transform-origin: 0 0; /* Ustawia punkt odniesienia dla skalowania */
+  transform-origin: 0 0;
+  transition: opacity 0.2s ease-in-out;
 }
-
-.graphContainer {
-  /* Ten kontener nie jest już potrzebny, ale zostawiamy na wypadek przyszłych zastosowań */
-  /* Jego rolę przejmuje pannableContainer i graphWrapper */
-  font-family: "Roboto Mono", monospace;
+.pannableContainer.fading {
+  opacity: 0;
 }
 
 .svgCanvas {
@@ -57,14 +113,9 @@
   position: absolute;
   display: flex;
   align-items: center;
-  gap: 5px;
-  transform: translateY(-50%);
   z-index: 10;
-  pointer-events: auto; /* Zapewnia, że commity są klikalne */
+  pointer-events: auto;
 }
-
-/* ... reszta stylów (commitCircle, commitLine itd.) pozostaje bez zmian ... */
-
 .commitCircle {
   width: 22px;
   height: 22px;
@@ -74,13 +125,11 @@
   box-sizing: border-box;
   flex-shrink: 0;
 }
-
 .commitLine {
   width: 30px;
   height: 2px;
   background-color: #4a5568;
 }
-
 .inlineCommitHash {
   background-color: #262d3d;
   border: 1px solid #4a5568;
@@ -90,17 +139,11 @@
   font-size: 0.85rem;
   white-space: nowrap;
 }
-
 .labelWrapper {
   position: absolute;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
   z-index: 10;
+  transform: translateX(-50%);
 }
-
 .branchLabel {
   padding: 0.2rem 0.8rem;
   border-radius: 9999px;
@@ -110,7 +153,6 @@
   white-space: nowrap;
   width: fit-content;
 }
-
 .headLabel {
   padding: 0.2rem 0.6rem;
   border-radius: 4px;
@@ -119,6 +161,36 @@
   font-weight: bold;
   color: #e2e8f0;
   white-space: nowrap;
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 8px;
+}
+
+/* --- HORIZONTAL LAYOUT STYLES --- */
+
+.commitNodeWrapper.horizontal {
+  flex-direction: column;
+}
+
+.commitNodeWrapper.horizontal .commitLine {
+  width: 2px;
+  height: 30px;
+}
+
+.labelWrapper.horizontal {
+  transform: translateY(-50%);
+  width: auto;
+}
+
+.labelWrapper.horizontal .headLabel {
+  top: 50%;
+  right: 100%;
+  left: auto;
+  transform: translateY(-50%);
+  margin-top: 0;
+  margin-right: 10px;
 }
 
 /* Tooltip Styles */
@@ -128,35 +200,31 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: 40;
+  z-index: 10000;
 }
-
 .tooltip {
-  position: absolute; /* Pozycjonowany względem graphWrapper */
+  position: fixed;
   background-color: #2d3748;
   border: 1px solid #4a5568;
   border-radius: 6px;
   padding: 12px;
   color: #e2e8f0;
   font-size: 0.9rem;
-  z-index: 50;
+  z-index: 10001;
   min-width: 250px;
   transform: translate(-50%, 0);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  pointer-events: none; /* Zapobiega przechwytywaniu zdarzeń myszy przez tooltip */
+  pointer-events: none;
 }
-
 .tooltipHeader {
   font-weight: bold;
   margin-bottom: 8px;
   border-bottom: 1px solid #4a5568;
   padding-bottom: 4px;
 }
-
 .tooltipRow {
   margin-bottom: 4px;
 }
-
 .tooltipRow ul {
   padding-left: 18px;
   margin: 4px 0 0 0;

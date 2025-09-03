@@ -1,4 +1,3 @@
-// src/components/views/homepage/parts/branchTree/BranchTree.tsx
 import { useGitStore, Commit } from "@/store/gitStore";
 import styles from "./BranchTree.module.css";
 import {
@@ -9,8 +8,10 @@ import {
   MouseEvent,
   useEffect,
 } from "react";
+import { createPortal } from "react-dom";
+import { ControlsPanel } from "./ControlsPanel";
 
-// --- INTERFACES --- (bez zmian)
+// --- INTERFACES ---
 interface Node {
   id: string;
   message: string;
@@ -42,14 +43,55 @@ interface TooltipData {
   commit: Commit;
 }
 
+interface GraphData {
+  nodes: Node[];
+  edges: Edge[];
+  labels: Label[];
+}
+
+// --- CONSTANTS ---
 const Y_STEP = 80;
 const X_STEP = 150;
+const HORIZONTAL_Y_STEP = Y_STEP * 1.5;
 const PADDING_X = 150;
 const PADDING_Y = 100;
 const LABEL_ROW_Y = 40;
 const GRAY_COLOR = "#4a5568";
-
 const LANE_COLORS = ["#38b2ac", "#a78bfa", "#f6ad55", "#ec4899"];
+
+// --- ICONS ---
+const FullscreenIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
+  </svg>
+);
+
+const CloseIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <line x1="18" y1="6" x2="6" y2="18"></line>
+    <line x1="6" y1="6" x2="18" y2="18"></line>
+  </svg>
+);
 
 export const BranchTree = () => {
   const commits = useGitStore((state) => state.commits);
@@ -58,31 +100,41 @@ export const BranchTree = () => {
 
   const [tooltip, setTooltip] = useState<TooltipData | null>(null);
   const [pan, setPan] = useState({ x: 0, y: 0 });
-  const [scale, setScale] = useState(1);
+  const [scale, setScale] = useState(0.9);
+  const [fullscreenPan, setFullscreenPan] = useState({ x: 0, y: 0 });
+  const [fullscreenScale, setFullscreenScale] = useState(1.1);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isEnteringFullscreen, setIsEnteringFullscreen] = useState(false);
+  const [orientation, setOrientation] = useState<"vertical" | "horizontal">(
+    "vertical"
+  );
+  const [isFading, setIsFading] = useState(false);
 
   const wrapperRef = useRef<HTMLDivElement>(null);
   const isPanning = useRef(false);
   const panStart = useRef({ x: 0, y: 0 });
   const hasDragged = useRef(false);
+  const initialPanSet = useRef(false);
+  const isInitialMount = useRef(true);
+
+  const isVertical = orientation === "vertical";
 
   useEffect(() => {
-    if (wrapperRef.current) {
+    if (!initialPanSet.current && wrapperRef.current && !isFullscreen) {
       const wrapperWidth = wrapperRef.current.offsetWidth;
       const numLanes = Object.keys(branches).length;
       const contentWidth = PADDING_X + numLanes * X_STEP;
-
       const initialX = (wrapperWidth - contentWidth) / 2;
       setPan({ x: initialX, y: 40 });
-    } // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+      initialPanSet.current = true;
+    }
+  }, [branches, isFullscreen]);
 
-  const { nodes, edges, labels } = useMemo(() => {
+  const { nodes, edges, labels }: GraphData = useMemo(() => {
     const branchNames = Object.keys(branches);
-
-    const sortedBranchNames = [...branchNames].sort((a, b) => {
-      return branches[a].position - branches[b].position;
-    });
-
+    const sortedBranchNames = [...branchNames].sort(
+      (a, b) => branches[a].position - branches[b].position
+    );
     const laneAssignments = new Map<string, number>(
       sortedBranchNames.map((name, i) => [name, i])
     );
@@ -111,34 +163,29 @@ export const BranchTree = () => {
     commitList.forEach((c) => getDepth(c.id));
     const nodeMap = new Map<string, Node>();
     const calculatedNodes: Node[] = [];
-
     const commitToBranch = new Map<string, string>();
-
     if (branches.main) {
       let currentId: string | null = branches.main.commitId;
       while (currentId && commits[currentId]) {
-        if (!commitToBranch.has(currentId)) {
+        if (!commitToBranch.has(currentId))
           commitToBranch.set(currentId, "main");
-        }
         const parent: string | string[] | null | undefined =
           commits[currentId]?.parent;
         currentId = Array.isArray(parent) ? parent[0] : parent ?? null;
       }
     }
-
     sortedBranchNames.forEach((branchName) => {
       if (branchName === "main") return;
-
       let currentId: string | null = branches[branchName].commitId;
       while (currentId && commits[currentId]) {
-        if (!commitToBranch.has(currentId)) {
+        if (!commitToBranch.has(currentId))
           commitToBranch.set(currentId, branchName);
-        }
         const parent: string | string[] | null | undefined =
           commits[currentId]?.parent;
         currentId = Array.isArray(parent) ? parent[0] : parent ?? null;
       }
     });
+
     commitList.forEach((commit) => {
       const branchName = commitToBranch.get(commit.id) || "main";
       const lane = laneAssignments.get(branchName) ?? 0;
@@ -146,8 +193,8 @@ export const BranchTree = () => {
       const node: Node = {
         id: commit.id,
         message: commit.message,
-        x: PADDING_X + lane * X_STEP,
-        y: PADDING_Y + depth * Y_STEP,
+        x: PADDING_X + (isVertical ? lane * X_STEP : depth * X_STEP),
+        y: PADDING_Y + (isVertical ? depth * Y_STEP : lane * HORIZONTAL_Y_STEP),
         color: colorAssignments.get(branchName) ?? LANE_COLORS[0],
         depth: depth,
         commitData: commit,
@@ -155,19 +202,7 @@ export const BranchTree = () => {
       calculatedNodes.push(node);
       nodeMap.set(commit.id, node);
     });
-    const calculatedLabels: Label[] = sortedBranchNames.map((name) => {
-      const commitId = branches[name].commitId;
-      const lane = laneAssignments.get(name) ?? 0;
-      const x = PADDING_X + lane * X_STEP;
-      return {
-        name,
-        x,
-        y: LABEL_ROW_Y,
-        color: colorAssignments.get(name) ?? LANE_COLORS[0],
-        isHead: head.type === "branch" && head.name === name,
-        commitId,
-      };
-    });
+
     const calculatedEdges: Edge[] = [];
 
     sortedBranchNames.forEach((branchName) => {
@@ -177,33 +212,51 @@ export const BranchTree = () => {
       if (existingNode && commitToBranch.get(branchCommitId) !== branchName) {
         const lane = laneAssignments.get(branchName) ?? 0;
         const markerNode: Node = {
-          id: `${branchName}-marker-${branchCommitId}`,
+          id: `marker-${branchName}-${branchCommitId}`,
           message: existingNode.message,
-          x: PADDING_X + lane * X_STEP,
-          y: existingNode.y,
+          x:
+            PADDING_X +
+            (isVertical ? lane * X_STEP : existingNode.depth * X_STEP),
+          y:
+            PADDING_Y +
+            (isVertical
+              ? existingNode.depth * Y_STEP
+              : lane * HORIZONTAL_Y_STEP),
           color: colorAssignments.get(branchName) ?? LANE_COLORS[0],
           depth: existingNode.depth,
           commitData: existingNode.commitData,
         };
         calculatedNodes.push(markerNode);
 
-        if (existingNode.x !== markerNode.x) {
-          calculatedEdges.push({
-            key: `branch-connection-${branchName}-${branchCommitId}`,
-            path: `M ${existingNode.x} ${existingNode.y} L ${markerNode.x} ${markerNode.y}`,
-            color: colorAssignments.get(branchName) ?? LANE_COLORS[0],
-          });
-        }
+        calculatedEdges.push({
+          key: `branch-connection-${branchName}-${branchCommitId}`,
+          path: `M ${existingNode.x} ${existingNode.y} L ${markerNode.x} ${markerNode.y}`,
+          color: markerNode.color,
+        });
       }
+    });
+
+    const calculatedLabels: Label[] = sortedBranchNames.map((name) => {
+      const lane = laneAssignments.get(name) ?? 0;
+      return {
+        name,
+        x: PADDING_X + (isVertical ? lane * X_STEP : 0),
+        y: PADDING_Y + (isVertical ? 0 : lane * HORIZONTAL_Y_STEP),
+        color: colorAssignments.get(name) ?? LANE_COLORS[0],
+        isHead: head.type === "branch" && head.name === name,
+        commitId: branches[name].commitId,
+      };
     });
 
     const lanes = new Map<number, Node[]>();
     calculatedNodes.forEach((node) => {
-      if (!lanes.has(node.x)) lanes.set(node.x, []);
-      lanes.get(node.x)!.push(node);
+      const laneKey = isVertical ? node.x : node.y;
+      if (!lanes.has(laneKey)) lanes.set(laneKey, []);
+      lanes.get(laneKey)!.push(node);
     });
+
     lanes.forEach((nodesOnLane) => {
-      nodesOnLane.sort((a, b) => a.y - b.y);
+      nodesOnLane.sort((a, b) => (isVertical ? a.y - b.y : a.x - b.x));
       for (let i = 0; i < nodesOnLane.length - 1; i++) {
         const startNode = nodesOnLane[i];
         const endNode = nodesOnLane[i + 1];
@@ -214,6 +267,7 @@ export const BranchTree = () => {
         });
       }
     });
+
     commitList.forEach((commit) => {
       const parentIds = commit.parent
         ? Array.isArray(commit.parent)
@@ -225,14 +279,25 @@ export const BranchTree = () => {
           const childNode = nodeMap.get(commit.id)!;
           const parentNode = nodeMap.get(parentId)!;
           let path;
-          if (childNode.x === parentNode.x) {
+          if (
+            (isVertical && childNode.x === parentNode.x) ||
+            (!isVertical && childNode.y === parentNode.y)
+          ) {
             path = `M ${parentNode.x} ${parentNode.y} L ${childNode.x} ${childNode.y}`;
           } else {
-            path = `M ${parentNode.x} ${parentNode.y} C ${parentNode.x} ${
-              parentNode.y + Y_STEP / 2
-            }, ${childNode.x} ${childNode.y - Y_STEP / 2}, ${childNode.x} ${
-              childNode.y
-            }`;
+            if (isVertical) {
+              path = `M ${parentNode.x} ${parentNode.y} C ${parentNode.x} ${
+                parentNode.y + Y_STEP / 2
+              }, ${childNode.x} ${childNode.y - Y_STEP / 2}, ${childNode.x} ${
+                childNode.y
+              }`;
+            } else {
+              path = `M ${parentNode.x} ${parentNode.y} C ${
+                parentNode.x + X_STEP / 2
+              } ${parentNode.y}, ${childNode.x - X_STEP / 2} ${childNode.y}, ${
+                childNode.x
+              } ${childNode.y}`;
+            }
           }
           calculatedEdges.push({
             key: `${parentId}-${commit.id}`,
@@ -242,30 +307,108 @@ export const BranchTree = () => {
         }
       });
     });
+
     calculatedLabels.forEach((label) => {
-      const nodesOnLane = (lanes.get(label.x) || []).sort((a, b) => a.y - b.y);
-      if (nodesOnLane.length > 0) {
+      const laneKey = isVertical ? label.x : label.y;
+      const nodesOnLane = lanes.get(laneKey);
+
+      if (nodesOnLane && nodesOnLane.length > 0) {
+        nodesOnLane.sort((a, b) => (isVertical ? a.y - b.y : a.x - b.x));
         const firstNode = nodesOnLane[0];
-        const color = firstNode.depth === 0 ? label.color : GRAY_COLOR;
+        const color =
+          commitToBranch.get(firstNode.commitData.id) === label.name
+            ? label.color
+            : GRAY_COLOR;
+
         calculatedEdges.push({
           key: `label-trunk-${label.name}`,
-          path: `M ${label.x} ${label.y + 15} L ${firstNode.x} ${firstNode.y}`,
+          path: isVertical
+            ? `M ${label.x} ${LABEL_ROW_Y} L ${firstNode.x} ${firstNode.y}`
+            : `M ${PADDING_X - 50} ${label.y} L ${firstNode.x} ${firstNode.y}`,
           color: color,
         });
       }
     });
+
     return {
       nodes: calculatedNodes,
       edges: calculatedEdges,
       labels: calculatedLabels,
     };
-  }, [commits, branches, head]);
+  }, [commits, branches, head, orientation, isVertical]);
+
+  useEffect(() => {
+    if (isEnteringFullscreen && wrapperRef.current) {
+      const wrapperWidth = wrapperRef.current.offsetWidth;
+      const wrapperHeight = wrapperRef.current.offsetHeight;
+      const numLanes = Object.keys(branches).length;
+      const maxDepth = Math.max(0, ...nodes.map((n) => n.depth));
+      const contentWidth =
+        PADDING_X * 2 + (isVertical ? numLanes * X_STEP : maxDepth * X_STEP);
+      const contentHeight =
+        PADDING_Y * 2 +
+        (isVertical ? maxDepth * Y_STEP : numLanes * HORIZONTAL_Y_STEP);
+      const initialX = (wrapperWidth - contentWidth) / 2;
+      const initialY = (wrapperHeight - contentHeight) / 2;
+      setFullscreenPan({ x: initialX, y: initialY });
+      setFullscreenScale(1.1);
+      setTooltip(null);
+      setIsEnteringFullscreen(false);
+    }
+  }, [isEnteringFullscreen, branches, nodes, orientation, isVertical]);
+
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    if (!wrapperRef.current) return;
+
+    const wrapperWidth = wrapperRef.current.offsetWidth;
+    const wrapperHeight = wrapperRef.current.offsetHeight;
+    const numLanes = Object.keys(branches).length;
+    const maxDepth = Math.max(0, ...nodes.map((n) => n.depth));
+
+    const contentWidth =
+      PADDING_X * 2 + (isVertical ? numLanes * X_STEP : maxDepth * X_STEP);
+    const contentHeight =
+      PADDING_Y * 2 +
+      (isVertical ? maxDepth * Y_STEP : numLanes * HORIZONTAL_Y_STEP);
+
+    const standardX = (wrapperWidth - contentWidth) / 2;
+    setPan({ x: standardX, y: 40 });
+    setScale(0.9);
+
+    const fullscreenX = (wrapperWidth - contentWidth) / 2;
+    const fullscreenY = (wrapperHeight - contentHeight) / 2;
+    setFullscreenPan({ x: fullscreenX, y: fullscreenY });
+    setFullscreenScale(1.1);
+
+    setTooltip(null);
+  }, [orientation, branches, nodes, isVertical]);
+
+  const handleRotateRequest = () => {
+    if (isFading) return;
+    setIsFading(true);
+    setTimeout(() => {
+      setOrientation((prev) =>
+        prev === "vertical" ? "horizontal" : "vertical"
+      );
+      requestAnimationFrame(() => {
+        setIsFading(false);
+      });
+    }, 200);
+  };
 
   const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
     if (e.button !== 0) return;
     e.preventDefault();
     isPanning.current = true;
-    panStart.current = { x: e.clientX - pan.x, y: e.clientY - pan.y };
+    const currentPan = isFullscreen ? fullscreenPan : pan;
+    panStart.current = {
+      x: e.clientX - currentPan.x,
+      y: e.clientY - currentPan.y,
+    };
     hasDragged.current = false;
     e.currentTarget.style.cursor = "grabbing";
   };
@@ -273,10 +416,15 @@ export const BranchTree = () => {
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
     if (!isPanning.current) return;
     hasDragged.current = true;
-    setPan({
+    const newPan = {
       x: e.clientX - panStart.current.x,
       y: e.clientY - panStart.current.y,
-    });
+    };
+    if (isFullscreen) {
+      setFullscreenPan(newPan);
+    } else {
+      setPan(newPan);
+    }
   };
 
   const handleMouseUp = (e: MouseEvent<HTMLDivElement>) => {
@@ -287,20 +435,76 @@ export const BranchTree = () => {
 
   const handleWheel = (e: WheelEvent<HTMLDivElement>) => {
     e.preventDefault();
+    if (!wrapperRef.current) return;
+    const rect = wrapperRef.current.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
     const scaleAmount = -e.deltaY * 0.001;
-    setScale((prevScale) =>
-      Math.min(Math.max(prevScale + scaleAmount, 0.2), 2)
-    );
+    if (isFullscreen) {
+      const newScale = Math.min(
+        Math.max(fullscreenScale + scaleAmount, 0.2),
+        4
+      );
+      const newPanX =
+        mouseX - ((mouseX - fullscreenPan.x) / fullscreenScale) * newScale;
+      const newPanY =
+        mouseY - ((mouseY - fullscreenPan.y) / fullscreenScale) * newScale;
+      setFullscreenScale(newScale);
+      setFullscreenPan({ x: newPanX, y: newPanY });
+    } else {
+      const newScale = Math.min(Math.max(scale + scaleAmount, 0.2), 4);
+      const newPanX = mouseX - ((mouseX - pan.x) / scale) * newScale;
+      const newPanY = mouseY - ((mouseY - pan.y) / scale) * newScale;
+      setScale(newScale);
+      setPan({ x: newPanX, y: newPanY });
+    }
   };
 
   const handleNodeClick = (node: Node) => {
-    if (hasDragged.current) return;
-    setTooltip({ x: node.x, y: node.y, commit: node.commitData });
+    if (hasDragged.current || !wrapperRef.current) return;
+
+    const rect = wrapperRef.current.getBoundingClientRect();
+    const activeScale = isFullscreen ? fullscreenScale : scale;
+    const activePan = isFullscreen ? fullscreenPan : pan;
+
+    const screenX = node.x * activeScale + activePan.x + rect.left;
+    const screenY = node.y * activeScale + activePan.y + rect.top;
+
+    setTooltip({
+      x: screenX,
+      y: screenY,
+      commit: node.commitData,
+    });
   };
 
-  return (
+  const handleBackdropClick = () => {
+    if (!hasDragged.current) {
+      setTooltip(null);
+    }
+  };
+
+  const branchTreeContent = (
     <div className={styles.container}>
-      <div className={styles.branchInfo}>branch: {head.name}</div> 
+      <div className={styles.branchInfo}>branch: {head.name}</div>
+      {isFullscreen ? (
+        <button
+          className={styles.closeButton}
+          onClick={() => setIsFullscreen(false)}
+        >
+          <CloseIcon />
+        </button>
+      ) : (
+        <button
+          className={styles.fullscreenButton}
+          onClick={() => {
+            setIsEnteringFullscreen(true);
+            setIsFullscreen(true);
+          }}
+        >
+          <FullscreenIcon />
+        </button>
+      )}
+
       <div
         ref={wrapperRef}
         className={styles.graphWrapper}
@@ -311,13 +515,20 @@ export const BranchTree = () => {
         onWheel={handleWheel}
       >
         <div
-          className={styles.pannableContainer}
+          className={`${styles.pannableContainer} ${
+            isFading ? styles.fading : ""
+          }`}
           style={{
-            transform: `translate(${pan.x}px, ${pan.y}px) scale(${scale})`,
+            transform: `translate(${
+              isFullscreen ? fullscreenPan.x : pan.x
+            }px, ${isFullscreen ? fullscreenPan.y : pan.y}px) scale(${
+              isFullscreen ? fullscreenScale : scale
+            })`,
+            visibility: isEnteringFullscreen ? "hidden" : "visible",
           }}
         >
           <svg className={styles.svgCanvas} overflow="visible">
-            {edges.map((edge) => (
+            {edges.map((edge: Edge) => (
               <path
                 key={edge.key}
                 d={edge.path}
@@ -327,42 +538,61 @@ export const BranchTree = () => {
               />
             ))}
           </svg>
-          {labels.map((label) => (
-            <div
-              key={label.name}
-              className={styles.labelWrapper}
-              style={{ top: `${label.y - 15}px`, left: `${label.x}px` }}
-            >
+          {labels.map((label: Label) => {
+            let style: React.CSSProperties = {};
+            if (isVertical) {
+              style = { top: `${LABEL_ROW_Y - 15}px`, left: `${label.x}px` };
+            } else {
+              style = { top: `${label.y}px`, left: `${PADDING_X - 100}px` };
+            }
+            return (
               <div
-                className={styles.branchLabel}
-                style={{ backgroundColor: label.color }}
+                key={label.name}
+                className={`${styles.labelWrapper} ${
+                  !isVertical ? styles.horizontal : ""
+                }`}
+                style={style}
               >
-                {label.name} 
+                <div
+                  className={styles.branchLabel}
+                  style={{ backgroundColor: label.color }}
+                >
+                  {label.name}
+                </div>
+                {label.isHead && <div className={styles.headLabel}>HEAD</div>}
               </div>
-              {label.isHead && <div className={styles.headLabel}>HEAD</div>} 
-            </div>
-          ))}
-          {nodes.map((node) => {
+            );
+          })}
+          {nodes.map((node: Node) => {
             const isReversed = node.depth % 2 !== 0;
-            const transform = isReversed
-              ? `translate(calc(-100% + 11px), -50%)`
-              : `translate(-11px, -50%)`;
+            const transform = isVertical
+              ? isReversed
+                ? `translate(calc(-100% + 11px), -50%)`
+                : `translate(-11px, -50%)`
+              : isReversed
+              ? `translate(-50%, calc(-100% + 11px))`
+              : `translate(-50%, -11px)`;
+
             return (
               <div
                 key={node.id}
-                className={styles.commitNodeWrapper}
+                className={`${styles.commitNodeWrapper} ${
+                  !isVertical ? styles.horizontal : ""
+                }`}
                 style={{
                   top: `${node.y}px`,
                   left: `${node.x}px`,
-                  transform: transform,
+                  transform,
                   cursor: "pointer",
                 }}
                 onClick={() => handleNodeClick(node)}
               >
                 {isReversed ? (
                   <>
-                    <div className={styles.inlineCommitHash}>{node.id}</div>
-                    <div className={styles.commitLine} /> 
+                    <div className={styles.inlineCommitHash}>
+                      {node.commitData.id}
+                    </div>
+                    <div className={styles.commitLine} />
                     <div
                       className={styles.commitCircle}
                       style={{ borderColor: node.color }}
@@ -374,46 +604,68 @@ export const BranchTree = () => {
                       className={styles.commitCircle}
                       style={{ borderColor: node.color }}
                     />
-                    <div className={styles.commitLine} /> 
-                    <div className={styles.inlineCommitHash}>{node.id}</div> 
+                    <div className={styles.commitLine} />
+                    <div className={styles.inlineCommitHash}>
+                      {node.commitData.id}
+                    </div>
                   </>
                 )}
               </div>
             );
           })}
         </div>
-        {tooltip && (
-          <>
-            <div
-              className={styles.tooltipBackdrop}
-              onClick={() => setTooltip(null)}
-            />
-            <div
-              className={styles.tooltip}
-              style={{
-                top: `${tooltip.y * scale + pan.y + 20}px`,
-                left: `${tooltip.x * scale + pan.x}px`,
-              }}
-            >
-              <h4 className={styles.tooltipHeader}>Commit Details</h4>
-              <div className={styles.tooltipRow}>
-                <strong>Hash:</strong> {tooltip.commit.id} 
+        {tooltip &&
+          createPortal(
+            <>
+              <div
+                className={styles.tooltipBackdrop}
+                onClick={handleBackdropClick}
+              />
+              <div
+                className={styles.tooltip}
+                style={{
+                  top: `${tooltip.y + 20}px`,
+                  left: `${tooltip.x}px`,
+                }}
+              >
+                <h4 className={styles.tooltipHeader}>Commit Details</h4>
+                <div className={styles.tooltipRow}>
+                  <strong>Hash:</strong> {tooltip.commit.id}
+                </div>
+                <div className={styles.tooltipRow}>
+                  <strong>Message:</strong> {tooltip.commit.message}
+                </div>
+                <div className={styles.tooltipRow}>
+                  <strong>Files Changed:</strong>
+                  <ul>
+                    {tooltip.commit.files.map((file) => (
+                      <li key={file.id}>{file.name}</li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-              <div className={styles.tooltipRow}>
-                <strong>Message:</strong> {tooltip.commit.message} 
-              </div>
-              <div className={styles.tooltipRow}>
-                <strong>Files Changed:</strong> 
-                <ul>
-                  {tooltip.commit.files.map((file) => (
-                    <li key={file.id}>{file.name}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </>
-        )}
+            </>,
+            document.body
+          )}
       </div>
+      {isFullscreen && (
+        <ControlsPanel
+          orientation={orientation}
+          setOrientation={setOrientation}
+          onRotate={handleRotateRequest}
+        />
+      )}
     </div>
   );
+
+  if (isFullscreen) {
+    return createPortal(
+      <div className={styles.modalOverlay}>
+        <div className={styles.modalContentWrapper}>{branchTreeContent}</div>
+      </div>,
+      document.body
+    );
+  }
+
+  return branchTreeContent;
 };
