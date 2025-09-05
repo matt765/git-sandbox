@@ -52,7 +52,7 @@ export const AboutModal = ({ isOpen, onClose, onContributeClick }: AboutModalPro
             messing up a real project.
           </p>
           <p>
-            This project is open-source. If you want to support this project and
+            This application is open-source. If you want to support this project and
             its future development with new features and improvements, read{" "}
             <button
               onClick={() => {
@@ -63,7 +63,7 @@ export const AboutModal = ({ isOpen, onClose, onContributeClick }: AboutModalPro
             >
               the contributing guide
             </button>
-            . Every contribution is greatly appreciated.<br /> <br />I hope you find the
+            .<br /> <br />I hope you find the
             application helpful.<br /><br /> ~matt765
           </p>
         </div>

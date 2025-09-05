@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { useGitStore } from "@/store/gitStore";
 import { TerminalIcon } from "@/assets/icons/TerminalIcon";
 import { useCommandHistory } from "@/hooks/useCommandHistory";
@@ -20,15 +20,15 @@ export const CommandLine = () => {
       timeoutRef.current = window.setTimeout(() => setError(null), 3000);
     } else {
       setError(null);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
     }
   };
 
   const { value, setValue, handleKeyDown, handleChange } =
     useCommandHistory(handleSubmit);
-
-  useEffect(() => {
-    if (error) setError(null);
-  }, [value, error]);
 
   return (
     <div className={styles.container}>

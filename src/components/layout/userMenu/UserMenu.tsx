@@ -64,29 +64,21 @@ export const UserMenu = ({
               <button onClick={() => handleOptionClick(onChangelogClick)}>
                 Changelog
               </button>
-            </li>
-            <li>
-              <button onClick={() => handleOptionClick(onContributeClick)}>
-                Contribute
-              </button>
-            </li>
+            </li>        
             <li>
               <button onClick={onThemeCycle}>Switch theme</button>
             </li>
             <li className={styles.separator}></li>
             <li>
               <a
-                href="https://github.com/matt765/git-sandbox/discussions"
+                href="https://github.com/matt765/git-sandbox/discussions/1"
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.linkAsButton}
               >
                 Discussion
               </a>
-            </li>
-            <li>
-              <button>Video Guide</button>
-            </li>
+            </li>          
             <li>
               <a
                 href="https://github.com/matt765/git-sandbox"
