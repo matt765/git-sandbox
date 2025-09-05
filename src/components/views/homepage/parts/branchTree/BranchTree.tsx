@@ -6,7 +6,7 @@ import {
   useRef,
   WheelEvent,
   MouseEvent,
-  useEffect,
+  useLayoutEffect, // ZMIANA: Import useLayoutEffect
 } from "react";
 import { createPortal } from "react-dom";
 import { ControlsPanel } from "./ControlsPanel";
@@ -110,6 +110,7 @@ export const BranchTree = () => {
     "vertical"
   );
   const [isFading, setIsFading] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
 
   const wrapperRef = useRef<HTMLDivElement>(null);
   const isPanning = useRef(false);
@@ -119,7 +120,8 @@ export const BranchTree = () => {
 
   const isVertical = orientation === "vertical";
 
-  useEffect(() => {
+  // ZMIANA: Zastąpienie useEffect przez useLayoutEffect
+  useLayoutEffect(() => {
     if (!initialPanSet.current && wrapperRef.current && !isFullscreen) {
       const wrapperWidth = wrapperRef.current.offsetWidth;
       const numLanes = Object.keys(branches).length;
@@ -127,6 +129,7 @@ export const BranchTree = () => {
       const initialX = (wrapperWidth - contentWidth) / 2;
       setPan({ x: initialX, y: 40 });
       initialPanSet.current = true;
+      setIsVisible(true);
     }
   }, [branches, isFullscreen]);
 
@@ -330,7 +333,7 @@ export const BranchTree = () => {
     };
   }, [commits, branches, head, orientation, isVertical]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (isEnteringFullscreen && wrapperRef.current) {
       const wrapperWidth = wrapperRef.current.offsetWidth;
       const wrapperHeight = wrapperRef.current.offsetHeight;
@@ -500,7 +503,7 @@ export const BranchTree = () => {
         <div
           className={`${styles.pannableContainer} ${
             isFading ? styles.fading : ""
-          }`}
+          } ${!isVisible ? styles.invisible : ""}`}
           style={{
             transform: `translate(${
               isFullscreen ? fullscreenPan.x : pan.x

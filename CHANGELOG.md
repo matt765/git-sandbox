@@ -16,3 +16,11 @@
 - add history log
 - add command line
 - reorganize buttons
+
+## 1.0.2 (05-09-2025)
+
+- improve branch tree
+- add user menu
+- add files box section
+- fix history animation
+- add command line
