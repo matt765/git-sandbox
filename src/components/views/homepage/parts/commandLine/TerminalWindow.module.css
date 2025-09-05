@@ -1,0 +1,121 @@
+.window {
+  position: fixed;
+  width: 500px;
+  height: 300px;
+  background-color: var(--modal-background);
+  border: 1px solid var(--border-color);
+  border-radius: var(--box-border-radius);
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  z-index: 1000;
+  user-select: none;
+}
+
+.header {
+  background-color: var(--modal-header-background);
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: grab;
+}
+
+.header:active {
+  cursor: grabbing;
+}
+
+.title {
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+
+.closeButton:hover {
+  color: var(--text-primary);
+}
+
+.body {
+  flex-grow: 1;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  user-select: text;
+  overflow: hidden;
+}
+
+.history {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.history p {
+  margin: 0 0 4px 0;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.output {
+  color: var(--text-secondary);
+}
+
+.error {
+  color: var(--color-error, #c74646);
+}
+
+.inputArea {
+  border-top: 1px solid var(--border-color);
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 6px 10px;
+}
+
+.commandLine {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.prompt {
+  color: var(--text-secondary); /* Changed color back to gray */
+}
+
+.input {
+  flex-grow: 1;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+}
+
+.input:focus {
+  outline: none;
+}
+
+.iconButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconButton:hover {
+  color: var(--text-primary);
+}

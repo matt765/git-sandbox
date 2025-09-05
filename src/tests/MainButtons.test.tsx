@@ -194,9 +194,7 @@ describe("MainButtons Git Logic Integration Tests", () => {
       await user.click(within(modal).getByRole("button", { name: "Reset" }));
       const state = useGitStore.getState();
       expect(state.branches.feature.commitId).toBe(targetCommitId);
-      expect(state.stagingArea).toHaveLength(0);
-
-      // OSTATECZNA POPRAWKA: Oczekujemy 3 plików, a nie 2.
+      expect(state.stagingArea).toHaveLength(0);     
       expect(state.workingDirectory.length).toBe(3);
     });
 

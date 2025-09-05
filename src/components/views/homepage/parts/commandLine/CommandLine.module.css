@@ -1,13 +1,28 @@
 .container {
+  position: relative;
   display: flex;
   align-items: center;
   width: 100%;
   height: 100%;
   background-color: var(--background-secondary);
-  border: 1px solid #555;
-  border-radius: 4px;
-  padding: 0 12px;
+  padding: 0 8px; /* Reduced left/right padding */
   gap: 8px;
+}
+
+.terminalIcon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 4px;
+  z-index: 2;
+  display: block; /* Always visible */
+}
+
+.terminalIcon:hover {
+  color: var(--text-primary);
 }
 
 .prompt {
@@ -19,10 +34,42 @@
   background: none;
   border: none;
   color: var(--text-primary);
-  font-family: "Fira Code", monospace, sans-serif;
+  font-family: var(--font-mono), monospace, sans-serif;
   font-size: 0.9rem;
+  padding-right: 30px;
 }
 
 .input:focus {
   outline: none;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: 110%;
+  left: 10px;
+  background-color: var(--color-error, #c74646);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s, visibility 0.2s;
+  z-index: 10;
+  white-space: nowrap;
+}
+
+.tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 20px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: var(--color-error, #c74646) transparent transparent transparent;
+}
+
+.tooltipVisible {
+  opacity: 1;
+  visibility: visible;
 }

@@ -38,9 +38,7 @@ interface Label {
 }
 
 interface TooltipData {
-  x: number;
-  y: number;
-  commit: Commit;
+  nodeId: string;
 }
 
 interface GraphData {
@@ -58,6 +56,8 @@ const PADDING_Y = 100;
 const LABEL_ROW_Y = 40;
 const GRAY_COLOR = "#4a5568";
 const LANE_COLORS = ["#38b2ac", "#a78bfa", "#f6ad55", "#ec4899"];
+const TOOLTIP_WIDTH = 250;
+const TOOLTIP_OFFSET = 20;
 
 // --- ICONS ---
 const FullscreenIcon = () => (
@@ -72,10 +72,10 @@ const FullscreenIcon = () => (
     strokeLinecap="round"
     strokeLinejoin="round"
   >
-    <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
+    {" "}
+    <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />{" "}
   </svg>
 );
-
 const CloseIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -88,8 +88,9 @@ const CloseIcon = () => (
     strokeLinecap="round"
     strokeLinejoin="round"
   >
-    <line x1="18" y1="6" x2="6" y2="18"></line>
-    <line x1="6" y1="6" x2="18" y2="18"></line>
+    {" "}
+    <line x1="18" y1="6" x2="6" y2="18"></line>{" "}
+    <line x1="6" y1="6" x2="18" y2="18"></line>{" "}
   </svg>
 );
 
@@ -115,7 +116,6 @@ export const BranchTree = () => {
   const panStart = useRef({ x: 0, y: 0 });
   const hasDragged = useRef(false);
   const initialPanSet = useRef(false);
-  const isInitialMount = useRef(true);
 
   const isVertical = orientation === "vertical";
 
@@ -130,7 +130,12 @@ export const BranchTree = () => {
     }
   }, [branches, isFullscreen]);
 
-  const { nodes, edges, labels }: GraphData = useMemo(() => {
+  const {
+    nodes,
+    edges,
+    labels,
+    nodeMap,
+  }: GraphData & { nodeMap: Map<string, Node> } = useMemo(() => {
     const branchNames = Object.keys(branches);
     const sortedBranchNames = [...branchNames].sort(
       (a, b) => branches[a].position - branches[b].position
@@ -161,7 +166,7 @@ export const BranchTree = () => {
       return depth;
     };
     commitList.forEach((c) => getDepth(c.id));
-    const nodeMap = new Map<string, Node>();
+    const internalNodeMap = new Map<string, Node>();
     const calculatedNodes: Node[] = [];
     const commitToBranch = new Map<string, string>();
     if (branches.main) {
@@ -185,7 +190,6 @@ export const BranchTree = () => {
         currentId = Array.isArray(parent) ? parent[0] : parent ?? null;
       }
     });
-
     commitList.forEach((commit) => {
       const branchName = commitToBranch.get(commit.id) || "main";
       const lane = laneAssignments.get(branchName) ?? 0;
@@ -200,15 +204,12 @@ export const BranchTree = () => {
         commitData: commit,
       };
       calculatedNodes.push(node);
-      nodeMap.set(commit.id, node);
+      internalNodeMap.set(commit.id, node);
     });
-
     const calculatedEdges: Edge[] = [];
-
     sortedBranchNames.forEach((branchName) => {
       const branchCommitId = branches[branchName].commitId;
-      const existingNode = nodeMap.get(branchCommitId);
-
+      const existingNode = internalNodeMap.get(branchCommitId);
       if (existingNode && commitToBranch.get(branchCommitId) !== branchName) {
         const lane = laneAssignments.get(branchName) ?? 0;
         const markerNode: Node = {
@@ -227,7 +228,6 @@ export const BranchTree = () => {
           commitData: existingNode.commitData,
         };
         calculatedNodes.push(markerNode);
-
         calculatedEdges.push({
           key: `branch-connection-${branchName}-${branchCommitId}`,
           path: `M ${existingNode.x} ${existingNode.y} L ${markerNode.x} ${markerNode.y}`,
@@ -235,7 +235,6 @@ export const BranchTree = () => {
         });
       }
     });
-
     const calculatedLabels: Label[] = sortedBranchNames.map((name) => {
       const lane = laneAssignments.get(name) ?? 0;
       return {
@@ -247,14 +246,12 @@ export const BranchTree = () => {
         commitId: branches[name].commitId,
       };
     });
-
     const lanes = new Map<number, Node[]>();
     calculatedNodes.forEach((node) => {
       const laneKey = isVertical ? node.x : node.y;
       if (!lanes.has(laneKey)) lanes.set(laneKey, []);
       lanes.get(laneKey)!.push(node);
     });
-
     lanes.forEach((nodesOnLane) => {
       nodesOnLane.sort((a, b) => (isVertical ? a.y - b.y : a.x - b.x));
       for (let i = 0; i < nodesOnLane.length - 1; i++) {
@@ -267,7 +264,6 @@ export const BranchTree = () => {
         });
       }
     });
-
     commitList.forEach((commit) => {
       const parentIds = commit.parent
         ? Array.isArray(commit.parent)
@@ -275,9 +271,9 @@ export const BranchTree = () => {
           : [commit.parent]
         : [];
       parentIds.forEach((parentId) => {
-        if (nodeMap.has(commit.id) && nodeMap.has(parentId)) {
-          const childNode = nodeMap.get(commit.id)!;
-          const parentNode = nodeMap.get(parentId)!;
+        if (internalNodeMap.has(commit.id) && internalNodeMap.has(parentId)) {
+          const childNode = internalNodeMap.get(commit.id)!;
+          const parentNode = internalNodeMap.get(parentId)!;
           let path;
           if (
             (isVertical && childNode.x === parentNode.x) ||
@@ -307,11 +303,9 @@ export const BranchTree = () => {
         }
       });
     });
-
     calculatedLabels.forEach((label) => {
       const laneKey = isVertical ? label.x : label.y;
       const nodesOnLane = lanes.get(laneKey);
-
       if (nodesOnLane && nodesOnLane.length > 0) {
         nodesOnLane.sort((a, b) => (isVertical ? a.y - b.y : a.x - b.x));
         const firstNode = nodesOnLane[0];
@@ -319,7 +313,6 @@ export const BranchTree = () => {
           commitToBranch.get(firstNode.commitData.id) === label.name
             ? label.color
             : GRAY_COLOR;
-
         calculatedEdges.push({
           key: `label-trunk-${label.name}`,
           path: isVertical
@@ -329,11 +322,11 @@ export const BranchTree = () => {
         });
       }
     });
-
     return {
       nodes: calculatedNodes,
       edges: calculatedEdges,
       labels: calculatedLabels,
+      nodeMap: internalNodeMap,
     };
   }, [commits, branches, head, orientation, isVertical]);
 
@@ -357,36 +350,6 @@ export const BranchTree = () => {
     }
   }, [isEnteringFullscreen, branches, nodes, orientation, isVertical]);
 
-  useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      return;
-    }
-    if (!wrapperRef.current) return;
-
-    const wrapperWidth = wrapperRef.current.offsetWidth;
-    const wrapperHeight = wrapperRef.current.offsetHeight;
-    const numLanes = Object.keys(branches).length;
-    const maxDepth = Math.max(0, ...nodes.map((n) => n.depth));
-
-    const contentWidth =
-      PADDING_X * 2 + (isVertical ? numLanes * X_STEP : maxDepth * X_STEP);
-    const contentHeight =
-      PADDING_Y * 2 +
-      (isVertical ? maxDepth * Y_STEP : numLanes * HORIZONTAL_Y_STEP);
-
-    const standardX = (wrapperWidth - contentWidth) / 2;
-    setPan({ x: standardX, y: 40 });
-    setScale(0.9);
-
-    const fullscreenX = (wrapperWidth - contentWidth) / 2;
-    const fullscreenY = (wrapperHeight - contentHeight) / 2;
-    setFullscreenPan({ x: fullscreenX, y: fullscreenY });
-    setFullscreenScale(1.1);
-
-    setTooltip(null);
-  }, [orientation, branches, nodes, isVertical]);
-
   const handleRotateRequest = () => {
     if (isFading) return;
     setIsFading(true);
@@ -401,6 +364,11 @@ export const BranchTree = () => {
   };
 
   const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
+    // --- FIX: Hide tooltip on drag start ---
+    if (tooltip) {
+      setTooltip(null);
+    }
+
     if (e.button !== 0) return;
     e.preventDefault();
     isPanning.current = true;
@@ -461,20 +429,8 @@ export const BranchTree = () => {
   };
 
   const handleNodeClick = (node: Node) => {
-    if (hasDragged.current || !wrapperRef.current) return;
-
-    const rect = wrapperRef.current.getBoundingClientRect();
-    const activeScale = isFullscreen ? fullscreenScale : scale;
-    const activePan = isFullscreen ? fullscreenPan : pan;
-
-    const screenX = node.x * activeScale + activePan.x + rect.left;
-    const screenY = node.y * activeScale + activePan.y + rect.top;
-
-    setTooltip({
-      x: screenX,
-      y: screenY,
-      commit: node.commitData,
-    });
+    if (hasDragged.current) return;
+    setTooltip({ nodeId: node.id });
   };
 
   const handleBackdropClick = () => {
@@ -483,15 +439,41 @@ export const BranchTree = () => {
     }
   };
 
+  const getTooltipPosition = () => {
+    if (!tooltip || !wrapperRef.current) return null;
+    const node = nodeMap.get(tooltip.nodeId);
+    if (!node) return null;
+    const rect = wrapperRef.current.getBoundingClientRect();
+    const activeScale = isFullscreen ? fullscreenScale : scale;
+    const activePan = isFullscreen ? fullscreenPan : pan;
+    let screenX = node.x * activeScale + activePan.x + rect.left;
+    let screenY =
+      node.y * activeScale + activePan.y + rect.top + TOOLTIP_OFFSET;
+    const tooltipHeight = 150;
+    screenX = Math.max(
+      rect.left,
+      Math.min(screenX, rect.right - TOOLTIP_WIDTH)
+    );
+    screenY = Math.max(
+      rect.top,
+      Math.min(screenY, rect.bottom - tooltipHeight)
+    );
+    return { x: screenX, y: screenY, commit: node.commitData };
+  };
+
+  const tooltipPosition = getTooltipPosition();
+
   const branchTreeContent = (
     <div className={styles.container}>
-      <div className={styles.branchInfo}>branch: {head.name}</div>
+      {" "}
+      <div className={styles.branchInfo}>branch: {head.name}</div>{" "}
       {isFullscreen ? (
         <button
           className={styles.closeButton}
           onClick={() => setIsFullscreen(false)}
         >
-          <CloseIcon />
+          {" "}
+          <CloseIcon />{" "}
         </button>
       ) : (
         <button
@@ -501,10 +483,10 @@ export const BranchTree = () => {
             setIsFullscreen(true);
           }}
         >
-          <FullscreenIcon />
+          {" "}
+          <FullscreenIcon />{" "}
         </button>
-      )}
-
+      )}{" "}
       <div
         ref={wrapperRef}
         className={styles.graphWrapper}
@@ -514,6 +496,7 @@ export const BranchTree = () => {
         onMouseLeave={handleMouseUp}
         onWheel={handleWheel}
       >
+        {" "}
         <div
           className={`${styles.pannableContainer} ${
             isFading ? styles.fading : ""
@@ -527,7 +510,9 @@ export const BranchTree = () => {
             visibility: isEnteringFullscreen ? "hidden" : "visible",
           }}
         >
+          {" "}
           <svg className={styles.svgCanvas} overflow="visible">
+            {" "}
             {edges.map((edge: Edge) => (
               <path
                 key={edge.key}
@@ -536,8 +521,8 @@ export const BranchTree = () => {
                 strokeWidth="2"
                 fill="none"
               />
-            ))}
-          </svg>
+            ))}{" "}
+          </svg>{" "}
           {labels.map((label: Label) => {
             let style: React.CSSProperties = {};
             if (isVertical) {
@@ -553,16 +538,18 @@ export const BranchTree = () => {
                 }`}
                 style={style}
               >
+                {" "}
                 <div
                   className={styles.branchLabel}
                   style={{ backgroundColor: label.color }}
                 >
-                  {label.name}
-                </div>
-                {label.isHead && <div className={styles.headLabel}>HEAD</div>}
+                  {" "}
+                  {label.name}{" "}
+                </div>{" "}
+                {label.isHead && <div className={styles.headLabel}>HEAD</div>}{" "}
               </div>
             );
-          })}
+          })}{" "}
           {nodes.map((node: Node) => {
             const isReversed = node.depth % 2 !== 0;
             const transform = isVertical
@@ -572,7 +559,6 @@ export const BranchTree = () => {
               : isReversed
               ? `translate(-50%, calc(-100% + 11px))`
               : `translate(-50%, -11px)`;
-
             return (
               <div
                 key={node.id}
@@ -587,74 +573,85 @@ export const BranchTree = () => {
                 }}
                 onClick={() => handleNodeClick(node)}
               >
+                {" "}
                 {isReversed ? (
                   <>
+                    {" "}
                     <div className={styles.inlineCommitHash}>
-                      {node.commitData.id}
-                    </div>
-                    <div className={styles.commitLine} />
+                      {" "}
+                      {node.commitData.id}{" "}
+                    </div>{" "}
+                    <div className={styles.commitLine} />{" "}
                     <div
                       className={styles.commitCircle}
                       style={{ borderColor: node.color }}
-                    />
+                    />{" "}
                   </>
                 ) : (
                   <>
+                    {" "}
                     <div
                       className={styles.commitCircle}
                       style={{ borderColor: node.color }}
-                    />
-                    <div className={styles.commitLine} />
+                    />{" "}
+                    <div className={styles.commitLine} />{" "}
                     <div className={styles.inlineCommitHash}>
-                      {node.commitData.id}
-                    </div>
+                      {" "}
+                      {node.commitData.id}{" "}
+                    </div>{" "}
                   </>
-                )}
+                )}{" "}
               </div>
             );
-          })}
-        </div>
-        {tooltip &&
+          })}{" "}
+        </div>{" "}
+        {tooltipPosition &&
           createPortal(
             <>
+              {" "}
               <div
                 className={styles.tooltipBackdrop}
                 onClick={handleBackdropClick}
-              />
+              />{" "}
               <div
                 className={styles.tooltip}
                 style={{
-                  top: `${tooltip.y + 20}px`,
-                  left: `${tooltip.x}px`,
+                  top: `${tooltipPosition.y}px`,
+                  left: `${tooltipPosition.x}px`,
                 }}
               >
-                <h4 className={styles.tooltipHeader}>Commit Details</h4>
+                {" "}
+                <h4 className={styles.tooltipHeader}>Commit Details</h4>{" "}
                 <div className={styles.tooltipRow}>
-                  <strong>Hash:</strong> {tooltip.commit.id}
-                </div>
+                  {" "}
+                  <strong>Hash:</strong> {tooltipPosition.commit.id}{" "}
+                </div>{" "}
                 <div className={styles.tooltipRow}>
-                  <strong>Message:</strong> {tooltip.commit.message}
-                </div>
+                  {" "}
+                  <strong>Message:</strong> {tooltipPosition.commit.message}{" "}
+                </div>{" "}
                 <div className={styles.tooltipRow}>
-                  <strong>Files Changed:</strong>
+                  {" "}
+                  <strong>Files Changed:</strong>{" "}
                   <ul>
-                    {tooltip.commit.files.map((file) => (
+                    {" "}
+                    {tooltipPosition.commit.files.map((file) => (
                       <li key={file.id}>{file.name}</li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
+                    ))}{" "}
+                  </ul>{" "}
+                </div>{" "}
+              </div>{" "}
             </>,
             document.body
-          )}
-      </div>
+          )}{" "}
+      </div>{" "}
       {isFullscreen && (
         <ControlsPanel
           orientation={orientation}
           setOrientation={setOrientation}
           onRotate={handleRotateRequest}
         />
-      )}
+      )}{" "}
     </div>
   );
 

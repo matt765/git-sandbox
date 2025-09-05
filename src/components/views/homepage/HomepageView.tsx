@@ -5,7 +5,6 @@ import styles from "./HomepageView.module.css";
 import { BranchTree } from "./parts/branchTree/BranchTree";
 import { CommandLine } from "./parts/commandLine/CommandLine";
 import { FilesBox } from "./parts/filesBox/FilesBox";
-
 import { MainButtons } from "./parts/mainButtons/MainButtons";
 import { AdvancedButtons } from "./parts/advancedButtons/AdvancedButtons";
 import { LogHistory } from "./parts/logHistory/LogHistory";
