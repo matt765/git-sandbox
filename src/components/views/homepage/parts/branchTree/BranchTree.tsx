@@ -523,6 +523,7 @@ export const BranchTree = () => {
                 stroke={edge.color}
                 strokeWidth="2"
                 fill="none"
+                className={styles.fadein}
               />
             ))}{" "}
           </svg>{" "}
@@ -567,7 +568,7 @@ export const BranchTree = () => {
                 key={node.id}
                 className={`${styles.commitNodeWrapper} ${
                   !isVertical ? styles.horizontal : ""
-                }`}
+                } ${styles.fadein}`}
                 style={{
                   top: `${node.y}px`,
                   left: `${node.x}px`,
