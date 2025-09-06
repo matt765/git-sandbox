@@ -100,6 +100,7 @@ export const BranchTree = () => {
   const head = useGitStore((state) => state.HEAD);
   const shouldResetBranchTree = useGitStore((state) => state.shouldResetBranchTree);
   const resetBranchTreePosition = useGitStore((state) => state.resetBranchTreePosition);
+  const switchBranch = useGitStore((state) => state.switchBranch);
 
   const [tooltip, setTooltip] = useState<TooltipData | null>(null);
   const [pan, setPan] = useState({ x: 0, y: 0 });
@@ -716,7 +717,8 @@ export const BranchTree = () => {
                 {" "}
                 <div
                   className={styles.branchLabel}
-                  style={{ backgroundColor: label.color }}
+                  style={{ backgroundColor: label.color, cursor: 'pointer' }}
+                  onClick={() => switchBranch(label.name)}
                 >
                   {" "}
                   {label.name}{" "}
