@@ -1,0 +1,100 @@
+.tooltipContainer {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltipContainer:hover::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  background: rgba(30, 32, 35, 0.95);
+  color: var(--text-primary);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  white-space: nowrap;
+  z-index: 10000;
+  border: 1px solid var(--border-color);
+  pointer-events: none;
+  opacity: 1;
+}
+
+.tooltipContainer:hover::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  z-index: 10001;
+  pointer-events: none;
+}
+
+/* Top position (default) */
+.tooltipContainer[data-position="top"]:hover::before {
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 8px;
+}
+
+.tooltipContainer[data-position="top"]:hover::after {
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 2px;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid rgba(30, 32, 35, 0.95);
+}
+
+/* Bottom position */
+.tooltipContainer[data-position="bottom"]:hover::before {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 8px;
+}
+
+.tooltipContainer[data-position="bottom"]:hover::after {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 2px;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-bottom: 4px solid rgba(30, 32, 35, 0.95);
+}
+
+/* Left position */
+.tooltipContainer[data-position="left"]:hover::before {
+  top: 50%;
+  right: 100%;
+  transform: translateY(-50%);
+  margin-right: 8px;
+}
+
+.tooltipContainer[data-position="left"]:hover::after {
+  top: 50%;
+  right: 100%;
+  transform: translateY(-50%);
+  margin-right: 2px;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-left: 4px solid rgba(30, 32, 35, 0.95);
+}
+
+/* Right position */
+.tooltipContainer[data-position="right"]:hover::before {
+  top: 50%;
+  left: 100%;
+  transform: translateY(-50%);
+  margin-left: 8px;
+}
+
+.tooltipContainer[data-position="right"]:hover::after {
+  top: 50%;
+  left: 100%;
+  transform: translateY(-50%);
+  margin-left: 2px;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-right: 4px solid rgba(30, 32, 35, 0.95);
+}
