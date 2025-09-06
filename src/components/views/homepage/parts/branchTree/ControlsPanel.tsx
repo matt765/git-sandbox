@@ -1,4 +1,5 @@
 import styles from "./ControlsPanel.module.css";
+import { useGitStore } from "@/store/gitStore";
 
 const RotateIcon = () => (
   <svg
@@ -63,6 +64,8 @@ export const ControlsPanel = ({
   orientation,
   onRotate,
 }: ControlsPanelProps) => {
+  const loadExample = useGitStore((state) => state.loadExample);
+
   return (
     <div className={styles.controlsPanel}>
       <button
@@ -74,7 +77,11 @@ export const ControlsPanel = ({
         <RotateIcon />
         Rotate
       </button>
-      <button className={styles.controlButton}>
+      <button 
+        className={styles.controlButton}
+        onClick={loadExample}
+        title="Load repository example with 24 branches and 60 commits"
+      >
         <LoadIcon />
         Load Example
       </button>

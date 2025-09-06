@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { largeExampleGitData } from "@/data/largeExampleGitData";
 
 // --- INTERFACES ---
 export interface GitFile {
@@ -44,6 +45,7 @@ interface GitActions {
   unstageFile: (id: number) => void;
   addFile: () => void;
   resetApp: () => void;
+  loadExample: () => void;
   resetBranchTreePosition: () => void;
   stageAllFiles: () => void;
   unstageAllFiles: () => void;
@@ -203,7 +205,7 @@ export const useGitStore = create<GitState & GitActions>((set, get) => ({
     }
 
     const parts = trimmedCommand.match(/(?:[^\s"']+|"[^"]*"|'[^']*')+/g) || [];
-    const [_, subCommand, ...args] = parts;
+    const [, subCommand, ...args] = parts;
 
     if (!subCommand) {
       return { success: false, message: "Usage: git <command> [<args>]" };
@@ -576,6 +578,16 @@ export const useGitStore = create<GitState & GitActions>((set, get) => ({
     fileIdCounter = 7;
     set({ ...initialState, shouldResetBranchTree: true });
   },
+  loadExample: () => {
+    fileIdCounter = Math.max(
+      ...(Object.values(largeExampleGitData.commits) as Commit[]).flatMap((commit: Commit) => 
+        commit.files.map((file: GitFile) => file.id)
+      ), 
+      ...largeExampleGitData.workingDirectory.map((file: GitFile) => file.id), 
+      ...largeExampleGitData.stagingArea.map((file: GitFile) => file.id)
+    ) + 1;
+    set({ ...largeExampleGitData, shouldResetBranchTree: false });
+  },
   resetBranchTreePosition: () => {
     set({ shouldResetBranchTree: false });
   },
@@ -718,6 +730,7 @@ export const useGitStore = create<GitState & GitActions>((set, get) => ({
       message: newMessage || oldCommit.message,
       files: [...oldCommit.files, ...state.stagingArea],
     };
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { [oldCommitId]: _removedCommit, ...remainingCommits } =
       state.commits;
     set({
@@ -822,6 +835,7 @@ export const useGitStore = create<GitState & GitActions>((set, get) => ({
   deleteBranch: (name: string) => {
     const state = get();
     if (!state.branches[name] || name === state.HEAD.name) return;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { [name]: _deletedBranch, ...remainingBranches } = state.branches;
     set({
       branches: remainingBranches,

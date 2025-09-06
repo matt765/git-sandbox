@@ -357,8 +357,19 @@ export const BranchTree = () => {
       const contentHeight =
         PADDING_Y * 2 +
         (isVertical ? maxDepth * Y_STEP : numLanes * HORIZONTAL_Y_STEP);
-      const initialX = (wrapperWidth - contentWidth) / 2 + (isVertical ? 56 : 0); // Add 3.5rem (56px) for vertical
-      const initialY = (wrapperHeight - contentHeight) / 2;
+      
+      // For large trees (more than 5 branches), position main badge in top-left when entering fullscreen
+      let initialX, initialY;
+      if (numLanes > 5) {
+        // Position for large trees - provide proper spacing from edges
+        initialX = 80;
+        initialY = 80;
+      } else {
+        // Default positioning for small trees
+        initialX = (wrapperWidth - contentWidth) / 2 + (isVertical ? 56 : 0); // Add 3.5rem (56px) for vertical
+        initialY = (wrapperHeight - contentHeight) / 2;
+      }
+      
       setFullscreenPan({ x: initialX, y: initialY });
       setFullscreenScale(1.1);
       setTooltip(null);
@@ -376,16 +387,29 @@ export const BranchTree = () => {
       
       let initialX, initialY;
       
-      if (orientation === "vertical") {
-        const contentWidth = PADDING_X + numLanes * X_STEP;
-        initialX = (wrapperWidth - contentWidth) / 2 + 40; // Add 2.5rem (40px) to the right
-        initialY = 56;
+      // For large trees (more than 5 branches), use consistent positioning logic
+      if (numLanes > 5) {
+        // Position for large trees - provide proper spacing from edges
+        if (orientation === "vertical") {
+          initialX = 80;
+          initialY = 80;
+        } else {
+          initialX = 80;
+          initialY = 80;
+        }
       } else {
-        // For horizontal orientation - adjust calculations
-        const contentWidth = PADDING_X * 2 + maxDepth * X_STEP + 100; // Add extra padding
-        const contentHeight = PADDING_Y * 2 + numLanes * HORIZONTAL_Y_STEP + 100; // Add extra padding
-        initialX = (wrapperWidth - contentWidth) / 2 + 160; // Reduced offset from 260 to 50
-        initialY = (wrapperHeight - contentHeight) / 2 + 120; // Reduced offset from 240 to 50
+        // Default positioning for small trees
+        if (orientation === "vertical") {
+          const contentWidth = PADDING_X + numLanes * X_STEP;
+          initialX = (wrapperWidth - contentWidth) / 2 + 40; // Add 2.5rem (40px) to the right
+          initialY = 56;
+        } else {
+          // For horizontal orientation - adjust calculations
+          const contentWidth = PADDING_X * 2 + maxDepth * X_STEP + 100; // Add extra padding
+          const contentHeight = PADDING_Y * 2 + numLanes * HORIZONTAL_Y_STEP + 100; // Add extra padding
+          initialX = (wrapperWidth - contentWidth) / 2 + 160; // Reduced offset from 260 to 50
+          initialY = (wrapperHeight - contentHeight) / 2 + 120; // Reduced offset from 240 to 50
+        }
       }
       
       setPan({ x: initialX, y: initialY });
@@ -443,8 +467,19 @@ export const BranchTree = () => {
       const fullscreenContentHeight =
         PADDING_Y * 2 +
         (newIsVertical ? maxDepth * Y_STEP : numLanes * HORIZONTAL_Y_STEP);
-      const fullscreenInitialX = (wrapperWidth - fullscreenContentWidth) / 2 + (newIsVertical ? 56 : 0); // Add 3.5rem (56px) for vertical
-      const fullscreenInitialY = (wrapperHeight - fullscreenContentHeight) / 2;
+      
+      // For large trees (more than 5 branches), position main badge in top-left after rotate
+      let fullscreenInitialX, fullscreenInitialY;
+      if (numLanes > 5) {
+        // Position for large trees - provide proper spacing from edges
+        fullscreenInitialX = 80;
+        fullscreenInitialY = 80;
+      } else {
+        // Default positioning for small trees
+        fullscreenInitialX = (wrapperWidth - fullscreenContentWidth) / 2 + (newIsVertical ? 56 : 0); // Add 3.5rem (56px) for vertical
+        fullscreenInitialY = (wrapperHeight - fullscreenContentHeight) / 2;
+      }
+      
       setFullscreenPan({ x: fullscreenInitialX, y: fullscreenInitialY });
       setFullscreenScale(1.1);
     } else {
@@ -549,8 +584,8 @@ export const BranchTree = () => {
     const scaleAmount = -e.deltaY * 0.001;
     if (isFullscreen) {
       const newScale = Math.min(
-        Math.max(fullscreenScale + scaleAmount, 0.2),
-        4
+        Math.max(fullscreenScale + scaleAmount, 0.07),
+        12
       );
       const newPanX =
         mouseX - ((mouseX - fullscreenPan.x) / fullscreenScale) * newScale;
@@ -559,7 +594,7 @@ export const BranchTree = () => {
       setFullscreenScale(newScale);
       setFullscreenPan({ x: newPanX, y: newPanY });
     } else {
-      const newScale = Math.min(Math.max(scale + scaleAmount, 0.2), 4);
+      const newScale = Math.min(Math.max(scale + scaleAmount, 0.07), 12);
       const newPanX = mouseX - ((mouseX - pan.x) / scale) * newScale;
       const newPanY = mouseY - ((mouseY - pan.y) / scale) * newScale;
       setScale(newScale);

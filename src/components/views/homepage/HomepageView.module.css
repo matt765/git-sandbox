@@ -5,7 +5,7 @@
   padding: 2rem;
   gap: 1.5rem;
   grid-template-columns: 1fr 1fr 0.8fr;
-  grid-template-rows: 1fr auto auto;
+  grid-template-rows: 1fr auto 160px;
   grid-template-areas:
     "branchTree branchTree console"
     "branchTree branchTree stash"
@@ -17,20 +17,29 @@
 
 .branchTree {
   grid-area: branchTree;
+  min-height: 0;
+  overflow: auto;
 }
+
 .console {
   grid-area: console;
-  overflow: hidden;
+  min-height: 0;
+  overflow: auto;
 }
+
 .stash {
   grid-area: stash;
 }
+
 .mainButtons {
   grid-area: mainButtons;
 }
+
 .advancedButtons {
   grid-area: advancedButtons;
 }
+
 .resetButtons {
   grid-area: resetButtons;
+  overflow: auto;
 }
