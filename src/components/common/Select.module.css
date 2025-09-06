@@ -1,0 +1,138 @@
+.select {
+  position: relative;
+  width: 100%;
+  font-family: inherit;
+  z-index: 9999;
+}
+
+.trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 12px;
+  background-color: var(--select-background);
+  border: 1px solid var(--select-border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 42px;
+  box-sizing: border-box;
+}
+
+.trigger:hover {
+  border-color: var(--text-secondary);
+}
+
+.trigger:focus-within,
+.open .trigger {
+  border-color: var(--color-accent);
+  outline: none;
+}
+
+.text {
+  color: var(--select-text);
+  font-size: 1rem;
+  line-height: 1.4;
+  flex-grow: 1;
+  text-align: left;
+}
+
+.placeholder {
+  color: var(--select-placeholder);
+}
+
+.arrow {
+  width: 20px;
+  height: 20px;
+  color: var(--select-placeholder);
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+.open .arrow {
+  transform: rotate(180deg);
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 10000;
+  background-color: var(--select-option-background);
+  border: 1px solid var(--select-border);
+  border-top: none;
+  border-radius: 0 0 6px 6px;
+  box-shadow: var(--shadow);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.dropdownPortal {
+  background-color: var(--select-option-background);
+  border: 1px solid var(--select-border);
+  border-radius: 6px;
+  box-shadow: var(--shadow);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.option {
+  padding: 10px 12px;
+  cursor: pointer;
+  color: var(--select-text);
+  font-size: 1rem;
+  line-height: 1.4;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid var(--select-border);
+}
+
+.option:last-child {
+  border-bottom: none;
+}
+
+.option:hover {
+  background-color: var(--select-option-hover);
+}
+
+.selected {
+  background-color: var(--select-option-hover);
+  color: var(--text-primary);
+}
+
+.selected:hover {
+  background-color: var(--select-option-hover);
+}
+
+.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.disabled .trigger {
+  cursor: not-allowed;
+}
+
+/* Scrollbar styling for dropdown */
+.dropdown::-webkit-scrollbar,
+.dropdownPortal::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dropdown::-webkit-scrollbar-track,
+.dropdownPortal::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+.dropdown::-webkit-scrollbar-thumb,
+.dropdownPortal::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+}
+
+.dropdown::-webkit-scrollbar-thumb:hover,
+.dropdownPortal::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
