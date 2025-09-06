@@ -66,6 +66,7 @@ interface GitActions {
   closeTerminal: () => void;
   addCommandToHistory: (command: string) => void;
   clearTerminalHistory: () => void;
+  performRandomAction: () => void;
 }
 
 // --- HELPER FUNCTIONS ---
@@ -873,5 +874,166 @@ export const useGitStore = create<GitState & GitActions>((set, get) => ({
       HEAD: { type: "branch", name },
       logs: [...state.logs, `Switched to branch '${name}'`],
     });
+  },
+
+  performRandomAction: () => {
+    const state = get();
+    const actions = get();
+    
+    // Generate realistic names
+    const commitMessages = [
+      "Fix critical bug in authentication",
+      "Add new feature for user preferences", 
+      "Update dependencies to latest versions",
+      "Refactor database connection logic",
+      "Improve error handling in API",
+      "Add unit tests for core functionality",
+      "Update documentation and README",
+      "Optimize performance for large datasets",
+      "Fix memory leak in background service",
+      "Add support for dark mode theme",
+      "Implement data validation layer",
+      "Fix cross-browser compatibility issues",
+      "Add logging and monitoring tools",
+      "Update CI/CD pipeline configuration",
+      "Implement caching mechanism",
+    ];
+
+    const fileNames = [
+      "auth.service.ts", "user.model.ts", "config.json", "database.ts", 
+      "api.controller.ts", "utils.ts", "styles.css", "components.tsx",
+      "middleware.ts", "routes.ts", "constants.ts", "types.d.ts",
+      "validators.ts", "helpers.ts", "hooks.ts", "store.ts"
+    ];
+
+    const branchNames = [
+      "dashboard", "authentication", "memory", "darkmode", "cleanup", 
+      "notifications", "performance", "search", "security", "mobile", 
+      "database", "analytics", "payments", "profile", "settings",
+      "api", "ui", "tests", "docs", "deploy"
+    ];
+
+    // Get available branches and commits for operations
+    const branchList = Object.keys(state.branches);
+    const commitList = Object.keys(state.commits);
+    const currentBranch = state.HEAD.name;
+    
+    // Define possible actions with their weights (higher = more likely)
+    const possibleActions = [
+      { action: 'commit', weight: 40 },
+      { action: 'createBranch', weight: 15 },
+      { action: 'merge', weight: 10 },
+      { action: 'rebase', weight: 8 },
+      { action: 'cherryPick', weight: 7 },
+      { action: 'revert', weight: 5 },
+      { action: 'switchBranch', weight: 10 },
+      { action: 'deleteBranch', weight: 3 },
+      { action: 'reset', weight: 2 }
+    ];
+
+    // Weighted random selection
+    const totalWeight = possibleActions.reduce((sum, item) => sum + item.weight, 0);
+    let random = Math.random() * totalWeight;
+    let selectedAction = possibleActions[0].action;
+
+    for (const item of possibleActions) {
+      random -= item.weight;
+      if (random <= 0) {
+        selectedAction = item.action;
+        break;
+      }
+    }
+
+    // Execute the selected action
+    switch (selectedAction) {
+      case 'commit': {
+        // Add some files to staging first if empty
+        if (state.stagingArea.length === 0) {
+          const fileName = fileNames[Math.floor(Math.random() * fileNames.length)];
+          const newFile = { id: fileIdCounter++, name: fileName };
+          set((state) => ({
+            stagingArea: [...state.stagingArea, newFile]
+          }));
+        }
+        const message = commitMessages[Math.floor(Math.random() * commitMessages.length)];
+        actions.commit(message);
+        break;
+      }
+      
+      case 'createBranch': {
+        const branchName = branchNames[Math.floor(Math.random() * branchNames.length)];
+        // Ensure branch name is unique
+        const uniqueBranchName = state.branches[branchName] 
+          ? `${branchName}-${Math.floor(Math.random() * 1000)}`
+          : branchName;
+        actions.createBranch(uniqueBranchName);
+        break;
+      }
+      
+      case 'merge': {
+        const otherBranches = branchList.filter(name => name !== currentBranch);
+        if (otherBranches.length > 0) {
+          const sourceBranch = otherBranches[Math.floor(Math.random() * otherBranches.length)];
+          actions.merge(sourceBranch);
+        }
+        break;
+      }
+      
+      case 'rebase': {
+        const otherBranches = branchList.filter(name => name !== currentBranch);
+        if (otherBranches.length > 0) {
+          const targetBranch = otherBranches[Math.floor(Math.random() * otherBranches.length)];
+          actions.rebase(targetBranch);
+        }
+        break;
+      }
+      
+      case 'cherryPick': {
+        if (commitList.length > 0) {
+          const randomCommit = commitList[Math.floor(Math.random() * commitList.length)];
+          actions.cherryPick(randomCommit);
+        }
+        break;
+      }
+      
+      case 'revert': {
+        if (commitList.length > 1) { // Don't revert if only initial commit
+          const randomCommit = commitList[Math.floor(Math.random() * commitList.length)];
+          actions.revert(randomCommit);
+        }
+        break;
+      }
+      
+      case 'switchBranch': {
+        const otherBranches = branchList.filter(name => name !== currentBranch);
+        if (otherBranches.length > 0) {
+          const targetBranch = otherBranches[Math.floor(Math.random() * otherBranches.length)];
+          actions.switchBranch(targetBranch);
+        }
+        break;
+      }
+      
+      case 'deleteBranch': {
+        // Only delete non-main branches and not current branch
+        const deletableBranches = branchList.filter(name => 
+          name !== 'main' && name !== currentBranch
+        );
+        if (deletableBranches.length > 0) {
+          const branchToDelete = deletableBranches[Math.floor(Math.random() * deletableBranches.length)];
+          actions.deleteBranch(branchToDelete);
+        }
+        break;
+      }
+      
+      case 'reset': {
+        if (commitList.length > 1) {
+          const randomCommit = commitList[Math.floor(Math.random() * commitList.length)];
+          const modes: ("soft" | "mixed" | "hard")[] = ['soft', 'mixed', 'hard'];
+          const mode = modes[Math.floor(Math.random() * modes.length)];
+          actions.reset(randomCommit, mode);
+        }
+        break;
+      }
+    }
   },
 }));

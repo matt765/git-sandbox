@@ -1,6 +1,6 @@
 .controlsPanel {
   position: absolute;
-  bottom: 1rem;
+  bottom: 2.5rem;
   left: 50%;
   transform: translateX(-50%);
   z-index: 30;
@@ -44,4 +44,41 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+}
+
+.speedSlider {
+  width: 160px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  outline: none;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+  cursor: pointer;
+  margin-left: 0.5rem;
+}
+
+.speedSlider:hover {
+  opacity: 1;
+}
+
+.speedSlider::-webkit-slider-thumb {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  cursor: pointer;
+  border: 2px solid rgba(30, 32, 35, 0.8);
+  box-shadow: 0 0 4px rgba(80, 228, 223, 0.3);
+}
+
+.speedSlider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  cursor: pointer;
+  border: 2px solid rgba(30, 32, 35, 0.8);
+  box-shadow: 0 0 4px rgba(80, 228, 223, 0.3);
 }
