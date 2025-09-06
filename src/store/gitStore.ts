@@ -58,6 +58,7 @@ interface GitActions {
   rebase: (targetBranch: string) => void;
   createBranch: (name: string) => void;
   deleteBranch: (name: string) => void;
+  renameBranch: (oldName: string, newName: string) => void;
   switchBranch: (name: string) => void;
   executeCommand: (command: string) => CommandResult;
   executeTerminalCommand: (command: string) => void;
@@ -840,6 +841,29 @@ export const useGitStore = create<GitState & GitActions>((set, get) => ({
     set({
       branches: remainingBranches,
       logs: [...state.logs, `Deleted branch '${name}'`],
+    });
+  },
+  renameBranch: (oldName: string, newName: string) => {
+    const state = get();
+    if (!state.branches[oldName] || state.branches[newName] || oldName === newName) return;
+    
+    const branchToRename = state.branches[oldName];
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { [oldName]: _oldBranch, ...remainingBranches } = state.branches;
+    
+    const newBranches = {
+      ...remainingBranches,
+      [newName]: { ...branchToRename, name: newName },
+    };
+    
+    const newHEAD = state.HEAD.name === oldName 
+      ? { type: "branch" as const, name: newName }
+      : state.HEAD;
+    
+    set({
+      branches: newBranches,
+      HEAD: newHEAD,
+      logs: [...state.logs, `Renamed branch '${oldName}' to '${newName}'`],
     });
   },
   switchBranch: (name: string) => {

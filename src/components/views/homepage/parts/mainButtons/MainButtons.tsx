@@ -2,20 +2,74 @@
 import { useState } from "react";
 import { SectionTitle } from "@/components/common/SectionTitle";
 import { OutlinedButton } from "@/components/common/OutlinedButton";
+import { useGitStore } from "@/store/gitStore";
 
 import styles from "./MainButtons.module.css";
 import { CherryPickModal } from "./modals/CherryPickModal";
 import { RevertModal } from "./modals/RevertModal";
-import { ResetModal } from "./modals/ResetModal";
+import { ResetModal, ResetMode } from "./modals/ResetModal";
 import { AmendModal } from "./modals/AmendModal";
-import { Modal } from "@/components/common/Modal";
+import { ActionModal } from "@/components/common/ActionModal";
 
 type ActiveModal = "cherry-pick" | "revert" | "reset" | "amend" | null;
 
 export const MainButtons = () => {
   const [activeModal, setActiveModal] = useState<ActiveModal>(null);
+  
+  // Stan dla cherry-pick
+  const [cherryPickCommit, setCherryPickCommit] = useState("");
+  
+  // Stan dla revert
+  const [revertCommit, setRevertCommit] = useState("");
+  
+  // Stan dla reset
+  const [resetCommit, setResetCommit] = useState("");
+  const [resetMode, setResetMode] = useState<ResetMode>("mixed");
+  
+  // Stan dla amend
+  const [amendMessage, setAmendMessage] = useState("");
 
-  const closeModal = () => setActiveModal(null);
+  // Store actions
+  const cherryPick = useGitStore((state) => state.cherryPick);
+  const revert = useGitStore((state) => state.revert);
+  const reset = useGitStore((state) => state.reset);
+  const amend = useGitStore((state) => state.amend);
+
+  const closeModal = () => {
+    setActiveModal(null);
+    // Reset form states
+    setCherryPickCommit("");
+    setRevertCommit("");
+    setResetCommit("");
+    setResetMode("mixed");
+    setAmendMessage("");
+  };
+
+  const handleCherryPick = () => {
+    if (cherryPickCommit) {
+      cherryPick(cherryPickCommit);
+      closeModal();
+    }
+  };
+
+  const handleRevert = () => {
+    if (revertCommit) {
+      revert(revertCommit);
+      closeModal();
+    }
+  };
+
+  const handleReset = () => {
+    if (resetCommit) {
+      reset(resetCommit, resetMode);
+      closeModal();
+    }
+  };
+
+  const handleAmend = () => {
+    amend(amendMessage);
+    closeModal();
+  };
 
   return (
     <>
@@ -37,37 +91,62 @@ export const MainButtons = () => {
         </div>
       </div>
 
-      <Modal
+      <ActionModal
         isOpen={activeModal === "cherry-pick"}
         onClose={closeModal}
         title="Cherry-pick a Commit"
+        onAccept={handleCherryPick}
+        acceptText="Cherry-pick"
+        acceptDisabled={!cherryPickCommit}
       >
-        <CherryPickModal onClose={closeModal} />
-      </Modal>
+        <CherryPickModal 
+          selectedCommit={cherryPickCommit}
+          setSelectedCommit={setCherryPickCommit}
+        />
+      </ActionModal>
 
-      <Modal
+      <ActionModal
         isOpen={activeModal === "revert"}
         onClose={closeModal}
         title="Revert a Commit"
+        onAccept={handleRevert}
+        acceptText="Revert"
+        acceptDisabled={!revertCommit}
       >
-        <RevertModal onClose={closeModal} />
-      </Modal>
+        <RevertModal 
+          selectedCommit={revertCommit}
+          setSelectedCommit={setRevertCommit}
+        />
+      </ActionModal>
 
-      <Modal
+      <ActionModal
         isOpen={activeModal === "reset"}
         onClose={closeModal}
         title="Reset Branch"
+        onAccept={handleReset}
+        acceptText="Reset"
+        acceptDisabled={!resetCommit}
       >
-        <ResetModal onClose={closeModal} />
-      </Modal>
+        <ResetModal 
+          selectedCommit={resetCommit}
+          setSelectedCommit={setResetCommit}
+          mode={resetMode}
+          setMode={setResetMode}
+        />
+      </ActionModal>
 
-      <Modal
+      <ActionModal
         isOpen={activeModal === "amend"}
         onClose={closeModal}
         title="Amend Last Commit"
+        onAccept={handleAmend}
+        acceptText="Amend Commit"
       >
-        <AmendModal onClose={closeModal} />
-      </Modal>
+        <AmendModal 
+          newMessage={amendMessage}
+          setNewMessage={setAmendMessage}
+        />
+      </ActionModal>
     </>
   );
 };

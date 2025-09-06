@@ -1,64 +1,36 @@
 // src/components/views/homepage/parts/advancedButtons/modals/MergeBranchModal.tsx
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { useGitStore } from "@/store/gitStore";
-import { ContainedButton } from "@/components/common/ContainedButton";
+import { Select } from "@/components/common/Select";
 import styles from "./common.module.css";
 
 interface MergeBranchModalProps {
-  onClose: () => void;
+  selectedBranch: string;
+  setSelectedBranch: (branch: string) => void;
 }
 
-export const MergeBranchModal = ({ onClose }: MergeBranchModalProps) => {
-  const [selectedBranch, setSelectedBranch] = useState("");
+export const MergeBranchModal = ({ selectedBranch, setSelectedBranch }: MergeBranchModalProps) => {
   const branches = useGitStore((state) => state.branches);
   const currentBranch = useGitStore((state) => state.HEAD.name);
-  const merge = useGitStore((state) => state.merge);
 
-  const availableBranches = useMemo(() => 
-    Object.keys(branches).filter(branchName => branchName !== currentBranch), [branches, currentBranch]
+  const branchOptions = useMemo(() => 
+    Object.keys(branches)
+      .filter(branchName => branchName !== currentBranch)
+      .map(name => ({ value: name, label: name })),
+    [branches, currentBranch]
   );
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (selectedBranch) {
-      merge(selectedBranch);
-      onClose();
-    }
-  };
-
   return (
-    <form onSubmit={handleSubmit} className={styles.form}>
+    <div className={styles.form}>
       <label className={styles.label}>
-        Select branch to merge into current branch ({currentBranch})
-        <select
+        Branch to merge into current branch ({currentBranch}):
+        <Select
           value={selectedBranch}
-          onChange={(e) => setSelectedBranch(e.target.value)}
-          className={styles.select}
-          required
-        >
-          <option value="" disabled>
-            Choose a branch...
-          </option>
-          {availableBranches.map((branchName) => (
-            <option key={branchName} value={branchName}>
-              {branchName}
-            </option>
-          ))}
-        </select>
+          onChange={setSelectedBranch}
+          options={branchOptions}
+          placeholder="Select branch to merge"
+        />
       </label>
-      {availableBranches.length === 0 && (
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-          No other branches available to merge
-        </p>
-      )}
-      <div className={styles.actions}>
-        <ContainedButton 
-          type="submit" 
-          disabled={!selectedBranch || availableBranches.length === 0}
-        >
-          Merge Branch
-        </ContainedButton>
-      </div>
-    </form>
+    </div>
   );
 };

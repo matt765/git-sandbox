@@ -1,53 +1,37 @@
 // src/components/views/HomepageView/parts/mainButtons/modals/CherryPickModal.tsx
-import { useState, useMemo } from "react";
-import { Commit, useGitStore } from "@/store/gitStore";
-import { ContainedButton } from "@/components/common/ContainedButton";
+import { useMemo } from "react";
+import { useGitStore } from "@/store/gitStore";
+import { Select } from "@/components/common/Select";
 import styles from "./common.module.css";
 
 interface CherryPickModalProps {
-  onClose: () => void;
+  selectedCommit: string;
+  setSelectedCommit: (commit: string) => void;
 }
 
-export const CherryPickModal = ({ onClose }: CherryPickModalProps) => {
-  const [selectedCommit, setSelectedCommit] = useState("");
+export const CherryPickModal = ({ selectedCommit, setSelectedCommit }: CherryPickModalProps) => {
   const commitsRecord = useGitStore((state) => state.commits);
-  const cherryPick = useGitStore((state) => state.cherryPick);
   
   const commits = useMemo(() => Object.values(commitsRecord), [commitsRecord]);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (selectedCommit) {
-      cherryPick(selectedCommit);
-      onClose();
-    }
-  };
+  
+  const commitOptions = useMemo(() => 
+    commits.map(commit => ({
+      value: commit.id,
+      label: `${commit.id} - ${commit.message}`
+    })), [commits]
+  );
 
   return (
-    <form onSubmit={handleSubmit} className={styles.form}>
+    <div className={styles.form}>
       <label className={styles.label}>
         Select commit to cherry-pick
-        <select
+        <Select
           value={selectedCommit}
-          onChange={(e) => setSelectedCommit(e.target.value)}
-          className={styles.select}
-          required
-        >
-          <option value="" disabled>
-            Choose a commit...
-          </option>
-          {commits.map((commit) => (
-            <option key={commit.id} value={commit.id}>
-              {commit.id} - {commit.message}
-            </option>
-          ))}
-        </select>
+          onChange={setSelectedCommit}
+          options={commitOptions}
+          placeholder="Choose a commit..."
+        />
       </label>
-      <div className={styles.actions}>
-        <ContainedButton type="submit" disabled={!selectedCommit}>
-          Cherry-pick
-        </ContainedButton>
-      </div>
-    </form>
+    </div>
   );
 };

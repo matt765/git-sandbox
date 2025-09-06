@@ -41,6 +41,15 @@
   --scrollbar-thumb-hover: rgba(255, 255, 255, 0.3);
   --scrollbar-thumb-active: rgba(255, 255, 255, 0.4);
   --scrollbar-border: rgba(255, 255, 255, 0.1);
+
+  /* SELECT */
+  --select-background: var(--content-background);
+  --select-border: var(--border-color);
+  --select-text: var(--text-primary);
+  --select-placeholder: var(--text-secondary);
+  --select-focus-border: var(--color-accent);
+  --select-option-background: var(--content-background);
+  --select-option-hover: rgba(255, 255, 255, 0.1);
 }
 
 [data-theme="midnight"] {
@@ -85,6 +94,15 @@
   --scrollbar-thumb-hover: rgba(159, 122, 234, 0.4);
   --scrollbar-thumb-active: rgba(159, 122, 234, 0.5);
   --scrollbar-border: rgba(159, 122, 234, 0.2);
+
+  /* SELECT */
+  --select-background: var(--content-background);
+  --select-border: var(--border-color);
+  --select-text: var(--text-primary);
+  --select-placeholder: var(--text-secondary);
+  --select-focus-border: var(--color-accent);
+  --select-option-background: var(--content-background);
+  --select-option-hover: rgba(255, 255, 255, 0.1);
 }
 
 [data-theme="snowlight"] {
@@ -129,4 +147,13 @@
   --scrollbar-thumb-hover: rgba(0, 0, 0, 0.35);
   --scrollbar-thumb-active: rgba(0, 0, 0, 0.45);
   --scrollbar-border: rgba(0, 0, 0, 0.15);
+
+  /* SELECT */
+  --select-background: var(--content-background);
+  --select-border: var(--border-color);
+  --select-text: var(--text-primary);
+  --select-placeholder: var(--text-secondary);
+  --select-focus-border: var(--color-accent);
+  --select-option-background: var(--content-background);
+  --select-option-hover: rgba(0, 0, 0, 0.05);
 }

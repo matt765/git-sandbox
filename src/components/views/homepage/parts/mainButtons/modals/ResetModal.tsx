@@ -1,50 +1,40 @@
 // src/components/views/HomepageView/parts/mainButtons/modals/ResetModal.tsx
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { useGitStore } from "@/store/gitStore";
-import { ContainedButton } from "@/components/common/ContainedButton";
+import { Select } from "@/components/common/Select";
 import styles from "./common.module.css";
 
-type ResetMode = "soft" | "mixed" | "hard";
+export type ResetMode = "soft" | "mixed" | "hard";
 
 interface ResetModalProps {
-  onClose: () => void;
+  selectedCommit: string;
+  setSelectedCommit: (commit: string) => void;
+  mode: ResetMode;
+  setMode: (mode: ResetMode) => void;
 }
 
-export const ResetModal = ({ onClose }: ResetModalProps) => {
-  const [selectedCommit, setSelectedCommit] = useState("");
-  const [mode, setMode] = useState<ResetMode>("mixed");
+export const ResetModal = ({ selectedCommit, setSelectedCommit, mode, setMode }: ResetModalProps) => {
   const commitsRecord = useGitStore((state) => state.commits);
-  const reset = useGitStore((state) => state.reset);
   
   const commits = useMemo(() => Object.values(commitsRecord), [commitsRecord]);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (selectedCommit) {
-      reset(selectedCommit, mode);
-      onClose();
-    }
-  };
+  
+  const commitOptions = useMemo(() => 
+    commits.map(commit => ({
+      value: commit.id,
+      label: `${commit.id} - ${commit.message}`
+    })), [commits]
+  );
 
   return (
-    <form onSubmit={handleSubmit} className={styles.form}>
+    <div className={styles.form}>
       <label className={styles.label}>
         Reset current branch to commit
-        <select
+        <Select
           value={selectedCommit}
-          onChange={(e) => setSelectedCommit(e.target.value)}
-          className={styles.select}
-          required
-        >
-          <option value="" disabled>
-            Choose a commit...
-          </option>
-          {commits.map((commit) => (
-            <option key={commit.id} value={commit.id}>
-              {commit.id} - {commit.message}
-            </option>
-          ))}
-        </select>
+          onChange={setSelectedCommit}
+          options={commitOptions}
+          placeholder="Choose a commit..."
+        />
       </label>
 
       <div className={styles.label}>
@@ -98,12 +88,6 @@ export const ResetModal = ({ onClose }: ResetModalProps) => {
           </label>
         </div>
       </div>
-
-      <div className={styles.actions}>
-        <ContainedButton type="submit" disabled={!selectedCommit}>
-          Reset
-        </ContainedButton>
-      </div>
-    </form>
+    </div>
   );
 };

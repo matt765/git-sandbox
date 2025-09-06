@@ -1,53 +1,37 @@
 // src/components/views/HomepageView/parts/mainButtons/modals/RevertModal.tsx
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { useGitStore } from "@/store/gitStore";
-import { ContainedButton } from "@/components/common/ContainedButton";
+import { Select } from "@/components/common/Select";
 import styles from "./common.module.css";
 
 interface RevertModalProps {
-  onClose: () => void;
+  selectedCommit: string;
+  setSelectedCommit: (commit: string) => void;
 }
 
-export const RevertModal = ({ onClose }: RevertModalProps) => {
-  const [selectedCommit, setSelectedCommit] = useState("");
+export const RevertModal = ({ selectedCommit, setSelectedCommit }: RevertModalProps) => {
   const commitsRecord = useGitStore((state) => state.commits);
-  const revert = useGitStore((state) => state.revert);
   
   const commits = useMemo(() => Object.values(commitsRecord), [commitsRecord]);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (selectedCommit) {
-      revert(selectedCommit);
-      onClose();
-    }
-  };
+  
+  const commitOptions = useMemo(() => 
+    commits.map(commit => ({
+      value: commit.id,
+      label: `${commit.id} - ${commit.message}`
+    })), [commits]
+  );
 
   return (
-    <form onSubmit={handleSubmit} className={styles.form}>
+    <div className={styles.form}>
       <label className={styles.label}>
         Select commit to revert
-        <select
+        <Select
           value={selectedCommit}
-          onChange={(e) => setSelectedCommit(e.target.value)}
-          className={styles.select}
-          required
-        >
-          <option value="" disabled>
-            Choose a commit...
-          </option>
-          {commits.map((commit) => (
-            <option key={commit.id} value={commit.id}>
-              {commit.id} - {commit.message}
-            </option>
-          ))}
-        </select>
+          onChange={setSelectedCommit}
+          options={commitOptions}
+          placeholder="Choose a commit..."
+        />
       </label>
-      <div className={styles.actions}>
-        <ContainedButton type="submit" disabled={!selectedCommit}>
-          Revert
-        </ContainedButton>
-      </div>
-    </form>
+    </div>
   );
 };
