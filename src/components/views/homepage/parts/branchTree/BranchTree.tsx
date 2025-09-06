@@ -39,6 +39,8 @@ interface Label {
 
 interface TooltipData {
   nodeId: string;
+  clickX: number;
+  clickY: number;
 }
 
 interface GraphData {
@@ -57,7 +59,6 @@ const LABEL_ROW_Y = 40;
 const GRAY_COLOR = "#4a5568";
 const LANE_COLORS = ["#38b2ac", "#a78bfa", "#f6ad55", "#ec4899"];
 const TOOLTIP_WIDTH = 250;
-const TOOLTIP_OFFSET = 20;
 
 // --- ICONS ---
 const FullscreenIcon = () => (
@@ -603,9 +604,13 @@ export const BranchTree = () => {
     }
   };
 
-  const handleNodeClick = (node: Node) => {
+  const handleNodeClick = (node: Node, e: MouseEvent<HTMLDivElement>) => {
     if (hasDragged.current) return;
-    setTooltip({ nodeId: node.id });
+    setTooltip({ 
+      nodeId: node.id,
+      clickX: e.clientX,
+      clickY: e.clientY
+    });
   };
 
   const handleBackdropClick = () => {
@@ -618,21 +623,24 @@ export const BranchTree = () => {
     if (!tooltip || !wrapperRef.current) return null;
     const node = nodeMap.get(tooltip.nodeId);
     if (!node) return null;
-    const rect = wrapperRef.current.getBoundingClientRect();
-    const activeScale = isFullscreen ? fullscreenScale : scale;
-    const activePan = isFullscreen ? fullscreenPan : pan;
-    let screenX = node.x * activeScale + activePan.x + rect.left;
-    let screenY =
-      node.y * activeScale + activePan.y + rect.top + TOOLTIP_OFFSET;
+    
+    // Use click position as the top-left corner of tooltip
+    let screenX = tooltip.clickX;
+    let screenY = tooltip.clickY;
+    
     const tooltipHeight = 150;
+    
+    // Ensure tooltip stays within viewport bounds
+    // Adjust position if tooltip would go outside viewport
     screenX = Math.max(
-      rect.left,
-      Math.min(screenX, rect.right - TOOLTIP_WIDTH)
+      0,
+      Math.min(screenX, window.innerWidth - TOOLTIP_WIDTH)
     );
     screenY = Math.max(
-      rect.top,
-      Math.min(screenY, rect.bottom - tooltipHeight)
+      0,
+      Math.min(screenY, window.innerHeight - tooltipHeight)
     );
+    
     return { x: screenX, y: screenY, commit: node.commitData };
   };
 
@@ -748,7 +756,7 @@ export const BranchTree = () => {
                   transform,
                   cursor: "pointer",
                 }}
-                onClick={() => handleNodeClick(node)}
+                onClick={(e) => handleNodeClick(node, e)}
               >
                 {" "}
                 {isReversed ? (
