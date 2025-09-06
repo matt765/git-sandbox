@@ -3,6 +3,7 @@ import { useGitStore } from "@/store/gitStore";
 import { TerminalIcon } from "@/assets/icons/TerminalIcon";
 import { useCommandHistory } from "@/hooks/useCommandHistory";
 import styles from "./CommandLine.module.css";
+import { ArrowRightSimpleIcon } from "@/assets/icons/ArrowRightSimpleIcon";
 
 export const CommandLine = () => {
   const [error, setError] = useState<string | null>(null);
@@ -32,7 +33,7 @@ export const CommandLine = () => {
 
   return (
     <div className={styles.container}>
-      <span className={styles.prompt}>{">"}</span>
+      <span className={styles.prompt}><ArrowRightSimpleIcon /></span>
       <input
         className={styles.input}
         placeholder="Enter a command..."

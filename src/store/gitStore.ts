@@ -30,6 +30,7 @@ interface GitState {
   terminalHistory: TerminalLine[];
   isTerminalOpen: boolean;
   commandHistory: string[];
+  shouldResetBranchTree?: boolean;
 }
 
 interface CommandResult {
@@ -43,6 +44,7 @@ interface GitActions {
   unstageFile: (id: number) => void;
   addFile: () => void;
   resetApp: () => void;
+  resetBranchTreePosition: () => void;
   stageAllFiles: () => void;
   unstageAllFiles: () => void;
   discardAllChanges: () => void;
@@ -572,7 +574,10 @@ export const useGitStore = create<GitState & GitActions>((set, get) => ({
     })),
   resetApp: () => {
     fileIdCounter = 7;
-    set(initialState);
+    set({ ...initialState, shouldResetBranchTree: true });
+  },
+  resetBranchTreePosition: () => {
+    set({ shouldResetBranchTree: false });
   },
   cherryPick: (commitId: string) => {
     const state = get();
@@ -783,6 +788,7 @@ export const useGitStore = create<GitState & GitActions>((set, get) => ({
   createBranch: (name: string) => {
     const state = get();
     if (state.branches[name]) return;
+    
     const currentCommitId = state.branches[state.HEAD.name].commitId;
     const existingPositions = new Set(
       Object.values(state.branches).map((b) => b.position)
@@ -791,12 +797,26 @@ export const useGitStore = create<GitState & GitActions>((set, get) => ({
     while (existingPositions.has(nextPosition)) {
       nextPosition++;
     }
+    
+    // Create a new commit for the new branch
+    const newCommitId = generateHash();
+    const newCommit: Commit = {
+      id: newCommitId,
+      message: `Initial commit on ${name}`,
+      parent: currentCommitId,
+      files: [],
+    };
+    
     set({
+      commits: {
+        ...state.commits,
+        [newCommitId]: newCommit,
+      },
       branches: {
         ...state.branches,
-        [name]: { name, commitId: currentCommitId, position: nextPosition },
+        [name]: { name, commitId: newCommitId, position: nextPosition },
       },
-      logs: [...state.logs, `Created branch '${name}'`],
+      logs: [...state.logs, `Created branch '${name}' with initial commit`],
     });
   },
   deleteBranch: (name: string) => {

@@ -98,6 +98,8 @@ export const BranchTree = () => {
   const commits = useGitStore((state) => state.commits);
   const branches = useGitStore((state) => state.branches);
   const head = useGitStore((state) => state.HEAD);
+  const shouldResetBranchTree = useGitStore((state) => state.shouldResetBranchTree);
+  const resetBranchTreePosition = useGitStore((state) => state.resetBranchTreePosition);
 
   const [tooltip, setTooltip] = useState<TooltipData | null>(null);
   const [pan, setPan] = useState({ x: 0, y: 0 });
@@ -111,27 +113,31 @@ export const BranchTree = () => {
   );
   const [isFading, setIsFading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [shouldShowInitialAnimation, setShouldShowInitialAnimation] = useState(false);
+  const [orientationChangedInFullscreen, setOrientationChangedInFullscreen] = useState(false);
 
   const wrapperRef = useRef<HTMLDivElement>(null);
   const isPanning = useRef(false);
   const panStart = useRef({ x: 0, y: 0 });
   const hasDragged = useRef(false);
   const initialPanSet = useRef(false);
+  const hasEverBeenFullscreen = useRef(false);
 
   const isVertical = orientation === "vertical";
 
   // ZMIANA: Zastąpienie useEffect przez useLayoutEffect
   useLayoutEffect(() => {
-    if (!initialPanSet.current && wrapperRef.current && !isFullscreen) {
+    if (!initialPanSet.current && wrapperRef.current) {
       const wrapperWidth = wrapperRef.current.offsetWidth;
       const numLanes = Object.keys(branches).length;
       const contentWidth = PADDING_X + numLanes * X_STEP;
-      const initialX = (wrapperWidth - contentWidth) / 2;
-      setPan({ x: initialX, y: 40 });
+      const initialX = (wrapperWidth - contentWidth) / 2 + 40; // Add 2.5rem (40px) to the right
+      setPan({ x: initialX, y: 56 });
       initialPanSet.current = true;
       setIsVisible(true);
+      setShouldShowInitialAnimation(true);
     }
-  }, [branches, isFullscreen]);
+  }, [branches]);
 
   const {
     nodes,
@@ -312,10 +318,16 @@ export const BranchTree = () => {
       if (nodesOnLane && nodesOnLane.length > 0) {
         nodesOnLane.sort((a, b) => (isVertical ? a.y - b.y : a.x - b.x));
         const firstNode = nodesOnLane[0];
-        const color =
-          commitToBranch.get(firstNode.commitData.id) === label.name
-            ? label.color
-            : GRAY_COLOR;
+        
+        // Check if first node is directly adjacent to label (first slot)
+        const isDirectlyAdjacent = isVertical 
+          ? Math.abs(firstNode.y - PADDING_Y) <= Y_STEP 
+          : Math.abs(firstNode.x - PADDING_X) <= X_STEP;
+        
+        // Use branch color only if it's the branch's own commit AND directly adjacent
+        const shouldUseColor = commitToBranch.get(firstNode.commitData.id) === label.name && isDirectlyAdjacent;
+        const color = shouldUseColor ? label.color : GRAY_COLOR;
+        
         calculatedEdges.push({
           key: `label-trunk-${label.name}`,
           path: isVertical
@@ -331,10 +343,11 @@ export const BranchTree = () => {
       labels: calculatedLabels,
       nodeMap: internalNodeMap,
     };
-  }, [commits, branches, head, orientation, isVertical]);
+  }, [commits, branches, head, isVertical]);
 
   useLayoutEffect(() => {
     if (isEnteringFullscreen && wrapperRef.current) {
+      hasEverBeenFullscreen.current = true;
       const wrapperWidth = wrapperRef.current.offsetWidth;
       const wrapperHeight = wrapperRef.current.offsetHeight;
       const numLanes = Object.keys(branches).length;
@@ -344,7 +357,7 @@ export const BranchTree = () => {
       const contentHeight =
         PADDING_Y * 2 +
         (isVertical ? maxDepth * Y_STEP : numLanes * HORIZONTAL_Y_STEP);
-      const initialX = (wrapperWidth - contentWidth) / 2;
+      const initialX = (wrapperWidth - contentWidth) / 2 + (isVertical ? 56 : 0); // Add 3.5rem (56px) for vertical
       const initialY = (wrapperHeight - contentHeight) / 2;
       setFullscreenPan({ x: initialX, y: initialY });
       setFullscreenScale(1.1);
@@ -353,17 +366,140 @@ export const BranchTree = () => {
     }
   }, [isEnteringFullscreen, branches, nodes, orientation, isVertical]);
 
+  // Reset standard view position when exiting fullscreen ONLY if orientation was changed
+  useLayoutEffect(() => {
+    if (!isFullscreen && wrapperRef.current && initialPanSet.current && orientationChangedInFullscreen) {
+      const wrapperWidth = wrapperRef.current.offsetWidth;
+      const wrapperHeight = wrapperRef.current.offsetHeight;
+      const numLanes = Object.keys(branches).length;
+      const maxDepth = Math.max(0, ...nodes.map((n) => n.depth));
+      
+      let initialX, initialY;
+      
+      if (orientation === "vertical") {
+        const contentWidth = PADDING_X + numLanes * X_STEP;
+        initialX = (wrapperWidth - contentWidth) / 2 + 40; // Add 2.5rem (40px) to the right
+        initialY = 56;
+      } else {
+        // For horizontal orientation - adjust calculations
+        const contentWidth = PADDING_X * 2 + maxDepth * X_STEP + 100; // Add extra padding
+        const contentHeight = PADDING_Y * 2 + numLanes * HORIZONTAL_Y_STEP + 100; // Add extra padding
+        initialX = (wrapperWidth - contentWidth) / 2 + 160; // Reduced offset from 260 to 50
+        initialY = (wrapperHeight - contentHeight) / 2 + 120; // Reduced offset from 240 to 50
+      }
+      
+      setPan({ x: initialX, y: initialY });
+      setScale(0.9);
+      
+      // Reset the flag after applying changes
+      setOrientationChangedInFullscreen(false);
+    }
+  }, [isFullscreen, orientationChangedInFullscreen, branches, orientation, nodes]);
+
+  // Reset branch tree position when reset app is clicked
+  useLayoutEffect(() => {
+    if (shouldResetBranchTree && wrapperRef.current) {
+      // Reset to initial vertical orientation
+      setOrientation("vertical");
+      setIsFullscreen(false);
+      setOrientationChangedInFullscreen(false);
+      
+      // Reset position to initial centered position
+      const wrapperWidth = wrapperRef.current.offsetWidth;
+      const numLanes = Object.keys(branches).length;
+      const contentWidth = PADDING_X + numLanes * X_STEP;
+      const initialX = (wrapperWidth - contentWidth) / 2 + 40; // Add 2.5rem (40px) to the right
+      setPan({ x: initialX, y: 56 });
+      setScale(0.9);
+      
+      // Reset fullscreen position as well
+      const wrapperHeight = wrapperRef.current.offsetHeight;
+      const maxDepth = Math.max(0, ...nodes.map((n) => n.depth));
+      const fullscreenContentWidth = PADDING_X * 2 + numLanes * X_STEP;
+      const fullscreenContentHeight = PADDING_Y * 2 + maxDepth * Y_STEP;
+      const fullscreenInitialX = (wrapperWidth - fullscreenContentWidth) / 2 + 56; // Add 3.5rem (56px) for vertical
+      const fullscreenInitialY = (wrapperHeight - fullscreenContentHeight) / 2;
+      setFullscreenPan({ x: fullscreenInitialX, y: fullscreenInitialY });
+      setFullscreenScale(1.1);
+      
+      // Clear the reset flag
+      resetBranchTreePosition();
+    }
+  }, [shouldResetBranchTree, branches, nodes, resetBranchTreePosition]);
+
+  const resetPanAndZoom = (newOrientation: "vertical" | "horizontal") => {
+    if (!wrapperRef.current) return;
+
+    const newIsVertical = newOrientation === "vertical";
+    const numLanes = Object.keys(branches).length;
+    const maxDepth = Math.max(0, ...nodes.map((n) => n.depth));
+    const wrapperWidth = wrapperRef.current.offsetWidth;
+    const wrapperHeight = wrapperRef.current.offsetHeight;
+
+    if (isFullscreen) {
+      // Reset only fullscreen view when in fullscreen mode
+      const fullscreenContentWidth =
+        PADDING_X * 2 + (newIsVertical ? numLanes * X_STEP : maxDepth * X_STEP);
+      const fullscreenContentHeight =
+        PADDING_Y * 2 +
+        (newIsVertical ? maxDepth * Y_STEP : numLanes * HORIZONTAL_Y_STEP);
+      const fullscreenInitialX = (wrapperWidth - fullscreenContentWidth) / 2 + (newIsVertical ? 56 : 0); // Add 3.5rem (56px) for vertical
+      const fullscreenInitialY = (wrapperHeight - fullscreenContentHeight) / 2;
+      setFullscreenPan({ x: fullscreenInitialX, y: fullscreenInitialY });
+      setFullscreenScale(1.1);
+    } else {
+      // When in standard mode, reset both views only for position calculations
+      // Standard view reset
+      let standardInitialX, standardInitialY;
+      
+      if (newIsVertical) {
+        const standardContentWidth = PADDING_X + numLanes * X_STEP;
+        standardInitialX = (wrapperWidth - standardContentWidth) / 2 + 40; // Add 2.5rem (40px) to the right
+        standardInitialY = 56;
+      } else {
+        const standardContentWidth = PADDING_X * 2 + maxDepth * X_STEP + 100;
+        const standardContentHeight = PADDING_Y * 2 + numLanes * HORIZONTAL_Y_STEP + 100;
+        standardInitialX = (wrapperWidth - standardContentWidth) / 2 + 50; // Reduced offset from 260 to 50
+        standardInitialY = (wrapperHeight - standardContentHeight) / 2 + 50; // Reduced offset from 240 to 50
+      }
+      
+      setPan({ x: standardInitialX, y: standardInitialY });
+      setScale(0.9);
+
+      // Also prepare fullscreen view for future use
+      const fullscreenContentWidth =
+        PADDING_X * 2 + (newIsVertical ? numLanes * X_STEP : maxDepth * X_STEP);
+      const fullscreenContentHeight =
+        PADDING_Y * 2 +
+        (newIsVertical ? maxDepth * Y_STEP : numLanes * HORIZONTAL_Y_STEP);
+      const fullscreenInitialX = (wrapperWidth - fullscreenContentWidth) / 2 + (newIsVertical ? 56 : 0); // Add 3.5rem (56px) for vertical
+      const fullscreenInitialY = (wrapperHeight - fullscreenContentHeight) / 2;
+      setFullscreenPan({ x: fullscreenInitialX, y: fullscreenInitialY });
+      setFullscreenScale(1.1);
+    }
+  };
+
   const handleRotateRequest = () => {
     if (isFading) return;
+
     setIsFading(true);
+
     setTimeout(() => {
-      setOrientation((prev) =>
-        prev === "vertical" ? "horizontal" : "vertical"
-      );
+      const newOrientation =
+        orientation === "vertical" ? "horizontal" : "vertical";
+      setOrientation(newOrientation);
+      
+      // Set flag that orientation was changed in fullscreen
+      if (isFullscreen) {
+        setOrientationChangedInFullscreen(true);
+      }
+      
+      resetPanAndZoom(newOrientation);
+
       requestAnimationFrame(() => {
         setIsFading(false);
       });
-    }, 200);
+    }, 300); // Match the CSS transition duration
   };
 
   const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
@@ -523,7 +659,7 @@ export const BranchTree = () => {
                 stroke={edge.color}
                 strokeWidth="2"
                 fill="none"
-                className={styles.fadein}
+                className={shouldShowInitialAnimation && !hasEverBeenFullscreen.current ? styles.fadein : ""}
               />
             ))}{" "}
           </svg>{" "}
@@ -568,7 +704,7 @@ export const BranchTree = () => {
                 key={node.id}
                 className={`${styles.commitNodeWrapper} ${
                   !isVertical ? styles.horizontal : ""
-                } ${styles.fadein}`}
+                } ${shouldShowInitialAnimation && !hasEverBeenFullscreen.current ? styles.fadein : ""}`}
                 style={{
                   top: `${node.y}px`,
                   left: `${node.x}px`,

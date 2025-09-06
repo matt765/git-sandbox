@@ -5,13 +5,11 @@
   padding: 2rem;
   gap: 1.5rem;
   grid-template-columns: 1fr 1fr 0.8fr;
-  grid-template-rows: 6fr auto 1fr 1fr auto;
+  grid-template-rows: 1fr auto auto;
   grid-template-areas:
     "branchTree branchTree console"
     "branchTree branchTree stash"
-    "mainButtons advancedButtons resetButtons"
-    "mainButtons advancedButtons resetButtons"
-    "commandLine commandLine commandLine";
+    "mainButtons advancedButtons resetButtons";
   background-color: var(--homepage-grid-background);
   backdrop-filter: var(--homepage-grid-backdrop-filter);
   -webkit-backdrop-filter: var(--homepage-grid-backdrop-filter);
@@ -35,7 +33,4 @@
 }
 .resetButtons {
   grid-area: resetButtons;
-}
-.commandLine {
-  grid-area: commandLine;
 }
