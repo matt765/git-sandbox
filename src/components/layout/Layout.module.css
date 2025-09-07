@@ -14,5 +14,9 @@
   overflow: hidden;
 
   border: 1px solid var(--border-color);
-  /* box-shadow: var(--shadow); */
+ 
+}
+
+:global([data-theme="snowlight"]) .contentWrapper {
+  box-shadow: var(--homepage-grid-shadow);
 }

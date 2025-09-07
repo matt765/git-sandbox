@@ -3,7 +3,7 @@
   height: 100%;
   position: relative;
   box-sizing: border-box;
-  color: #e2e8f0;
+  color: var(--text-primary);
   display: flex;
   flex-direction: column;
 }
@@ -50,7 +50,7 @@
   border: none;
   padding: 6px;
   border-radius: 6px;
-  color: #9ca3af;
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -59,7 +59,7 @@
 .fullscreenButton:hover,
 .closeButton:hover {
   background-color: rgba(255, 255, 255, 0.1);
-  color: #e2e8f0;
+  color: var(--text-primary);
 }
 .closeButton {
   top: 12px;
@@ -326,4 +326,40 @@
 
 .branchHighlighted .commitCircle {
   filter: brightness(1.3) !important;
+}
+
+/* Light theme overrides */
+:global([data-theme="snowlight"]) .commitCircle {
+  background-color: #ffffff;
+  border-color: #374151;
+}
+
+:global([data-theme="snowlight"]) .commitLine {
+  background-color: #6b7280;
+}
+
+:global([data-theme="snowlight"]) .inlineCommitHash {
+  background-color: #f3f4f6;
+  border-color: #9ca3af;
+  color: #374151;
+}
+
+:global([data-theme="snowlight"]) .inlineCommitHash:hover {
+  background-color: #e5e7eb;
+  border-color: #6b7280;
+  color: #1f2937;
+}
+
+:global([data-theme="snowlight"]) .branchLabel {
+  color: #ffffff;
+}
+
+:global([data-theme="snowlight"]) .headLabel {
+  background-color: #6b7280;
+  color: #ffffff;
+}
+
+:global([data-theme="snowlight"]) .fullscreenButton:hover,
+:global([data-theme="snowlight"]) .closeButton:hover {
+  background-color: rgba(0, 0, 0, 0.1);
 }

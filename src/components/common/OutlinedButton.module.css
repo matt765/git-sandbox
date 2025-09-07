@@ -3,10 +3,10 @@
   align-items: center;
   justify-content: center;
   padding: 8px 12px;
-  border: 1px solid #6fa5df24;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  background-color: rgb(255, 255, 255, 0.01);
-  color: #ffffff;
+  background-color: var(--button-outlined-bg);
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 400;
   cursor: pointer;
@@ -21,23 +21,23 @@
 }
 
 .button:hover {
-  border-color: #34a8bc8f;
-  color: #ffffff;
+  border-color: var(--color-accent);
+  background-color: var(--button-outlined-bg-hover);
 }
 
 .button:active {
-  background-color: rgb(255, 255, 255, 0.04);
-  border-color: #34a8bc;
+  background-color: var(--button-outlined-bg-active);
+  border-color: var(--color-accent);
 }
 
 .button:disabled {
-  border-color: #cccccc;
-  color: #cccccc;
+  border-color: var(--text-secondary);
+  color: var(--text-secondary);
   cursor: not-allowed;
   background-color: transparent;
 }
 
 .button:disabled:hover {
   background-color: transparent;
-  color: #cccccc;
+  color: var(--text-secondary);
 }

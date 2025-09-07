@@ -10,7 +10,7 @@
 .commitInput {
   width: 100%;
   background-color: var(--background-secondary);
-  border: 1px solid #555;
+  border: 1px solid var(--border-color);
   border-radius: 4px;
   padding: 8px;
   color: var(--text-primary);
@@ -21,7 +21,7 @@
 
 .commitInput:focus {
   outline: none;
-  border-color: #007acc;
+  border-color: var(--color-accent);
 }
 
 .commitInput.error {

@@ -9,7 +9,7 @@
 .logsContainer {
   flex-grow: 1;
   background-color: var(--background-secondary);
-  border: 1px solid rgba(85, 85, 85, 0.5); /* Przyciemniona ramka o 50% */
+  border: 1px solid var(--border-color);
   border-radius: 4px;
   padding: 8px;
   overflow-y: auto;

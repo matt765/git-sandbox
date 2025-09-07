@@ -15,6 +15,12 @@
   -webkit-backdrop-filter: var(--homepage-grid-backdrop-filter);
 }
 
+/* Box-shadow i border-radius dla jasnego trybu */
+/* :global([data-theme="snowlight"]) .grid {
+  box-shadow: var(--homepage-grid-shadow);
+  border-radius: var(--box-border-radius);
+} */
+
 .branchTree {
   grid-area: branchTree;
   min-height: 0;
