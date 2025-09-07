@@ -6,7 +6,7 @@ import {
   useRef,
   WheelEvent,
   MouseEvent,
-  useLayoutEffect, // ZMIANA: Import useLayoutEffect
+  useLayoutEffect,
 } from "react";
 import { createPortal } from "react-dom";
 import { ControlsPanel } from "./ControlsPanel";
@@ -41,6 +41,15 @@ interface TooltipData {
   nodeId: string;
   clickX: number;
   clickY: number;
+}
+
+interface DragDropTooltipData {
+  sourceType: "commit" | "branch";
+  sourceId: string;
+  targetType: "commit" | "branch";
+  targetId: string;
+  x: number;
+  y: number;
 }
 
 interface GraphData {
@@ -99,11 +108,20 @@ export const BranchTree = () => {
   const commits = useGitStore((state) => state.commits);
   const branches = useGitStore((state) => state.branches);
   const head = useGitStore((state) => state.HEAD);
-  const shouldResetBranchTree = useGitStore((state) => state.shouldResetBranchTree);
-  const resetBranchTreePosition = useGitStore((state) => state.resetBranchTreePosition);
+  const shouldResetBranchTree = useGitStore(
+    (state) => state.shouldResetBranchTree
+  );
+  const resetBranchTreePosition = useGitStore(
+    (state) => state.resetBranchTreePosition
+  );
   const switchBranch = useGitStore((state) => state.switchBranch);
+  const cherryPick = useGitStore((state) => state.cherryPick);
+  const merge = useGitStore((state) => state.merge);
+  const rebase = useGitStore((state) => state.rebase);
 
   const [tooltip, setTooltip] = useState<TooltipData | null>(null);
+  const [dragDropTooltip, setDragDropTooltip] =
+    useState<DragDropTooltipData | null>(null);
   const [hoveredBranch, setHoveredBranch] = useState<string | null>(null);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [scale, setScale] = useState(0.9);
@@ -116,8 +134,12 @@ export const BranchTree = () => {
   );
   const [isFading, setIsFading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  const [shouldShowInitialAnimation, setShouldShowInitialAnimation] = useState(false);
-  const [orientationChangedInFullscreen, setOrientationChangedInFullscreen] = useState(false);
+  const [shouldShowInitialAnimation, setShouldShowInitialAnimation] =
+    useState(false);
+  const [orientationChangedInFullscreen, setOrientationChangedInFullscreen] =
+    useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isDraggingElement, setIsDraggingElement] = useState(false);
 
   const wrapperRef = useRef<HTMLDivElement>(null);
   const isPanning = useRef(false);
@@ -128,7 +150,6 @@ export const BranchTree = () => {
 
   const isVertical = orientation === "vertical";
 
-  // ZMIANA: Zastąpienie useEffect przez useLayoutEffect
   useLayoutEffect(() => {
     if (!initialPanSet.current && wrapperRef.current) {
       const wrapperWidth = wrapperRef.current.offsetWidth;
@@ -149,8 +170,8 @@ export const BranchTree = () => {
     nodeMap,
     commitToBranch,
     colorAssignments,
-  }: GraphData & { 
-    nodeMap: Map<string, Node>; 
+  }: GraphData & {
+    nodeMap: Map<string, Node>;
     commitToBranch: Map<string, string>;
     colorAssignments: Map<string, string>;
   } = useMemo(() => {
@@ -270,18 +291,44 @@ export const BranchTree = () => {
       if (!lanes.has(laneKey)) lanes.set(laneKey, []);
       lanes.get(laneKey)!.push(node);
     });
+
+    const sameLaneConnections = new Set<string>();
+    commitList.forEach((commit) => {
+      const childNode = internalNodeMap.get(commit.id);
+      if (!childNode) return;
+      const parentIds = commit.parent
+        ? Array.isArray(commit.parent)
+          ? commit.parent
+          : [commit.parent]
+        : [];
+      parentIds.forEach((parentId) => {
+        const parentNode = internalNodeMap.get(parentId);
+        if (!parentNode) return;
+        if (
+          (isVertical && parentNode.x === childNode.x) ||
+          (!isVertical && parentNode.y === childNode.y)
+        ) {
+          sameLaneConnections.add(`${parentNode.id}-${childNode.id}`);
+        }
+      });
+    });
+
     lanes.forEach((nodesOnLane) => {
       nodesOnLane.sort((a, b) => (isVertical ? a.y - b.y : a.x - b.x));
       for (let i = 0; i < nodesOnLane.length - 1; i++) {
         const startNode = nodesOnLane[i];
         const endNode = nodesOnLane[i + 1];
-        calculatedEdges.push({
-          key: `gray-trunk-${startNode.id}-${endNode.id}`,
-          path: `M ${startNode.x} ${startNode.y} L ${endNode.x} ${endNode.y}`,
-          color: GRAY_COLOR,
-        });
+        const connectionKey = `${startNode.id}-${endNode.id}`;
+        if (!sameLaneConnections.has(connectionKey)) {
+          calculatedEdges.push({
+            key: `gray-trunk-${startNode.id}-${endNode.id}`,
+            path: `M ${startNode.x} ${startNode.y} L ${endNode.x} ${endNode.y}`,
+            color: GRAY_COLOR,
+          });
+        }
       }
     });
+
     commitList.forEach((commit) => {
       const parentIds = commit.parent
         ? Array.isArray(commit.parent)
@@ -327,16 +374,16 @@ export const BranchTree = () => {
       if (nodesOnLane && nodesOnLane.length > 0) {
         nodesOnLane.sort((a, b) => (isVertical ? a.y - b.y : a.x - b.x));
         const firstNode = nodesOnLane[0];
-        
-        // Check if first node is directly adjacent to label (first slot)
-        const isDirectlyAdjacent = isVertical 
-          ? Math.abs(firstNode.y - PADDING_Y) <= Y_STEP 
+
+        const isDirectlyAdjacent = isVertical
+          ? Math.abs(firstNode.y - PADDING_Y) <= Y_STEP
           : Math.abs(firstNode.x - PADDING_X) <= X_STEP;
-        
-        // Use branch color only if it's the branch's own commit AND directly adjacent
-        const shouldUseColor = commitToBranch.get(firstNode.commitData.id) === label.name && isDirectlyAdjacent;
+
+        const shouldUseColor =
+          commitToBranch.get(firstNode.commitData.id) === label.name &&
+          isDirectlyAdjacent;
         const color = shouldUseColor ? label.color : GRAY_COLOR;
-        
+
         calculatedEdges.push({
           key: `label-trunk-${label.name}`,
           path: isVertical
@@ -368,19 +415,16 @@ export const BranchTree = () => {
       const contentHeight =
         PADDING_Y * 2 +
         (isVertical ? maxDepth * Y_STEP : numLanes * HORIZONTAL_Y_STEP);
-      
-      // For large trees (more than 5 branches), position main badge in top-left when entering fullscreen
+
       let initialX, initialY;
       if (numLanes > 5) {
-        // Position for large trees - provide proper spacing from edges
         initialX = 80;
         initialY = 80;
       } else {
-        // Default positioning for small trees
-        initialX = (wrapperWidth - contentWidth) / 2 + (isVertical ? 56 : 0); // Add 3.5rem (56px) for vertical
+        initialX = (wrapperWidth - contentWidth) / 2 + (isVertical ? 56 : 0);
         initialY = (wrapperHeight - contentHeight) / 2;
       }
-      
+
       setFullscreenPan({ x: initialX, y: initialY });
       setFullscreenScale(1.1);
       setTooltip(null);
@@ -388,19 +432,21 @@ export const BranchTree = () => {
     }
   }, [isEnteringFullscreen, branches, nodes, orientation, isVertical]);
 
-  // Reset standard view position when exiting fullscreen ONLY if orientation was changed
   useLayoutEffect(() => {
-    if (!isFullscreen && wrapperRef.current && initialPanSet.current && orientationChangedInFullscreen) {
+    if (
+      !isFullscreen &&
+      wrapperRef.current &&
+      initialPanSet.current &&
+      orientationChangedInFullscreen
+    ) {
       const wrapperWidth = wrapperRef.current.offsetWidth;
       const wrapperHeight = wrapperRef.current.offsetHeight;
       const numLanes = Object.keys(branches).length;
       const maxDepth = Math.max(0, ...nodes.map((n) => n.depth));
-      
+
       let initialX, initialY;
-      
-      // For large trees (more than 5 branches), use consistent positioning logic
+
       if (numLanes > 5) {
-        // Position for large trees - provide proper spacing from edges
         if (orientation === "vertical") {
           initialX = 80;
           initialY = 80;
@@ -409,55 +455,55 @@ export const BranchTree = () => {
           initialY = 80;
         }
       } else {
-        // Default positioning for small trees
         if (orientation === "vertical") {
           const contentWidth = PADDING_X + numLanes * X_STEP;
-          initialX = (wrapperWidth - contentWidth) / 2 + 40; // Add 2.5rem (40px) to the right
+          initialX = (wrapperWidth - contentWidth) / 2 + 40;
           initialY = 56;
         } else {
-          // For horizontal orientation - adjust calculations
-          const contentWidth = PADDING_X * 2 + maxDepth * X_STEP + 100; // Add extra padding
-          const contentHeight = PADDING_Y * 2 + numLanes * HORIZONTAL_Y_STEP + 100; // Add extra padding
-          initialX = (wrapperWidth - contentWidth) / 2 + 160; // Reduced offset from 260 to 50
-          initialY = (wrapperHeight - contentHeight) / 2 + 120; // Reduced offset from 240 to 50
+          const contentWidth = PADDING_X * 2 + maxDepth * X_STEP + 100;
+          const contentHeight =
+            PADDING_Y * 2 + numLanes * HORIZONTAL_Y_STEP + 100;
+          initialX = (wrapperWidth - contentWidth) / 2 + 160;
+          initialY = (wrapperHeight - contentHeight) / 2 + 120;
         }
       }
-      
+
       setPan({ x: initialX, y: initialY });
       setScale(0.9);
-      
-      // Reset the flag after applying changes
+
       setOrientationChangedInFullscreen(false);
     }
-  }, [isFullscreen, orientationChangedInFullscreen, branches, orientation, nodes]);
+  }, [
+    isFullscreen,
+    orientationChangedInFullscreen,
+    branches,
+    orientation,
+    nodes,
+  ]);
 
-  // Reset branch tree position when reset app is clicked
   useLayoutEffect(() => {
     if (shouldResetBranchTree && wrapperRef.current) {
-      // Reset to initial vertical orientation
       setOrientation("vertical");
       setIsFullscreen(false);
       setOrientationChangedInFullscreen(false);
-      
-      // Reset position to initial centered position
+
       const wrapperWidth = wrapperRef.current.offsetWidth;
       const numLanes = Object.keys(branches).length;
       const contentWidth = PADDING_X + numLanes * X_STEP;
-      const initialX = (wrapperWidth - contentWidth) / 2 + 40; // Add 2.5rem (40px) to the right
+      const initialX = (wrapperWidth - contentWidth) / 2 + 40;
       setPan({ x: initialX, y: 56 });
       setScale(0.9);
-      
-      // Reset fullscreen position as well
+
       const wrapperHeight = wrapperRef.current.offsetHeight;
       const maxDepth = Math.max(0, ...nodes.map((n) => n.depth));
       const fullscreenContentWidth = PADDING_X * 2 + numLanes * X_STEP;
       const fullscreenContentHeight = PADDING_Y * 2 + maxDepth * Y_STEP;
-      const fullscreenInitialX = (wrapperWidth - fullscreenContentWidth) / 2 + 56; // Add 3.5rem (56px) for vertical
+      const fullscreenInitialX =
+        (wrapperWidth - fullscreenContentWidth) / 2 + 56;
       const fullscreenInitialY = (wrapperHeight - fullscreenContentHeight) / 2;
       setFullscreenPan({ x: fullscreenInitialX, y: fullscreenInitialY });
       setFullscreenScale(1.1);
-      
-      // Clear the reset flag
+
       resetBranchTreePosition();
     }
   }, [shouldResetBranchTree, branches, nodes, resetBranchTreePosition]);
@@ -472,53 +518,50 @@ export const BranchTree = () => {
     const wrapperHeight = wrapperRef.current.offsetHeight;
 
     if (isFullscreen) {
-      // Reset only fullscreen view when in fullscreen mode
       const fullscreenContentWidth =
         PADDING_X * 2 + (newIsVertical ? numLanes * X_STEP : maxDepth * X_STEP);
       const fullscreenContentHeight =
         PADDING_Y * 2 +
         (newIsVertical ? maxDepth * Y_STEP : numLanes * HORIZONTAL_Y_STEP);
-      
-      // For large trees (more than 5 branches), position main badge in top-left after rotate
+
       let fullscreenInitialX, fullscreenInitialY;
       if (numLanes > 5) {
-        // Position for large trees - provide proper spacing from edges
         fullscreenInitialX = 80;
         fullscreenInitialY = 80;
       } else {
-        // Default positioning for small trees
-        fullscreenInitialX = (wrapperWidth - fullscreenContentWidth) / 2 + (newIsVertical ? 56 : 0); // Add 3.5rem (56px) for vertical
+        fullscreenInitialX =
+          (wrapperWidth - fullscreenContentWidth) / 2 +
+          (newIsVertical ? 56 : 0);
         fullscreenInitialY = (wrapperHeight - fullscreenContentHeight) / 2;
       }
-      
+
       setFullscreenPan({ x: fullscreenInitialX, y: fullscreenInitialY });
       setFullscreenScale(1.1);
     } else {
-      // When in standard mode, reset both views only for position calculations
-      // Standard view reset
       let standardInitialX, standardInitialY;
-      
+
       if (newIsVertical) {
         const standardContentWidth = PADDING_X + numLanes * X_STEP;
-        standardInitialX = (wrapperWidth - standardContentWidth) / 2 + 40; // Add 2.5rem (40px) to the right
+        standardInitialX = (wrapperWidth - standardContentWidth) / 2 + 40;
         standardInitialY = 56;
       } else {
         const standardContentWidth = PADDING_X * 2 + maxDepth * X_STEP + 100;
-        const standardContentHeight = PADDING_Y * 2 + numLanes * HORIZONTAL_Y_STEP + 100;
-        standardInitialX = (wrapperWidth - standardContentWidth) / 2 + 50; // Reduced offset from 260 to 50
-        standardInitialY = (wrapperHeight - standardContentHeight) / 2 + 50; // Reduced offset from 240 to 50
+        const standardContentHeight =
+          PADDING_Y * 2 + numLanes * HORIZONTAL_Y_STEP + 100;
+        standardInitialX = (wrapperWidth - standardContentWidth) / 2 + 50;
+        standardInitialY = (wrapperHeight - standardContentHeight) / 2 + 50;
       }
-      
+
       setPan({ x: standardInitialX, y: standardInitialY });
       setScale(0.9);
 
-      // Also prepare fullscreen view for future use
       const fullscreenContentWidth =
         PADDING_X * 2 + (newIsVertical ? numLanes * X_STEP : maxDepth * X_STEP);
       const fullscreenContentHeight =
         PADDING_Y * 2 +
         (newIsVertical ? maxDepth * Y_STEP : numLanes * HORIZONTAL_Y_STEP);
-      const fullscreenInitialX = (wrapperWidth - fullscreenContentWidth) / 2 + (newIsVertical ? 56 : 0); // Add 3.5rem (56px) for vertical
+      const fullscreenInitialX =
+        (wrapperWidth - fullscreenContentWidth) / 2 + (newIsVertical ? 56 : 0);
       const fullscreenInitialY = (wrapperHeight - fullscreenContentHeight) / 2;
       setFullscreenPan({ x: fullscreenInitialX, y: fullscreenInitialY });
       setFullscreenScale(1.1);
@@ -527,35 +570,27 @@ export const BranchTree = () => {
 
   const handleRotateRequest = () => {
     if (isFading) return;
-
     setIsFading(true);
-
     setTimeout(() => {
       const newOrientation =
         orientation === "vertical" ? "horizontal" : "vertical";
       setOrientation(newOrientation);
-      
-      // Set flag that orientation was changed in fullscreen
       if (isFullscreen) {
         setOrientationChangedInFullscreen(true);
       }
-      
       resetPanAndZoom(newOrientation);
-
       requestAnimationFrame(() => {
         setIsFading(false);
       });
-    }, 300); // Match the CSS transition duration
+    }, 300);
   };
 
   const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
-    // --- FIX: Hide tooltip on drag start ---
+    if (isDraggingElement) return;
     if (tooltip) {
       setTooltip(null);
     }
-
     if (e.button !== 0) return;
-    e.preventDefault();
     isPanning.current = true;
     const currentPan = isFullscreen ? fullscreenPan : pan;
     panStart.current = {
@@ -566,8 +601,8 @@ export const BranchTree = () => {
     e.currentTarget.style.cursor = "grabbing";
     document.body.style.cursor = "grabbing";
 
-    // Add global listeners immediately
     const handleGlobalMouseMove = (globalE: globalThis.MouseEvent) => {
+      globalE.preventDefault();
       if (!isPanning.current) return;
       hasDragged.current = true;
       const newPan = {
@@ -588,24 +623,19 @@ export const BranchTree = () => {
       if (wrapperRef.current) {
         wrapperRef.current.style.cursor = "grab";
       }
-      // Clean up listeners
-      document.removeEventListener('mousemove', handleGlobalMouseMove);
-      document.removeEventListener('mouseup', handleGlobalMouseUp);
+      document.removeEventListener("mousemove", handleGlobalMouseMove);
+      document.removeEventListener("mouseup", handleGlobalMouseUp);
     };
 
-    document.addEventListener('mousemove', handleGlobalMouseMove);
-    document.addEventListener('mouseup', handleGlobalMouseUp);
+    document.addEventListener("mousemove", handleGlobalMouseMove);
+    document.addEventListener("mouseup", handleGlobalMouseUp);
   };
 
   const handleMouseMove = () => {
-    // Local mouse move is now handled globally
-    // This is kept for any edge cases but does nothing during panning
     return;
   };
 
   const handleMouseUp = () => {
-    // Local mouse up is now handled globally
-    // This is kept for any edge cases but does nothing during panning
     return;
   };
 
@@ -637,42 +667,124 @@ export const BranchTree = () => {
   };
 
   const handleNodeClick = (node: Node, e: MouseEvent<HTMLDivElement>) => {
-    if (hasDragged.current) return;
-    setTooltip({ 
+    if (hasDragged.current || isDragging) return;
+    e.stopPropagation();
+    setTooltip({
       nodeId: node.id,
       clickX: e.clientX,
-      clickY: e.clientY
+      clickY: e.clientY,
     });
   };
 
   const handleBackdropClick = () => {
     if (!hasDragged.current) {
       setTooltip(null);
+      setDragDropTooltip(null);
     }
+  };
+
+  const handleDragStart = (
+    e: React.DragEvent,
+    type: "commit" | "branch",
+    id: string
+  ) => {
+    e.stopPropagation();
+    e.dataTransfer.setData("application/json", JSON.stringify({ type, id }));
+    e.dataTransfer.effectAllowed = "move";
+    setIsDragging(true);
+    setIsDraggingElement(true);
+    setTooltip(null);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  };
+
+  const handleDrop = (
+    e: React.DragEvent,
+    targetType: "commit" | "branch",
+    targetId: string
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      const dragData = JSON.parse(e.dataTransfer.getData("application/json"));
+      if (dragData.type === targetType && dragData.id === targetId) {
+        return;
+      }
+      let tooltipX = e.clientX;
+      let tooltipY = e.clientY;
+      const tooltipWidth = 200;
+      const tooltipHeight = 100;
+      tooltipX = Math.max(
+        0,
+        Math.min(tooltipX, window.innerWidth - tooltipWidth)
+      );
+      tooltipY = Math.max(
+        0,
+        Math.min(tooltipY, window.innerHeight - tooltipHeight)
+      );
+      setDragDropTooltip({
+        sourceType: dragData.type,
+        sourceId: dragData.id,
+        targetType,
+        targetId,
+        x: tooltipX,
+        y: tooltipY,
+      });
+    } catch (error) {
+      console.error("Error handling drop:", error);
+    }
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+    setIsDraggingElement(false);
+  };
+
+  const executeDragDropAction = (
+    action: "cherry-pick" | "switch" | "merge" | "rebase"
+  ) => {
+    if (!dragDropTooltip) return;
+    const { sourceType, sourceId, targetType, targetId } = dragDropTooltip;
+    try {
+      if (sourceType === "commit") {
+        if (action === "cherry-pick") {
+          cherryPick(sourceId);
+        } else if (action === "switch") {
+          const branchName = commitToBranch.get(sourceId) || "main";
+          switchBranch(branchName);
+        }
+      } else if (sourceType === "branch") {
+        if (action === "merge") {
+          merge(sourceId);
+        } else if (action === "rebase") {
+          rebase(
+            targetType === "branch"
+              ? targetId
+              : commitToBranch.get(targetId) || "main"
+          );
+        }
+      }
+    } catch (error) {
+      console.error("Error executing drag-drop action:", error);
+    }
+    setDragDropTooltip(null);
   };
 
   const getTooltipPosition = () => {
     if (!tooltip || !wrapperRef.current) return null;
     const node = nodeMap.get(tooltip.nodeId);
     if (!node) return null;
-    
-    // Use click position as the top-left corner of tooltip
     let screenX = tooltip.clickX;
     let screenY = tooltip.clickY;
-    
     const tooltipHeight = 150;
-    
-    // Ensure tooltip stays within viewport bounds
-    // Adjust position if tooltip would go outside viewport
-    screenX = Math.max(
-      0,
-      Math.min(screenX, window.innerWidth - TOOLTIP_WIDTH)
-    );
+    screenX = Math.max(0, Math.min(screenX, window.innerWidth - TOOLTIP_WIDTH));
     screenY = Math.max(
       0,
       Math.min(screenY, window.innerHeight - tooltipHeight)
     );
-    
     return { x: screenX, y: screenY, commit: node.commitData };
   };
 
@@ -680,15 +792,13 @@ export const BranchTree = () => {
 
   const branchTreeContent = (
     <div className={styles.container}>
-      {" "}
-      <div className={styles.branchInfo}>branch: {head.name}</div>{" "}
+      <div className={styles.branchInfo}>branch: {head.name}</div>
       {isFullscreen ? (
         <button
           className={styles.closeButton}
           onClick={() => setIsFullscreen(false)}
         >
-          {" "}
-          <CloseIcon />{" "}
+          <CloseIcon />
         </button>
       ) : (
         <button
@@ -698,10 +808,9 @@ export const BranchTree = () => {
             setIsFullscreen(true);
           }}
         >
-          {" "}
-          <FullscreenIcon />{" "}
+          <FullscreenIcon />
         </button>
-      )}{" "}
+      )}
       <div
         ref={wrapperRef}
         className={styles.graphWrapper}
@@ -711,7 +820,6 @@ export const BranchTree = () => {
         onMouseLeave={handleMouseUp}
         onWheel={handleWheel}
       >
-        {" "}
         <div
           className={`${styles.pannableContainer} ${
             isFading ? styles.fading : ""
@@ -725,19 +833,18 @@ export const BranchTree = () => {
             visibility: isEnteringFullscreen ? "hidden" : "visible",
           }}
         >
-          {" "}
           <svg className={styles.svgCanvas} overflow="visible">
-            {" "}
             {edges.map((edge: Edge) => {
-              // Determine if this edge should be highlighted
-              const shouldHighlight = hoveredBranch && edge.color !== GRAY_COLOR && 
+              const shouldHighlight =
+                hoveredBranch &&
+                edge.color !== GRAY_COLOR &&
                 colorAssignments.get(hoveredBranch) === edge.color;
-              
-              // Find branch name by color for click handling
-              const branchName = edge.color !== GRAY_COLOR ? 
-                Array.from(colorAssignments.entries())
-                  .find(([, color]) => color === edge.color)?.[0] : null;
-              
+              const branchName =
+                edge.color !== GRAY_COLOR
+                  ? Array.from(colorAssignments.entries()).find(
+                      ([, color]) => color === edge.color
+                    )?.[0]
+                  : null;
               return (
                 <path
                   key={edge.key}
@@ -745,7 +852,11 @@ export const BranchTree = () => {
                   stroke={edge.color}
                   strokeWidth={shouldHighlight ? "3" : "2"}
                   fill="none"
-                  className={shouldShowInitialAnimation && !hasEverBeenFullscreen.current ? styles.fadein : ""}
+                  className={
+                    shouldShowInitialAnimation && !hasEverBeenFullscreen.current
+                      ? styles.fadein
+                      : ""
+                  }
                   onMouseEnter={() => {
                     if (edge.color !== GRAY_COLOR && branchName) {
                       setHoveredBranch(branchName);
@@ -753,21 +864,26 @@ export const BranchTree = () => {
                   }}
                   onMouseLeave={() => setHoveredBranch(null)}
                   onClick={(e) => {
-                    if (edge.color !== GRAY_COLOR && branchName && !hasDragged.current) {
+                    if (
+                      edge.color !== GRAY_COLOR &&
+                      branchName &&
+                      !hasDragged.current
+                    ) {
                       e.stopPropagation();
                       switchBranch(branchName);
                     }
                   }}
                   style={{
-                    filter: shouldHighlight ? 'brightness(1.2)' : 'none',
-                    transition: 'all 0.2s ease',
-                    pointerEvents: edge.color !== GRAY_COLOR ? 'stroke' : 'none',
-                    cursor: edge.color !== GRAY_COLOR ? 'pointer' : 'default'
+                    filter: shouldHighlight ? "brightness(1.2)" : "none",
+                    transition: "all 0.2s ease",
+                    pointerEvents:
+                      edge.color !== GRAY_COLOR ? "stroke" : "none",
+                    cursor: edge.color !== GRAY_COLOR ? "pointer" : "default",
                   }}
                 />
               );
-            })}{" "}
-          </svg>{" "}
+            })}
+          </svg>
           {labels.map((label: Label) => {
             let style: React.CSSProperties = {};
             if (isVertical) {
@@ -783,21 +899,32 @@ export const BranchTree = () => {
                 }`}
                 style={style}
               >
-                {" "}
                 <div
                   className={styles.branchLabel}
-                  style={{ backgroundColor: label.color, cursor: 'pointer' }}
-                  onClick={() => switchBranch(label.name)}
+                  style={{ backgroundColor: label.color, cursor: "pointer" }}
+                  onClick={(e) => {
+                    if (!isDragging) {
+                      e.stopPropagation();
+                      switchBranch(label.name);
+                    }
+                  }}
+                  onMouseDown={(e) => {
+                    // e.stopPropagation(); // This was causing the tooltip bug
+                  }}
                   onMouseEnter={() => setHoveredBranch(label.name)}
                   onMouseLeave={() => setHoveredBranch(null)}
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, "branch", label.name)}
+                  onDragOver={handleDragOver}
+                  onDrop={(e) => handleDrop(e, "branch", label.name)}
+                  onDragEnd={handleDragEnd}
                 >
-                  {" "}
-                  {label.name}{" "}
-                </div>{" "}
-                {label.isHead && <div className={styles.headLabel}>HEAD</div>}{" "}
+                  {label.name}
+                </div>
+                {label.isHead && <div className={styles.headLabel}>HEAD</div>}
               </div>
             );
-          })}{" "}
+          })}
           {nodes.map((node: Node) => {
             const isReversed = node.depth % 2 !== 0;
             const transform = isVertical
@@ -807,17 +934,18 @@ export const BranchTree = () => {
               : isReversed
               ? `translate(-50%, calc(-100% + 11px))`
               : `translate(-50%, -11px)`;
-            
-            // Determine if this node should be highlighted
             const branchName = commitToBranch.get(node.commitData.id) || "main";
             const shouldHighlightNode = hoveredBranch === branchName;
-            
             return (
               <div
                 key={node.id}
                 className={`${styles.commitNodeWrapper} ${
                   !isVertical ? styles.horizontal : ""
-                } ${shouldShowInitialAnimation && !hasEverBeenFullscreen.current ? styles.fadein : ""}`}
+                } ${
+                  shouldShowInitialAnimation && !hasEverBeenFullscreen.current
+                    ? styles.fadein
+                    : ""
+                }`}
                 style={{
                   top: `${node.y}px`,
                   left: `${node.x}px`,
@@ -825,59 +953,63 @@ export const BranchTree = () => {
                   cursor: "pointer",
                 }}
                 onClick={(e) => handleNodeClick(node, e)}
+                onMouseDown={(e) => {
+                  // e.stopPropagation(); // This was causing the tooltip bug
+                }}
+                draggable
+                onDragStart={(e) => handleDragStart(e, "commit", node.id)}
+                onDragOver={handleDragOver}
+                onDrop={(e) => handleDrop(e, "commit", node.id)}
+                onDragEnd={handleDragEnd}
               >
-                {" "}
                 {isReversed ? (
                   <>
-                    {" "}
                     <div className={styles.inlineCommitHash}>
-                      {" "}
-                      {node.commitData.id}{" "}
-                    </div>{" "}
-                    <div className={styles.commitLine} />{" "}
+                      {node.commitData.id}
+                    </div>
+                    <div className={styles.commitLine} />
                     <div
                       className={styles.commitCircle}
-                      style={{ 
+                      style={{
                         borderColor: node.color,
-                        filter: shouldHighlightNode ? 'brightness(1.3)' : 'none',
-                        transform: shouldHighlightNode ? 'scale(1.05)' : 'none'
+                        filter: shouldHighlightNode
+                          ? "brightness(1.3)"
+                          : "none",
                       }}
                       onMouseEnter={() => setHoveredBranch(branchName)}
                       onMouseLeave={() => setHoveredBranch(null)}
-                    />{" "}
+                    />
                   </>
                 ) : (
                   <>
-                    {" "}
                     <div
                       className={styles.commitCircle}
-                      style={{ 
+                      style={{
                         borderColor: node.color,
-                        filter: shouldHighlightNode ? 'brightness(1.3)' : 'none',
-                        transform: shouldHighlightNode ? 'scale(1.05)' : 'none'
+                        filter: shouldHighlightNode
+                          ? "brightness(1.3)"
+                          : "none",
                       }}
                       onMouseEnter={() => setHoveredBranch(branchName)}
                       onMouseLeave={() => setHoveredBranch(null)}
-                    />{" "}
-                    <div className={styles.commitLine} />{" "}
+                    />
+                    <div className={styles.commitLine} />
                     <div className={styles.inlineCommitHash}>
-                      {" "}
-                      {node.commitData.id}{" "}
-                    </div>{" "}
+                      {node.commitData.id}
+                    </div>
                   </>
-                )}{" "}
+                )}
               </div>
             );
-          })}{" "}
-        </div>{" "}
+          })}
+        </div>
         {tooltipPosition &&
           createPortal(
             <>
-              {" "}
               <div
                 className={styles.tooltipBackdrop}
                 onClick={handleBackdropClick}
-              />{" "}
+              />
               <div
                 className={styles.tooltip}
                 style={{
@@ -885,38 +1017,93 @@ export const BranchTree = () => {
                   left: `${tooltipPosition.x}px`,
                 }}
               >
-                {" "}
-                <h4 className={styles.tooltipHeader}>Commit Details</h4>{" "}
+                <h4 className={styles.tooltipHeader}>Commit Details</h4>
                 <div className={styles.tooltipRow}>
-                  {" "}
-                  <strong>Hash:</strong> {tooltipPosition.commit.id}{" "}
-                </div>{" "}
+                  <strong>Hash:</strong> {tooltipPosition.commit.id}
+                </div>
                 <div className={styles.tooltipRow}>
-                  {" "}
-                  <strong>Message:</strong> {tooltipPosition.commit.message}{" "}
-                </div>{" "}
+                  <strong>Message:</strong> {tooltipPosition.commit.message}
+                </div>
                 <div className={styles.tooltipRow}>
-                  {" "}
-                  <strong>Files Changed:</strong>{" "}
+                  <strong>Files Changed:</strong>
                   <ul>
-                    {" "}
                     {tooltipPosition.commit.files.map((file) => (
                       <li key={file.id}>{file.name}</li>
-                    ))}{" "}
-                  </ul>{" "}
-                </div>{" "}
-              </div>{" "}
+                    ))}
+                  </ul>
+                </div>
+              </div>
             </>,
             document.body
-          )}{" "}
-      </div>{" "}
+          )}
+        {dragDropTooltip &&
+          createPortal(
+            <>
+              <div
+                className={styles.tooltipBackdrop}
+                onClick={handleBackdropClick}
+              />
+              <div
+                className={styles.dragDropTooltip}
+                style={{
+                  top: `${dragDropTooltip.y}px`,
+                  left: `${dragDropTooltip.x}px`,
+                }}
+              >
+                <h4 className={styles.tooltipHeader}>
+                  {dragDropTooltip.sourceType === "commit"
+                    ? "Commit Action"
+                    : "Branch Action"}
+                </h4>
+                <div className={styles.dragDropActions}>
+                  {dragDropTooltip.sourceType === "commit" ? (
+                    <>
+                      <button
+                        className={styles.dragDropButton}
+                        style={{ backgroundColor: "#38b2ac" }}
+                        onClick={() => executeDragDropAction("cherry-pick")}
+                      >
+                        Cherry-pick
+                      </button>
+                      <button
+                        className={styles.dragDropButton}
+                        style={{ backgroundColor: "#a78bfa" }}
+                        onClick={() => executeDragDropAction("switch")}
+                      >
+                        Switch
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        className={styles.dragDropButton}
+                        style={{ backgroundColor: "#38b2ac" }}
+                        onClick={() => executeDragDropAction("merge")}
+                      >
+                        Merge
+                      </button>
+                      <button
+                        className={styles.dragDropButton}
+                        style={{ backgroundColor: "#a78bfa" }}
+                        onClick={() => executeDragDropAction("rebase")}
+                      >
+                        Rebase
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            </>,
+            document.body
+          )}
+      </div>
       {isFullscreen && (
         <ControlsPanel
           orientation={orientation}
           setOrientation={setOrientation}
           onRotate={handleRotateRequest}
         />
-      )}{" "}
+      )}
     </div>
   );
 
