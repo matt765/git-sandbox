@@ -564,26 +564,49 @@ export const BranchTree = () => {
     };
     hasDragged.current = false;
     e.currentTarget.style.cursor = "grabbing";
-  };
+    document.body.style.cursor = "grabbing";
 
-  const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
-    if (!isPanning.current) return;
-    hasDragged.current = true;
-    const newPan = {
-      x: e.clientX - panStart.current.x,
-      y: e.clientY - panStart.current.y,
+    // Add global listeners immediately
+    const handleGlobalMouseMove = (globalE: globalThis.MouseEvent) => {
+      if (!isPanning.current) return;
+      hasDragged.current = true;
+      const newPan = {
+        x: globalE.clientX - panStart.current.x,
+        y: globalE.clientY - panStart.current.y,
+      };
+      if (isFullscreen) {
+        setFullscreenPan(newPan);
+      } else {
+        setPan(newPan);
+      }
     };
-    if (isFullscreen) {
-      setFullscreenPan(newPan);
-    } else {
-      setPan(newPan);
-    }
+
+    const handleGlobalMouseUp = () => {
+      if (!isPanning.current) return;
+      isPanning.current = false;
+      document.body.style.cursor = "";
+      if (wrapperRef.current) {
+        wrapperRef.current.style.cursor = "grab";
+      }
+      // Clean up listeners
+      document.removeEventListener('mousemove', handleGlobalMouseMove);
+      document.removeEventListener('mouseup', handleGlobalMouseUp);
+    };
+
+    document.addEventListener('mousemove', handleGlobalMouseMove);
+    document.addEventListener('mouseup', handleGlobalMouseUp);
   };
 
-  const handleMouseUp = (e: MouseEvent<HTMLDivElement>) => {
-    if (!isPanning.current) return;
-    isPanning.current = false;
-    e.currentTarget.style.cursor = "grab";
+  const handleMouseMove = () => {
+    // Local mouse move is now handled globally
+    // This is kept for any edge cases but does nothing during panning
+    return;
+  };
+
+  const handleMouseUp = () => {
+    // Local mouse up is now handled globally
+    // This is kept for any edge cases but does nothing during panning
+    return;
   };
 
   const handleWheel = (e: WheelEvent<HTMLDivElement>) => {
