@@ -710,6 +710,11 @@ export const BranchTree = () => {
               const shouldHighlight = hoveredBranch && edge.color !== GRAY_COLOR && 
                 colorAssignments.get(hoveredBranch) === edge.color;
               
+              // Find branch name by color for click handling
+              const branchName = edge.color !== GRAY_COLOR ? 
+                Array.from(colorAssignments.entries())
+                  .find(([, color]) => color === edge.color)?.[0] : null;
+              
               return (
                 <path
                   key={edge.key}
@@ -719,20 +724,22 @@ export const BranchTree = () => {
                   fill="none"
                   className={shouldShowInitialAnimation && !hasEverBeenFullscreen.current ? styles.fadein : ""}
                   onMouseEnter={() => {
-                    if (edge.color !== GRAY_COLOR) {
-                      // Find branch name by color
-                      const branchName = Array.from(colorAssignments.entries())
-                        .find(([, color]) => color === edge.color)?.[0];
-                      if (branchName) {
-                        setHoveredBranch(branchName);
-                      }
+                    if (edge.color !== GRAY_COLOR && branchName) {
+                      setHoveredBranch(branchName);
                     }
                   }}
                   onMouseLeave={() => setHoveredBranch(null)}
+                  onClick={(e) => {
+                    if (edge.color !== GRAY_COLOR && branchName && !hasDragged.current) {
+                      e.stopPropagation();
+                      switchBranch(branchName);
+                    }
+                  }}
                   style={{
                     filter: shouldHighlight ? 'brightness(1.2)' : 'none',
                     transition: 'all 0.2s ease',
-                    pointerEvents: edge.color !== GRAY_COLOR ? 'stroke' : 'none'
+                    pointerEvents: edge.color !== GRAY_COLOR ? 'stroke' : 'none',
+                    cursor: edge.color !== GRAY_COLOR ? 'pointer' : 'default'
                   }}
                 />
               );
