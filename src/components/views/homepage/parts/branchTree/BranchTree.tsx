@@ -104,6 +104,7 @@ export const BranchTree = () => {
   const switchBranch = useGitStore((state) => state.switchBranch);
 
   const [tooltip, setTooltip] = useState<TooltipData | null>(null);
+  const [hoveredBranch, setHoveredBranch] = useState<string | null>(null);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [scale, setScale] = useState(0.9);
   const [fullscreenPan, setFullscreenPan] = useState({ x: 0, y: 0 });
@@ -146,7 +147,13 @@ export const BranchTree = () => {
     edges,
     labels,
     nodeMap,
-  }: GraphData & { nodeMap: Map<string, Node> } = useMemo(() => {
+    commitToBranch,
+    colorAssignments,
+  }: GraphData & { 
+    nodeMap: Map<string, Node>; 
+    commitToBranch: Map<string, string>;
+    colorAssignments: Map<string, string>;
+  } = useMemo(() => {
     const branchNames = Object.keys(branches);
     const sortedBranchNames = [...branchNames].sort(
       (a, b) => branches[a].position - branches[b].position
@@ -344,6 +351,8 @@ export const BranchTree = () => {
       edges: calculatedEdges,
       labels: calculatedLabels,
       nodeMap: internalNodeMap,
+      commitToBranch,
+      colorAssignments,
     };
   }, [commits, branches, head, isVertical]);
 
@@ -696,16 +705,38 @@ export const BranchTree = () => {
           {" "}
           <svg className={styles.svgCanvas} overflow="visible">
             {" "}
-            {edges.map((edge: Edge) => (
-              <path
-                key={edge.key}
-                d={edge.path}
-                stroke={edge.color}
-                strokeWidth="2"
-                fill="none"
-                className={shouldShowInitialAnimation && !hasEverBeenFullscreen.current ? styles.fadein : ""}
-              />
-            ))}{" "}
+            {edges.map((edge: Edge) => {
+              // Determine if this edge should be highlighted
+              const shouldHighlight = hoveredBranch && edge.color !== GRAY_COLOR && 
+                colorAssignments.get(hoveredBranch) === edge.color;
+              
+              return (
+                <path
+                  key={edge.key}
+                  d={edge.path}
+                  stroke={edge.color}
+                  strokeWidth={shouldHighlight ? "3" : "2"}
+                  fill="none"
+                  className={shouldShowInitialAnimation && !hasEverBeenFullscreen.current ? styles.fadein : ""}
+                  onMouseEnter={() => {
+                    if (edge.color !== GRAY_COLOR) {
+                      // Find branch name by color
+                      const branchName = Array.from(colorAssignments.entries())
+                        .find(([, color]) => color === edge.color)?.[0];
+                      if (branchName) {
+                        setHoveredBranch(branchName);
+                      }
+                    }
+                  }}
+                  onMouseLeave={() => setHoveredBranch(null)}
+                  style={{
+                    filter: shouldHighlight ? 'brightness(1.2)' : 'none',
+                    transition: 'all 0.2s ease',
+                    pointerEvents: edge.color !== GRAY_COLOR ? 'stroke' : 'none'
+                  }}
+                />
+              );
+            })}{" "}
           </svg>{" "}
           {labels.map((label: Label) => {
             let style: React.CSSProperties = {};
@@ -727,6 +758,8 @@ export const BranchTree = () => {
                   className={styles.branchLabel}
                   style={{ backgroundColor: label.color, cursor: 'pointer' }}
                   onClick={() => switchBranch(label.name)}
+                  onMouseEnter={() => setHoveredBranch(label.name)}
+                  onMouseLeave={() => setHoveredBranch(null)}
                 >
                   {" "}
                   {label.name}{" "}
@@ -744,6 +777,11 @@ export const BranchTree = () => {
               : isReversed
               ? `translate(-50%, calc(-100% + 11px))`
               : `translate(-50%, -11px)`;
+            
+            // Determine if this node should be highlighted
+            const branchName = commitToBranch.get(node.commitData.id) || "main";
+            const shouldHighlightNode = hoveredBranch === branchName;
+            
             return (
               <div
                 key={node.id}
@@ -769,7 +807,13 @@ export const BranchTree = () => {
                     <div className={styles.commitLine} />{" "}
                     <div
                       className={styles.commitCircle}
-                      style={{ borderColor: node.color }}
+                      style={{ 
+                        borderColor: node.color,
+                        filter: shouldHighlightNode ? 'brightness(1.3)' : 'none',
+                        transform: shouldHighlightNode ? 'scale(1.05)' : 'none'
+                      }}
+                      onMouseEnter={() => setHoveredBranch(branchName)}
+                      onMouseLeave={() => setHoveredBranch(null)}
                     />{" "}
                   </>
                 ) : (
@@ -777,7 +821,13 @@ export const BranchTree = () => {
                     {" "}
                     <div
                       className={styles.commitCircle}
-                      style={{ borderColor: node.color }}
+                      style={{ 
+                        borderColor: node.color,
+                        filter: shouldHighlightNode ? 'brightness(1.3)' : 'none',
+                        transform: shouldHighlightNode ? 'scale(1.05)' : 'none'
+                      }}
+                      onMouseEnter={() => setHoveredBranch(branchName)}
+                      onMouseLeave={() => setHoveredBranch(null)}
                     />{" "}
                     <div className={styles.commitLine} />{" "}
                     <div className={styles.inlineCommitHash}>
