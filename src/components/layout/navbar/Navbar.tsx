@@ -9,7 +9,7 @@ import { ChangelogModal } from "../userMenu/changelogModal/ChangelogModal";
 import { ContributeModal } from "../userMenu/contributeModal/ContributeModal";
 
 // const THEMES = ["charcoal", "midnight", "snowlight"];
-const THEMES = ["charcoal", "snowlight"];
+const THEMES = ["charcoal",  "fairytale",  "midnight", ];
 
 export const Navbar = () => {
   const { theme, setTheme } = useTheme();
@@ -23,10 +23,10 @@ export const Navbar = () => {
     }
   }, [theme, setTheme]);
 
-  const cycleTheme = () => {
-    const currentThemeIndex = THEMES.indexOf(theme ?? "charcoal");
-    const nextThemeIndex = (currentThemeIndex + 1) % THEMES.length;
-    setTheme(THEMES[nextThemeIndex]);
+  const handleThemeToggle = () => {
+    const currentIndex = THEMES.indexOf(theme ?? "charcoal");
+    const nextIndex = (currentIndex + 1) % THEMES.length;
+    setTheme(THEMES[nextIndex]);
   };
 
   return (
@@ -37,7 +37,8 @@ export const Navbar = () => {
         </div>
         <div className={styles.actions}>
           <UserMenu
-            onThemeCycle={cycleTheme}
+            onThemeToggle={handleThemeToggle}
+            currentTheme={theme ?? "charcoal"}
             onAboutClick={() => setIsAboutModalOpen(true)}
             onChangelogClick={() => setIsChangelogModalOpen(true)}
             onContributeClick={() => setIsContributeModalOpen(true)}

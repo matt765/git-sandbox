@@ -16,7 +16,7 @@ const themeColors = {
     new THREE.Color('#1c1c1c'),
     new THREE.Color('#3c096c'),
   ],
-  snowlight: [
+  fairytale: [
     new THREE.Color('#e0eafc'),
     new THREE.Color('#cfdef3'),
     new THREE.Color('#cfdef3'),
@@ -26,7 +26,7 @@ const themeColors = {
 const themeAngles = {
   charcoal: 45.0,
   midnight: 135.0,
-  snowlight: 135.0,
+  fairytale: 135.0,
 };
 
 type ThemeName = keyof typeof themeColors;

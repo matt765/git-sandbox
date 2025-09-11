@@ -139,7 +139,7 @@
   height: 22px;
   border-radius: 50%;
   border: 2px solid;
-  background-color: #1e293b;
+  background-color: var(--branch-tree-commit-bg);
   box-sizing: border-box;
   flex-shrink: 0;
   transition: all 0.2s ease;
@@ -152,12 +152,12 @@
 .commitLine {
   width: 30px;
   height: 2px;
-  background-color: #4a5568;
+  background-color: var(--branch-tree-commit-line);
 }
 .inlineCommitHash {
-  background-color: #262d3d;
-  border: 1px solid #4a5568;
-  color: #94a3b8;
+  background-color: var(--branch-tree-badge-bg);
+  border: 1px solid var(--branch-tree-badge-border);
+  color: var(--branch-tree-badge-text);
   border-radius: 4px;
   padding: 2px 6px;
   font-size: 0.85rem;
@@ -167,9 +167,9 @@
 }
 
 .inlineCommitHash:hover {
-  background-color: #374151;
-  border-color: #6b7280;
-  color: #e5e7eb;
+  background-color: var(--branch-tree-badge-bg-hover);
+  border-color: var(--branch-tree-badge-border-hover);
+  color: var(--branch-tree-badge-text-hover);
 }
 .labelWrapper {
   position: absolute;
@@ -194,10 +194,10 @@
 .headLabel {
   padding: 0.2rem 0.6rem;
   border-radius: 4px;
-  background-color: #4a5568;
+  background-color: var(--branch-tree-head-bg);
   font-size: 0.8rem;
   font-weight: bold;
-  color: #e2e8f0;
+  color: var(--branch-tree-head-text);
   white-space: nowrap;
   position: absolute;
   top: 100%;
@@ -242,11 +242,11 @@
 }
 .tooltip {
   position: fixed;
-  background-color: #2d3748;
-  border: 1px solid #4a5568;
+  background-color: var(--branch-tree-tooltip-bg);
+  border: 1px solid var(--branch-tree-tooltip-border);
   border-radius: 6px;
   padding: 12px;
-  color: #e2e8f0;
+  color: var(--branch-tree-tooltip-text);
   font-size: 0.9rem;
   z-index: 10001;
   min-width: 250px;
@@ -257,11 +257,11 @@
 /* Drag and Drop Tooltip Styles */
 .dragDropTooltip {
   position: fixed;
-  background-color: #2d3748;
-  border: 1px solid #4a5568;
+  background-color: var(--branch-tree-tooltip-bg);
+  border: 1px solid var(--branch-tree-tooltip-border);
   border-radius: 6px;
   padding: 12px;
-  color: #e2e8f0;
+  color: var(--branch-tree-tooltip-text);
   font-size: 0.9rem;
   z-index: 10001;
   min-width: 200px;
@@ -307,7 +307,7 @@
 .tooltipHeader {
   font-weight: bold;
   margin-bottom: 8px;
-  border-bottom: 1px solid #4a5568;
+  border-bottom: 1px solid var(--branch-tree-tooltip-border);
   padding-bottom: 4px;
 }
 .tooltipRow {
@@ -329,37 +329,37 @@
 }
 
 /* Light theme overrides */
-:global([data-theme="snowlight"]) .commitCircle {
-  background-color: #ffffff;
-  border-color: #374151;
+:global([data-theme="fairytale"]) .commitCircle {
+  background-color: var(--branch-tree-commit-bg);
+  border-color: var(--branch-tree-commit-line);
 }
 
-:global([data-theme="snowlight"]) .commitLine {
-  background-color: #6b7280;
+:global([data-theme="fairytale"]) .commitLine {
+  background-color: var(--branch-tree-commit-line);
 }
 
-:global([data-theme="snowlight"]) .inlineCommitHash {
-  background-color: #f3f4f6;
-  border-color: #9ca3af;
-  color: #374151;
+:global([data-theme="fairytale"]) .inlineCommitHash {
+  background-color: var(--branch-tree-badge-bg);
+  border-color: var(--branch-tree-badge-border);
+  color: var(--branch-tree-badge-text);
 }
 
-:global([data-theme="snowlight"]) .inlineCommitHash:hover {
-  background-color: #e5e7eb;
-  border-color: #6b7280;
-  color: #1f2937;
+:global([data-theme="fairytale"]) .inlineCommitHash:hover {
+  background-color: var(--branch-tree-badge-bg-hover);
+  border-color: var(--branch-tree-badge-border-hover);
+  color: var(--branch-tree-badge-text-hover);
 }
 
-:global([data-theme="snowlight"]) .branchLabel {
+:global([data-theme="fairytale"]) .branchLabel {
   color: #ffffff;
 }
 
-:global([data-theme="snowlight"]) .headLabel {
-  background-color: #6b7280;
-  color: #ffffff;
+:global([data-theme="fairytale"]) .headLabel {
+  background-color: var(--branch-tree-head-bg);
+  color: var(--branch-tree-head-text);
 }
 
-:global([data-theme="snowlight"]) .fullscreenButton:hover,
-:global([data-theme="snowlight"]) .closeButton:hover {
+:global([data-theme="fairytale"]) .fullscreenButton:hover,
+:global([data-theme="fairytale"]) .closeButton:hover {
   background-color: rgba(0, 0, 0, 0.1);
 }

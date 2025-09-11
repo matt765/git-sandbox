@@ -3,22 +3,33 @@
 import { useState, useRef, useEffect } from "react";
 import styles from "./UserMenu.module.css";
 import { HamburgerIcon } from "@/assets/icons/HamburgerIcon";
+import { ThemeIcon } from "@/assets/icons/ThemeIcon";
+import { GithubIcon } from "@/assets/icons/GithubIcon";
+import { TerminalIcon } from "@/assets/icons/TerminalIcon";
+import { PaintbrushIcon } from "@/assets/icons/PaintbrushIcon";
+import { LoadExampleIcon } from "@/assets/icons/LoadExampleIcon";
 
 interface UserMenuProps {
-  onThemeCycle: () => void;
+  onThemeToggle: () => void;
+  currentTheme: string;
   onAboutClick: () => void;
   onChangelogClick: () => void;
   onContributeClick: () => void;
 }
 
 export const UserMenu = ({
-  onThemeCycle,
+  onThemeToggle,
+  currentTheme,
   onAboutClick,
   onChangelogClick,
   onContributeClick,
 }: UserMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const formatThemeName = (theme: string) => {
+    return theme.charAt(0).toUpperCase() + theme.slice(1);
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -56,17 +67,43 @@ export const UserMenu = ({
         <div className={styles.menu}>
           <ul>
             <li>
-              <button onClick={() => handleOptionClick(onAboutClick)}>
+              <button 
+                className={styles.menuItem}
+                onClick={() => handleOptionClick(onAboutClick)}
+              >
+                <LoadExampleIcon />
                 About Project
               </button>
             </li>
             <li>
-              <button onClick={() => handleOptionClick(onChangelogClick)}>
+              <button 
+                className={styles.menuItem}
+                onClick={() => handleOptionClick(onChangelogClick)}
+              >
+                <TerminalIcon />
                 Changelog
               </button>
             </li>        
             <li>
-              <button onClick={onThemeCycle}>Switch theme</button>
+              <button 
+                className={styles.menuItem}
+                onClick={() => handleOptionClick(onContributeClick)}
+              >
+                <PaintbrushIcon />
+                Contribute
+              </button>
+            </li>        
+            <li>
+              <button 
+                className={styles.menuItem}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onThemeToggle();
+                }}
+              >
+                <ThemeIcon />
+                Theme: {formatThemeName(currentTheme)}
+              </button>
             </li>
             <li className={styles.separator}></li>
             <li>
@@ -76,6 +113,7 @@ export const UserMenu = ({
                 rel="noopener noreferrer"
                 className={styles.linkAsButton}
               >
+                <TerminalIcon />
                 Discussion
               </a>
             </li>          
@@ -86,6 +124,7 @@ export const UserMenu = ({
                 rel="noopener noreferrer"
                 className={styles.linkAsButton}
               >
+                <GithubIcon />
                 GitHub
               </a>
             </li>

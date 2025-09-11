@@ -12,7 +12,7 @@ export const Providers = ({ children }: ProvidersProps) => {
   return (
     <ThemeProvider
       attribute="data-theme"
-      themes={["charcoal", "midnight", "snowlight"]}
+      themes={["charcoal", "midnight", "obsidian", "fairytale"]}
       defaultTheme="charcoal"
     >
       {children}

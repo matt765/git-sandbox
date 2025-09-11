@@ -9,11 +9,13 @@
   --text-secondary: #a1a1a1;
 
   /* BACKGROUNDS */
-  --background-gradient: #171a1e url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 304 304' width='304' height='304'%3E%3Cpath fill='%23ffffff' fill-opacity='0.015' d='M44.1 224a5 5 0 1 1 0 2H0v-2h44.1zm160 48a5 5 0 1 1 0 2H82v-2h122.1zm57.8-46a5 5 0 1 1 0-2H304v2h-42.1zm0 16a5 5 0 1 1 0-2H304v2h-42.1zm6.2-114a5 5 0 1 1 0 2h-86.2a5 5 0 1 1 0-2h86.2zm-256-48a5 5 0 1 1 0 2H0v-2h12.1zm185.8 34a5 5 0 1 1 0-2h86.2a5 5 0 1 1 0 2h-86.2zM258 12.1a5 5 0 1 1-2 0V0h2v12.1zm-64 208a5 5 0 1 1-2 0v-54.2a5 5 0 1 1 2 0v54.2zm48-198.2V80h62v2h-64V21.9a5 5 0 1 1 2 0zm16 16V64h46v2h-48V37.9a5 5 0 1 1 2 0zm-128 96V208h16v12.1a5 5 0 1 1-2 0V210h-16v-76.1a5 5 0 1 1 2 0zm-5.9-21.9a5 5 0 1 1 0 2H114v48H85.9a5 5 0 1 1 0-2H112v-48h12.1zm-6.2 130a5 5 0 1 1 0-2H176v-74.1a5 5 0 1 1 2 0V242h-60.1zm-16-64a5 5 0 1 1 0-2H114v48h10.1a5 5 0 1 1 0 2H112v-48h-10.1zM66 284.1a5 5 0 1 1-2 0V274H50v30h-2v-32h18v12.1zM236.1 176a5 5 0 1 1 0 2H226v94h48v32h-2v-30h-48v-98h12.1zm25.8-30a5 5 0 1 1 0-2H274v44.1a5 5 0 1 1-2 0V146h-10.1zm-64 96a5 5 0 1 1 0-2H208v-80h16v-14h-42.1a5 5 0 1 1 0-2H226v18h-16v80h-12.1zm86.2-210a5 5 0 1 1 0 2H272V0h2v32h10.1zM98 101.9V146H53.9a5 5 0 1 1 0-2H96v-42.1a5 5 0 1 1 2 0zM53.9 34a5 5 0 1 1 0-2H80V0h2v34H53.9zm60.1 3.9V66H82v64H69.9a5 5 0 1 1 0-2H80V64h32V37.9a5 5 0 1 1 2 0zM101.9 82a5 5 0 1 1 0-2H128V37.9a5 5 0 1 1 2 0V82h-28.1zm16-64a5 5 0 1 1 0-2H146v44.1a5 5 0 1 1-2 0V18h-26.1zm102.2 270a5 5 0 1 1 0 2H98v14h-2v-16h124.1zM242 149.9V160h16v34h-16v62h48v48h-2v-46h-48v-66h16v-30h-16v-12.1a5 5 0 1 1 2 0zM53.9 18a5 5 0 1 1 0-2H64V2H48V0h18v18H53.9zm112 32a5 5 0 1 1 0-2H192V0h50v2h-48v48h-28.1zm-48-48a5 5 0 0 1-9.8-2h2.07a3 3 0 1 0 5.66 0H178v34h-18V21.9a5 5 0 1 1 2 0V32h14V2h-58.1zm0 96a5 5 0 1 1 0-2H137l32-32h39V21.9a5 5 0 1 1 2 0V66h-40.17l-32 32H117.9zm28.1 90.1a5 5 0 1 1-2 0v-76.51L175.59 80H224V21.9a5 5 0 1 1 2 0V82h-49.59L146 112.41v75.69zm16 32a5 5 0 1 1-2 0v-99.51L184.59 96H300.1a5 5 0 0 1 3.9-3.9v2.07a3 3 0 0 0 0 5.66v2.07a5 5 0 0 1-3.9-3.9H185.41L162 121.41v98.69zm-144-64a5 5 0 1 1-2 0v-3.51l48-48V48h32V0h2v50H66v55.41l-48 48v2.69zM50 53.9v43.51l-48 48V208h26.1a5 5 0 1 1 0 2H0v-65.41l48-48V53.9a5 5 0 1 1 2 0zm-16 16V89.41l-34 34v-2.82l32-32V69.9a5 5 0 1 1 2 0zM12.1 32a5 5 0 1 1 0 2H9.41L0 43.41V40.6L8.59 32h3.51zm265.8 18a5 5 0 1 1 0-2h18.69l7.41-7.41v2.82L297.41 50H277.9zm-16 160a5 5 0 1 1 0-2H288v-71.41l16-16v2.82l-14 14V210h-28.1zm-208 32a5 5 0 1 1 0-2H64v-22.59L40.59 194H21.9a5 5 0 1 1 0-2H41.41L66 216.59V242H53.9zm150.2 14a5 5 0 1 1 0 2H96v-56.6L56.6 162H37.9a5 5 0 1 1 0-2h19.5L98 200.6V256h106.1zm-150.2 2a5 5 0 1 1 0-2H80v-46.59L48.59 178H21.9a5 5 0 1 1 0-2H49.41L82 208.59V258H53.9zM34 39.8v1.61L9.41 66H0v-2h8.59L32 40.59V0h2v39.8zM2 300.1a5 5 0 0 1 3.9 3.9H3.83A3 3 0 0 0 0 302.17V256h18v48h-2v-46H2v42.1zM34 241v63h-2v-62H0v-2h34v1zM17 18H0v-2h16V0h2v18h-1zm273-2h14v2h-16V0h2v16zm-32 273v15h-2v-14h-14v14h-2v-16h18v1zM0 92.1A5.02 5.02 0 0 1 6 97a5 5 0 0 1-6 4.9v-2.07a3 3 0 1 0 0-5.66V92.1zM80 272h2v32h-2v-32zm37.9 32h-2.07a3 3 0 0 0-5.66 0h-2.07a5 5 0 0 1 9.8 0zM5.9 0A5.02 5.02 0 0 1 0 5.9V3.83A3 3 0 0 0 3.83 0H5.9zm294.2 0h2.07A3 3 0 0 0 304 3.83V5.9a5 5 0 0 1-3.9-5.9zm3.9 300.1v2.07a3 3 0 0 0-1.83 1.83h-2.07a5 5 0 0 1 3.9-3.9zM97 100a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-48 32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm32 48a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm32-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0-32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm32 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16-64a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 96a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-144a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-96 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm96 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16-64a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-32 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM49 36a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-32 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm32 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM33 68a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-48a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 240a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16-64a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16-32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm80-176a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm32 48a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0-32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm112 176a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM17 180a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0-32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM17 84a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm32 64a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6z'%3E%3C/path%3E%3C/svg%3E");
+  --background-gradient: #171a1e
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 304 304' width='304' height='304'%3E%3Cpath fill='%23ffffff' fill-opacity='0.015' d='M44.1 224a5 5 0 1 1 0 2H0v-2h44.1zm160 48a5 5 0 1 1 0 2H82v-2h122.1zm57.8-46a5 5 0 1 1 0-2H304v2h-42.1zm0 16a5 5 0 1 1 0-2H304v2h-42.1zm6.2-114a5 5 0 1 1 0 2h-86.2a5 5 0 1 1 0-2h86.2zm-256-48a5 5 0 1 1 0 2H0v-2h12.1zm185.8 34a5 5 0 1 1 0-2h86.2a5 5 0 1 1 0 2h-86.2zM258 12.1a5 5 0 1 1-2 0V0h2v12.1zm-64 208a5 5 0 1 1-2 0v-54.2a5 5 0 1 1 2 0v54.2zm48-198.2V80h62v2h-64V21.9a5 5 0 1 1 2 0zm16 16V64h46v2h-48V37.9a5 5 0 1 1 2 0zm-128 96V208h16v12.1a5 5 0 1 1-2 0V210h-16v-76.1a5 5 0 1 1 2 0zm-5.9-21.9a5 5 0 1 1 0 2H114v48H85.9a5 5 0 1 1 0-2H112v-48h12.1zm-6.2 130a5 5 0 1 1 0-2H176v-74.1a5 5 0 1 1 2 0V242h-60.1zm-16-64a5 5 0 1 1 0-2H114v48h10.1a5 5 0 1 1 0 2H112v-48h-10.1zM66 284.1a5 5 0 1 1-2 0V274H50v30h-2v-32h18v12.1zM236.1 176a5 5 0 1 1 0 2H226v94h48v32h-2v-30h-48v-98h12.1zm25.8-30a5 5 0 1 1 0-2H274v44.1a5 5 0 1 1-2 0V146h-10.1zm-64 96a5 5 0 1 1 0-2H208v-80h16v-14h-42.1a5 5 0 1 1 0-2H226v18h-16v80h-12.1zm86.2-210a5 5 0 1 1 0 2H272V0h2v32h10.1zM98 101.9V146H53.9a5 5 0 1 1 0-2H96v-42.1a5 5 0 1 1 2 0zM53.9 34a5 5 0 1 1 0-2H80V0h2v34H53.9zm60.1 3.9V66H82v64H69.9a5 5 0 1 1 0-2H80V64h32V37.9a5 5 0 1 1 2 0zM101.9 82a5 5 0 1 1 0-2H128V37.9a5 5 0 1 1 2 0V82h-28.1zm16-64a5 5 0 1 1 0-2H146v44.1a5 5 0 1 1-2 0V18h-26.1zm102.2 270a5 5 0 1 1 0 2H98v14h-2v-16h124.1zM242 149.9V160h16v34h-16v62h48v48h-2v-46h-48v-66h16v-30h-16v-12.1a5 5 0 1 1 2 0zM53.9 18a5 5 0 1 1 0-2H64V2H48V0h18v18H53.9zm112 32a5 5 0 1 1 0-2H192V0h50v2h-48v48h-28.1zm-48-48a5 5 0 0 1-9.8-2h2.07a3 3 0 1 0 5.66 0H178v34h-18V21.9a5 5 0 1 1 2 0V32h14V2h-58.1zm0 96a5 5 0 1 1 0-2H137l32-32h39V21.9a5 5 0 1 1 2 0V66h-40.17l-32 32H117.9zm28.1 90.1a5 5 0 1 1-2 0v-76.51L175.59 80H224V21.9a5 5 0 1 1 2 0V82h-49.59L146 112.41v75.69zm16 32a5 5 0 1 1-2 0v-99.51L184.59 96H300.1a5 5 0 0 1 3.9-3.9v2.07a3 3 0 0 0 0 5.66v2.07a5 5 0 0 1-3.9-3.9H185.41L162 121.41v98.69zm-144-64a5 5 0 1 1-2 0v-3.51l48-48V48h32V0h2v50H66v55.41l-48 48v2.69zM50 53.9v43.51l-48 48V208h26.1a5 5 0 1 1 0 2H0v-65.41l48-48V53.9a5 5 0 1 1 2 0zm-16 16V89.41l-34 34v-2.82l32-32V69.9a5 5 0 1 1 2 0zM12.1 32a5 5 0 1 1 0 2H9.41L0 43.41V40.6L8.59 32h3.51zm265.8 18a5 5 0 1 1 0-2h18.69l7.41-7.41v2.82L297.41 50H277.9zm-16 160a5 5 0 1 1 0-2H288v-71.41l16-16v2.82l-14 14V210h-28.1zm-208 32a5 5 0 1 1 0-2H64v-22.59L40.59 194H21.9a5 5 0 1 1 0-2H41.41L66 216.59V242H53.9zm150.2 14a5 5 0 1 1 0 2H96v-56.6L56.6 162H37.9a5 5 0 1 1 0-2h19.5L98 200.6V256h106.1zm-150.2 2a5 5 0 1 1 0-2H80v-46.59L48.59 178H21.9a5 5 0 1 1 0-2H49.41L82 208.59V258H53.9zM34 39.8v1.61L9.41 66H0v-2h8.59L32 40.59V0h2v39.8zM2 300.1a5 5 0 0 1 3.9 3.9H3.83A3 3 0 0 0 0 302.17V256h18v48h-2v-46H2v42.1zM34 241v63h-2v-62H0v-2h34v1zM17 18H0v-2h16V0h2v18h-1zm273-2h14v2h-16V0h2v16zm-32 273v15h-2v-14h-14v14h-2v-16h18v1zM0 92.1A5.02 5.02 0 0 1 6 97a5 5 0 0 1-6 4.9v-2.07a3 3 0 1 0 0-5.66V92.1zM80 272h2v32h-2v-32zm37.9 32h-2.07a3 3 0 0 0-5.66 0h-2.07a5 5 0 0 1 9.8 0zM5.9 0A5.02 5.02 0 0 1 0 5.9V3.83A3 3 0 0 0 3.83 0H5.9zm294.2 0h2.07A3 3 0 0 0 304 3.83V5.9a5 5 0 0 1-3.9-5.9zm3.9 300.1v2.07a3 3 0 0 0-1.83 1.83h-2.07a5 5 0 0 1 3.9-3.9zM97 100a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-48 32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm32 48a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm32-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0-32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm32 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16-64a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 96a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-144a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-96 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm96 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16-64a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-32 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM49 36a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-32 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm32 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM33 68a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-48a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 240a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16-64a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16-32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm80-176a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm32 48a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0-32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm112 176a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM17 180a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0-32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM17 84a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm32 64a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6z'%3E%3C/path%3E%3C/svg%3E");
   --background-secondary: #25282c;
 
   /* BORDERS & GLOW */
   --border-color: rgba(255, 255, 255, 0.1);
+  --border-color-grid: rgba(255, 255, 255, 0.1);
   --container-glow: inset 0 0 0 1px var(--border-color);
 
   /* SHADOW (dla głównego kontenera) */
@@ -28,6 +30,26 @@
 
   /* ACCENT */
   --color-accent: #50e4df;
+
+  /* BRANCH TREE COLORS */
+  --branch-tree-gray-color: #4a5568;
+  --branch-tree-lane-color-1: #38b2ac;
+  --branch-tree-lane-color-2: #a78bfa;
+  --branch-tree-lane-color-3: #f6ad55;
+  --branch-tree-lane-color-4: #ec4899;
+  --branch-tree-commit-bg: #1e293b;
+  --branch-tree-commit-line: #4a5568;
+  --branch-tree-badge-bg: #262d3d;
+  --branch-tree-badge-border: #4a5568;
+  --branch-tree-badge-text: #94a3b8;
+  --branch-tree-badge-bg-hover: #374151;
+  --branch-tree-badge-border-hover: #6b7280;
+  --branch-tree-badge-text-hover: #e5e7eb;
+  --branch-tree-head-bg: #4a5568;
+  --branch-tree-head-text: #e2e8f0;
+  --branch-tree-tooltip-bg: #2d3748;
+  --branch-tree-tooltip-border: #4a5568;
+  --branch-tree-tooltip-text: #e2e8f0;
 
   /* LAYOUT & CONTENT */
   --content-background: #1f2124;
@@ -53,6 +75,7 @@
   --select-option-hover: rgba(255, 255, 255, 0.1);
 
   /* BUTTONS */
+  --button-contained-bg: #2c8682;
   --button-contained-color: #ffffff;
   --button-contained-disabled-bg: var(--text-secondary);
   --button-contained-disabled-color: #ffffff;
@@ -66,44 +89,364 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 
+  /* TEXT COLORS - lepszy kontrast i hierarchia */
+  --text-primary: #ffffff;
+  --text-secondary: #a3a3a3;
+  --text-tertiary: #737373;
+  --text-disabled: #525252;
+
+  /* BACKGROUNDS - gradient zamiast obrazka */
+--background-gradient: linear-gradient(150deg,#9197aa,#565f86 100%,#282d39 0);
+
+  --background-secondary: #abafb713;
+  --background-tertiary: #334155;
+
+  /* BORDERS & GLOW - subtelne ale wyraziste */
+  --border-color: rgba(148, 163, 184, 0.226);
+  --border-color-grid: rgba(148, 163, 184, 0.1);
+  --border-color-hover: rgba(148, 163, 184, 0.2);
+  --border-color-focus: rgba(99, 102, 241, 0.4);
+  --container-glow: inset 0 0 0 1px var(--border-color),
+    0 0 0 1px rgba(148, 163, 184, 0.05);
+
+  /* SHADOWS - wielowarstwowe cienie dla głębi */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4),
+    0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5),
+    0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6),
+    0 10px 10px -5px rgba(0, 0, 0, 0.3);
+  --shadow: var(--shadow-lg);
+
+  --box-border-radius: 16px;
+  --box-border-radius-sm: 8px;
+  --box-border-radius-lg: 24px;
+
+  /* SHADOW (dla głównego kontenera) - dodany box-shadow pod homepage grid */
+   --homepage-grid-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+
+  /* MODAL */
+  --modal-overlay: rgba(0, 0, 0, 0.85);
+  --modal-background: #1e293b;
+  --modal-header-background: #0f172a;
+
+  /* ACCENT - nowoczesny indigo z wariantami */
+  --color-accent: #6366f1;
+  --color-accent-hover: #7c3aed;
+  --color-accent-light: rgba(99, 102, 241, 0.1);
+  --color-accent-border: rgba(99, 102, 241, 0.3);
+
+  /* BRANCH TREE COLORS */
+  --branch-tree-gray-color: #64748b;
+  --branch-tree-lane-color-1: rgba(113,118,255);
+  --branch-tree-lane-color-2: rgb(92, 189, 132);
+  --branch-tree-lane-color-3: #e1515b;
+  --branch-tree-lane-color-4: #44c756;
+  --branch-tree-commit-bg: #908c8c11;
+  --branch-tree-commit-line: #475569;
+  --branch-tree-badge-bg: rgba(97, 108, 102, 0.282);
+  --branch-tree-badge-border: #b7bdc56f;
+  --branch-tree-badge-text: #cbd5e1;
+  --branch-tree-badge-bg-hover: rgba(51, 65, 85, 0.9);
+  --branch-tree-badge-border-hover: #64748b;
+  --branch-tree-badge-text-hover: #f1f5f9;
+  --branch-tree-head-bg: #475569;
+  --branch-tree-head-text: #f1f5f9;
+  --branch-tree-tooltip-bg: rgba(30, 41, 59, 0.95);
+  --branch-tree-tooltip-border: #475569;
+  --branch-tree-tooltip-text: #f1f5f9;
+
+  /* SEMANTIC COLORS */
+  --color-success: #10b978;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-info: #3b82f6;
+
+  /* LAYOUT & CONTENT - glassmorphism effect */
+  --content-background: rgba(30, 41, 59, 0.8);
+  --homepage-grid-background: rgb(50, 55, 68);
+  --content-box-background: rgba(255, 255, 255, 0.01);
+
+  --homepage-grid-backdrop-filter: blur(30px) saturate(150%);
+
+  /* INTERACTIVE STATES */
+  --hover-overlay: rgba(255, 255, 255, 0.05);
+  --active-overlay: rgba(255, 255, 255, 0.1);
+  --focus-ring: 0 0 0 3px var(--color-accent-light);
+
+  /* SCROLLBARS - eleganckie i subtelne */
+  --scrollbar-width: 8px;
+  --scrollbar-track: rgba(51, 65, 85, 0.3);
+  --scrollbar-thumb: rgba(148, 163, 184, 0.4);
+  --scrollbar-thumb-hover: rgba(148, 163, 184, 0.6);
+  --scrollbar-thumb-active: rgba(148, 163, 184, 0.8);
+  --scrollbar-border: rgba(148, 163, 184, 0.1);
+
+  /* SELECT */
+  --select-background: var(--content-background);
+  --select-border: var(--border-color);
+  --select-text: var(--text-primary);
+  --select-placeholder: var(--text-secondary);
+  --select-focus-border: var(--color-accent);
+  --select-option-background: var(--background-secondary);
+  --select-option-hover: var(--hover-overlay);
+  --select-option-selected: var(--color-accent-light);
+
+  /* BUTTONS - nowoczesne stany interakcji */
+  --button-contained-bg: rgba(113,118,255);
+  --button-contained-bg-hover: var(--color-accent-hover);
+  --button-contained-color: #ffffff;
+  --button-contained-disabled-bg: var(--text-disabled);
+  --button-contained-disabled-color: var(--text-tertiary);
+
+  --button-outlined-bg: rgb(255, 255, 255, 0.03);
+  --button-outlined-bg-hover: var(--hover-overlay);
+  --button-outlined-bg-active: var(--active-overlay);
+  --button-outlined-border: var(--border-color);
+  --button-outlined-border-hover: var(--border-color-hover);
+  --button-outlined-color: var(--text-primary);
+
+  --button-ghost-bg-hover: var(--hover-overlay);
+  --button-ghost-bg-active: var(--active-overlay);
+
+  /* INPUTS */
+  --input-background: rgb(255, 255, 255, 0.08);
+  --input-border: var(--border-color);
+  --input-border-focus: var(--color-accent-border);
+  --input-placeholder: var(--text-secondary);
+  --input-text: var(--text-primary);
+
+  /* TRANSITIONS - płynne animacje */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Z-INDEX LAYERS */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+}
+
+[data-theme="fairytale"] {
+  /* FONTS */
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  /* TEXT COLORS - lepszy kontrast i hierarchia */
+  --text-primary: #ffffff;
+  --text-secondary: #a3a3a3;
+  --text-tertiary: #737373;
+  --text-disabled: #525252;
+
+  /* BACKGROUNDS - obrazek fairytale.png */
+  --background-gradient: url("/fairytale.png") no-repeat center center / cover;
+
+  --background-secondary: #abafb713;
+  --background-tertiary: #334155;
+
+  /* BORDERS & GLOW - subtelne ale wyraziste */
+  --border-color: rgba(148, 163, 184, 0.226);
+  --border-color-grid: rgba(148, 163, 184, 0.226);
+  --border-color-hover: rgba(148, 163, 184, 0.2);
+  --border-color-focus: rgba(99, 102, 241, 0.4);
+  --container-glow: inset 0 0 0 1px var(--border-color),
+    0 0 0 1px rgba(148, 163, 184, 0.05);
+
+  /* SHADOWS - wielowarstwowe cienie dla głębi */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4),
+    0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5),
+    0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6),
+    0 10px 10px -5px rgba(0, 0, 0, 0.3);
+  --shadow: var(--shadow-lg);
+
+  --box-border-radius: 16px;
+  --box-border-radius-sm: 8px;
+  --box-border-radius-lg: 24px;
+
+  /* SHADOW (dla głównego kontenera) - dodany box-shadow pod homepage grid */
+  /* --homepage-grid-shadow: rgba(104, 193, 156, 0.1) 0px 5px 15px; */
+
+  /* MODAL */
+  --modal-overlay: rgba(0, 0, 0, 0.85);
+  --modal-background: #1e293b;
+  --modal-header-background: #0f172a;
+
+  /* ACCENT - nowoczesny indigo z wariantami */
+  --color-accent: #6366f1;
+  --color-accent-hover: #7c3aed;
+  --color-accent-light: rgba(99, 102, 241, 0.1);
+  --color-accent-border: rgba(99, 102, 241, 0.3);
+
+  /* BRANCH TREE COLORS */
+  --branch-tree-gray-color: #64748b;
+  --branch-tree-lane-color-1: #438f34;
+  --branch-tree-lane-color-2: rgb(92, 135, 189);
+  --branch-tree-lane-color-3: #e1515b;
+  --branch-tree-lane-color-4: #44c756;
+  --branch-tree-commit-bg: #4b96561b;
+  --branch-tree-commit-line: #475569;
+  --branch-tree-badge-bg: rgba(97, 108, 102, 0.282);
+  --branch-tree-badge-border: #b7bdc56f;
+  --branch-tree-badge-text: #cbd5e1;
+  --branch-tree-badge-bg-hover: rgba(51, 65, 85, 0.9);
+  --branch-tree-badge-border-hover: #64748b;
+  --branch-tree-badge-text-hover: #f1f5f9;
+  --branch-tree-head-bg: #475569;
+  --branch-tree-head-text: #f1f5f9;
+  --branch-tree-tooltip-bg: rgba(30, 41, 59, 0.95);
+  --branch-tree-tooltip-border: #475569;
+  --branch-tree-tooltip-text: #f1f5f9;
+
+  /* SEMANTIC COLORS */
+  --color-success: #10b978;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-info: #3b82f6;
+
+  /* LAYOUT & CONTENT - glassmorphism effect */
+  --content-background: rgba(30, 41, 59, 0.8);
+  --homepage-grid-background: rgba(62, 71, 82, 0.5);
+  --content-box-background: rgba(255, 255, 255, 0.04);
+
+  --homepage-grid-backdrop-filter: blur(30px) saturate(150%);
+
+  /* INTERACTIVE STATES */
+  --hover-overlay: rgba(255, 255, 255, 0.05);
+  --active-overlay: rgba(255, 255, 255, 0.1);
+  --focus-ring: 0 0 0 3px var(--color-accent-light);
+
+  /* SCROLLBARS - eleganckie i subtelne */
+  --scrollbar-width: 8px;
+  --scrollbar-track: rgba(51, 65, 85, 0.3);
+  --scrollbar-thumb: rgba(148, 163, 184, 0.4);
+  --scrollbar-thumb-hover: rgba(148, 163, 184, 0.6);
+  --scrollbar-thumb-active: rgba(148, 163, 184, 0.8);
+  --scrollbar-border: rgba(148, 163, 184, 0.1);
+
+  /* SELECT */
+  --select-background: var(--content-background);
+  --select-border: var(--border-color);
+  --select-text: var(--text-primary);
+  --select-placeholder: var(--text-secondary);
+  --select-focus-border: var(--color-accent);
+  --select-option-background: var(--background-secondary);
+  --select-option-hover: var(--hover-overlay);
+  --select-option-selected: var(--color-accent-light);
+
+  /* BUTTONS - nowoczesne stany interakcji */
+  --button-contained-bg: rgba(118, 201, 97, 0.8);
+  --button-contained-bg-hover: var(--color-accent-hover);
+  --button-contained-color: #ffffff;
+  --button-contained-disabled-bg: var(--text-disabled);
+  --button-contained-disabled-color: var(--text-tertiary);
+
+  --button-outlined-bg: rgb(255, 255, 255, 0.08);
+  --button-outlined-bg-hover: var(--hover-overlay);
+  --button-outlined-bg-active: var(--active-overlay);
+  --button-outlined-border: var(--border-color);
+  --button-outlined-border-hover: var(--border-color-hover);
+  --button-outlined-color: var(--text-primary);
+
+  --button-ghost-bg-hover: var(--hover-overlay);
+  --button-ghost-bg-active: var(--active-overlay);
+
+  /* INPUTS */
+  --input-background: rgb(255, 255, 255, 0.08);
+  --input-border: var(--border-color);
+  --input-border-focus: var(--color-accent-border);
+  --input-placeholder: var(--text-secondary);
+  --input-text: var(--text-primary);
+
+  /* TRANSITIONS - płynne animacje */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Z-INDEX LAYERS */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+}
+
+
+[data-theme="obsidian"] {
+  /* FONTS */
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
   /* TEXT COLORS */
-  --text-primary: #f0f0f0;
-  --text-secondary: #b0b0b0;
+  --text-primary: #ededed;
+  --text-secondary: #a1a1a1;
 
   /* BACKGROUNDS */
-  --background-gradient: #1a1a2e url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 304 304' width='304' height='304'%3E%3Cpath fill='%239F7AEA' fill-opacity='0.05' d='M44.1 224a5 5 0 1 1 0 2H0v-2h44.1zm160 48a5 5 0 1 1 0 2H82v-2h122.1zm57.8-46a5 5 0 1 1 0-2H304v2h-42.1zm0 16a5 5 0 1 1 0-2H304v2h-42.1zm6.2-114a5 5 0 1 1 0 2h-86.2a5 5 0 1 1 0-2h86.2zm-256-48a5 5 0 1 1 0 2H0v-2h12.1zm185.8 34a5 5 0 1 1 0-2h86.2a5 5 0 1 1 0 2h-86.2zM258 12.1a5 5 0 1 1-2 0V0h2v12.1zm-64 208a5 5 0 1 1-2 0v-54.2a5 5 0 1 1 2 0v54.2zm48-198.2V80h62v2h-64V21.9a5 5 0 1 1 2 0zm16 16V64h46v2h-48V37.9a5 5 0 1 1 2 0zm-128 96V208h16v12.1a5 5 0 1 1-2 0V210h-16v-76.1a5 5 0 1 1 2 0zm-5.9-21.9a5 5 0 1 1 0 2H114v48H85.9a5 5 0 1 1 0-2H112v-48h12.1zm-6.2 130a5 5 0 1 1 0-2H176v-74.1a5 5 0 1 1 2 0V242h-60.1zm-16-64a5 5 0 1 1 0-2H114v48h10.1a5 5 0 1 1 0 2H112v-48h-10.1zM66 284.1a5 5 0 1 1-2 0V274H50v30h-2v-32h18v12.1zM236.1 176a5 5 0 1 1 0 2H226v94h48v32h-2v-30h-48v-98h12.1zm25.8-30a5 5 0 1 1 0-2H274v44.1a5 5 0 1 1-2 0V146h-10.1zm-64 96a5 5 0 1 1 0-2H208v-80h16v-14h-42.1a5 5 0 1 1 0-2H226v18h-16v80h-12.1zm86.2-210a5 5 0 1 1 0 2H272V0h2v32h10.1zM98 101.9V146H53.9a5 5 0 1 1 0-2H96v-42.1a5 5 0 1 1 2 0zM53.9 34a5 5 0 1 1 0-2H80V0h2v34H53.9zm60.1 3.9V66H82v64H69.9a5 5 0 1 1 0-2H80V64h32V37.9a5 5 0 1 1 2 0zM101.9 82a5 5 0 1 1 0-2H128V37.9a5 5 0 1 1 2 0V82h-28.1zm16-64a5 5 0 1 1 0-2H146v44.1a5 5 0 1 1-2 0V18h-26.1zm102.2 270a5 5 0 1 1 0 2H98v14h-2v-16h124.1zM242 149.9V160h16v34h-16v62h48v48h-2v-46h-48v-66h16v-30h-16v-12.1a5 5 0 1 1 2 0zM53.9 18a5 5 0 1 1 0-2H64V2H48V0h18v18H53.9zm112 32a5 5 0 1 1 0-2H192V0h50v2h-48v48h-28.1zm-48-48a5 5 0 0 1-9.8-2h2.07a3 3 0 1 0 5.66 0H178v34h-18V21.9a5 5 0 1 1 2 0V32h14V2h-58.1zm0 96a5 5 0 1 1 0-2H137l32-32h39V21.9a5 5 0 1 1 2 0V66h-40.17l-32 32H117.9zm28.1 90.1a5 5 0 1 1-2 0v-76.51L175.59 80H224V21.9a5 5 0 1 1 2 0V82h-49.59L146 112.41v75.69zm16 32a5 5 0 1 1-2 0v-99.51L184.59 96H300.1a5 5 0 0 1 3.9-3.9v2.07a3 3 0 0 0 0 5.66v2.07a5 5 0 0 1-3.9-3.9H185.41L162 121.41v98.69zm-144-64a5 5 0 1 1-2 0v-3.51l48-48V48h32V0h2v50H66v55.41l-48 48v2.69zM50 53.9v43.51l-48 48V208h26.1a5 5 0 1 1 0 2H0v-65.41l48-48V53.9a5 5 0 1 1 2 0zm-16 16V89.41l-34 34v-2.82l32-32V69.9a5 5 0 1 1 2 0zM12.1 32a5 5 0 1 1 0 2H9.41L0 43.41V40.6L8.59 32h3.51zm265.8 18a5 5 0 1 1 0-2h18.69l7.41-7.41v2.82L297.41 50H277.9zm-16 160a5 5 0 1 1 0-2H288v-71.41l16-16v2.82l-14 14V210h-28.1zm-208 32a5 5 0 1 1 0-2H64v-22.59L40.59 194H21.9a5 5 0 1 1 0-2H41.41L66 216.59V242H53.9zm150.2 14a5 5 0 1 1 0 2H96v-56.6L56.6 162H37.9a5 5 0 1 1 0-2h19.5L98 200.6V256h106.1zm-150.2 2a5 5 0 1 1 0-2H80v-46.59L48.59 178H21.9a5 5 0 1 1 0-2H49.41L82 208.59V258H53.9zM34 39.8v1.61L9.41 66H0v-2h8.59L32 40.59V0h2v39.8zM2 300.1a5 5 0 0 1 3.9 3.9H3.83A3 3 0 0 0 0 302.17V256h18v48h-2v-46H2v42.1zM34 241v63h-2v-62H0v-2h34v1zM17 18H0v-2h16V0h2v18h-1zm273-2h14v2h-16V0h2v16zm-32 273v15h-2v-14h-14v14h-2v-16h18v1zM0 92.1A5.02 5.02 0 0 1 6 97a5 5 0 0 1-6 4.9v-2.07a3 3 0 1 0 0-5.66V92.1zM80 272h2v32h-2v-32zm37.9 32h-2.07a3 3 0 0 0-5.66 0h-2.07a5 5 0 0 1 9.8 0zM5.9 0A5.02 5.02 0 0 1 0 5.9V3.83A3 3 0 0 0 3.83 0H5.9zm294.2 0h2.07A3 3 0 0 0 304 3.83V5.9a5 5 0 0 1-3.9-5.9zm3.9 300.1v2.07a3 3 0 0 0-1.83 1.83h-2.07a5 5 0 0 1 3.9-3.9zM97 100a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-48 32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm32 48a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm32-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0-32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm32 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16-64a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 96a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-144a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-96 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm96 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16-64a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-32 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM49 36a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-32 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm32 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM33 68a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-48a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 240a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16-64a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16-32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm80-176a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm32 48a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0-32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm112 176a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM17 180a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0-32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM17 84a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm32 64a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6z'%3E%3C/path%3E%3C/svg%3E");
-  --background-secondary: rgba(57, 56, 56, 0.24);
+  /* --background-gradient: #10151c url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.05'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3Cpath d='M6 5V0H5v5H0v1h5v94h1V6h94V5H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+   */
+  --background-gradient: #10151c;
+  --background-secondary: #25282c;
 
   /* BORDERS & GLOW */
-  --border-color: rgba(255, 255, 255, 0.2);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --border-color-grid: rgba(255, 255, 255, 0.1);
   --container-glow: inset 0 0 0 1px var(--border-color);
 
   /* SHADOW (dla głównego kontenera) */
-  --shadow: 0 0 20px rgba(0, 0, 0, 0);
+  --shadow: 0 0 20px rgba(0, 0, 0, 0.4);
 
   --box-border-radius: 12px;
 
   /* MODAL */
-  --modal-overlay: rgba(0, 0, 0, 0.64);
-  --modal-background: #1a1a2e;
-  --modal-header-background: #161628;
+  --modal-overlay: rgba(0, 0, 0, 0.6);
+  --modal-background: #25282c;
+  --modal-header-background: #1e2023;
 
   /* ACCENT */
-  --color-accent: #9f7aea;
+  --color-accent: #50e4df;
+
+  /* BRANCH TREE COLORS */
+  --branch-tree-gray-color: #4a5568;
+  --branch-tree-lane-color-1: #2f75ae;
+  --branch-tree-lane-color-2: #a78bfa;
+  --branch-tree-lane-color-3: #f6ad55;
+  --branch-tree-lane-color-4: #ec4899;
+  --branch-tree-commit-bg: #1e293b;
+  --branch-tree-commit-line: #4a5568;
+  --branch-tree-badge-bg: #262d3d;
+  --branch-tree-badge-border: #4a5568;
+  --branch-tree-badge-text: #94a3b8;
+  --branch-tree-badge-bg-hover: #374151;
+  --branch-tree-badge-border-hover: #6b7280;
+  --branch-tree-badge-text-hover: #e5e7eb;
+  --branch-tree-head-bg: #4a5568;
+  --branch-tree-head-text: #e2e8f0;
+  --branch-tree-tooltip-bg: #2d3748;
+  --branch-tree-tooltip-border: #4a5568;
+  --branch-tree-tooltip-text: #e2e8f0;
 
   /* LAYOUT & CONTENT */
-  --content-background: rgba(57, 56, 56, 0.24);
-  --homepage-grid-background: #1a1925;
-  --content-box-background: rgba(255, 255, 255, 0.01);
-  --content-box-backdrop-filter: blur(0px);
+  --content-background: #1f2124;
+  --homepage-grid-background: #151b22;
+  --content-box-background: rgb(255, 255, 255, 0.01);
+  --content-box-backdrop-filter: none;
   --homepage-grid-backdrop-filter: none;
 
   /* SCROLLBARS */
-  --scrollbar-track: rgba(159, 122, 234, 0.1);
-  --scrollbar-thumb: rgba(159, 122, 234, 0.3);
-  --scrollbar-thumb-hover: rgba(159, 122, 234, 0.4);
-  --scrollbar-thumb-active: rgba(159, 122, 234, 0.5);
-  --scrollbar-border: rgba(159, 122, 234, 0.2);
+  --scrollbar-track: rgba(255, 255, 255, 0.05);
+  --scrollbar-thumb: rgba(255, 255, 255, 0.2);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.3);
+  --scrollbar-thumb-active: rgba(255, 255, 255, 0.4);
+  --scrollbar-border: rgba(255, 255, 255, 0.1);
 
   /* SELECT */
   --select-background: var(--content-background);
@@ -115,105 +458,11 @@
   --select-option-hover: rgba(255, 255, 255, 0.1);
 
   /* BUTTONS */
+  --button-contained-bg: #2f75ae;
   --button-contained-color: #ffffff;
   --button-contained-disabled-bg: var(--text-secondary);
   --button-contained-disabled-color: #ffffff;
   --button-outlined-bg: rgba(255, 255, 255, 0.01);
   --button-outlined-bg-hover: rgba(255, 255, 255, 0.05);
   --button-outlined-bg-active: rgba(255, 255, 255, 0.1);
-}
-
-[data-theme="snowlight"] {
-  /* FONTS */
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-
-  /* TEXT COLORS */
-  --text-primary: #1a1a1a;
-  --text-secondary: #4a4a4a;
-
-  /* BACKGROUNDS - Neumorph gradient - ciemniejsze główne tło */
-  --spot-alpha: 0.45;
-  --base-top: #e8edf4;
-  --base-mid: #dde4ed;
-  --base-bot: #d5dce6;
-  
-  --background-gradient: 
-    /* róż/pomarańcz górny-lewy */
-    radial-gradient(1000px 600px at -10% -10%,
-      rgba(255, 175, 189, var(--spot-alpha)) 0%,
-      rgba(255, 175, 189, 0) 60%),
-    
-    /* morela lekko z lewej u góry */
-    radial-gradient(700px 420px at 25% 10%,
-      rgba(255, 230, 201, var(--spot-alpha)) 0%,
-      rgba(255, 230, 201, 0) 60%),
-    
-    /* turkus/pastelowy niebieski prawa strona */
-    radial-gradient(900px 650px at 90% 20%,
-      rgba(189, 231, 255, var(--spot-alpha)) 0%,
-      rgba(189, 231, 255, 0) 60%),
-    
-    /* lawenda/lekkie fiolety dół-lewy */
-    radial-gradient(900px 520px at 15% 90%,
-      rgba(227, 201, 255, var(--spot-alpha)) 0%,
-      rgba(227, 201, 255, 0) 60%),
-    
-    /* chłodny niebieski dół-prawy */
-    radial-gradient(800px 520px at 80% 80%,
-      rgba(184, 201, 255, var(--spot-alpha)) 0%,
-      rgba(184, 201, 255, 0) 60%),
-    
-    /* delikatny gradient bazowy */
-    linear-gradient(180deg, var(--base-top) 0%, var(--base-mid) 50%, var(--base-bot) 100%);
-  
-  --background-secondary: #f1f5f9;
-
-  /* BORDERS & GLOW */
-  --border-color: rgba(0, 0, 0, 0.1);
-  --container-glow: inset 0 0 0 1px var(--border-color);
-
-  /* SHADOW (dla głównego kontenera) - dodany box-shadow pod homepage grid */
-  --shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-  --homepage-grid-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-  --box-border-radius: 12px;
-
-  /* MODAL */
-  --modal-overlay: rgba(0, 0, 0, 0.44);
-  --modal-background: #ffffff;
-  --modal-header-background: #f0f0f0;
-
-  /* ACCENT */
-  --color-accent: #1b8c6b;
-
-  /* LAYOUT & CONTENT - 3 poziomy: ciemne główne tło -> średnie grid -> białe sekcje */
-  --content-background: #ffffff;
-  --homepage-grid-background: #f8fafbe4;
-  --content-box-background: #ffffff;
-  --content-box-backdrop-filter: none;
-  --homepage-grid-backdrop-filter: none;
-
-  /* SCROLLBARS */
-  --scrollbar-track: rgba(0, 0, 0, 0.08);
-  --scrollbar-thumb: rgba(0, 0, 0, 0.3);
-  --scrollbar-thumb-hover: rgba(0, 0, 0, 0.4);
-  --scrollbar-thumb-active: rgba(0, 0, 0, 0.5);
-  --scrollbar-border: rgba(0, 0, 0, 0.2);
-
-  /* SELECT */
-  --select-background: var(--content-background);
-  --select-border: var(--border-color);
-  --select-text: var(--text-primary);
-  --select-placeholder: var(--text-secondary);
-  --select-focus-border: var(--color-accent);
-  --select-option-background: var(--content-background);
-  --select-option-hover: rgba(0, 0, 0, 0.08);
-
-  /* BUTTONS */
-  --button-contained-color: #ffffff;
-  --button-contained-disabled-bg: #999999;
-  --button-contained-disabled-color: #ffffff;
-  --button-outlined-bg: rgba(0, 0, 0, 0.02);
-  --button-outlined-bg-hover: rgba(0, 0, 0, 0.05);
-  --button-outlined-bg-active: rgba(0, 0, 0, 0.08);
 }

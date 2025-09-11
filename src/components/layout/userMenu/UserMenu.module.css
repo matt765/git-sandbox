@@ -44,9 +44,10 @@
   padding: 0;
 }
 
-.menu li a,
-.menu li button {
-  display: block;
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   width: 100%;
   text-align: left;
   padding: 0.75rem 1rem;
@@ -59,18 +60,64 @@
   transition: background-color 0.2s ease;
 }
 
-.menu li a {
+.linkAsButton {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: none;
+  color: var(--text-primary);
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
   text-decoration: none;
 }
 
-.menu li a:hover,
-.menu li button:hover {
+.menuItem:hover,
+.linkAsButton:hover {
   background-color: rgba(255, 255, 255, 0.08);
 }
 
 .separator {
   height: 1px;
   background-color: var(--border-color);
+}
+
+.themeSelector {
+  padding: 0.75rem 1rem !important;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.themeLabel {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  margin: 0;
+}
+
+.themeSelect {
+  font-size: 14px;
+}
+
+.themeSelect :global(.trigger) {
+  padding: 6px 8px;
+  min-height: 32px;
+  font-size: 14px;
+}
+
+.themeSelect :global(.text) {
+  font-size: 14px;
+}
+
+.themeSelect :global(.arrow) {
+  width: 16px;
+  height: 16px;
 }
 
 @keyframes menuFadeIn {

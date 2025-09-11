@@ -1,7 +1,7 @@
 .button {
   width: 100%;
   padding: 8px 16px;
-  background-color: var(--color-accent);
+  background-color: var(--button-contained-bg);
   color: var(--button-contained-color);
   border: none;
   border-radius: 4px;

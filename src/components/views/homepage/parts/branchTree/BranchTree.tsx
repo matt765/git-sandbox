@@ -7,6 +7,7 @@ import {
   WheelEvent,
   MouseEvent,
   useLayoutEffect,
+  useEffect,
 } from "react";
 import { createPortal } from "react-dom";
 import { ControlsPanel } from "./ControlsPanel";
@@ -65,9 +66,64 @@ const HORIZONTAL_Y_STEP = Y_STEP * 1.5;
 const PADDING_X = 150;
 const PADDING_Y = 100;
 const LABEL_ROW_Y = 40;
-const GRAY_COLOR = "#4a5568";
-const LANE_COLORS = ["#38b2ac", "#a78bfa", "#f6ad55", "#ec4899"];
 const TOOLTIP_WIDTH = 250;
+const COMMIT_CIRCLE_RADIUS = 11;
+
+// Custom hook to get CSS variables with dynamic updates
+const useBranchTreeColors = () => {
+  const [colors, setColors] = useState({
+    grayColor: "#4a5568",
+    laneColors: ["#38b2ac", "#a78bfa", "#f6ad55", "#ec4899"],
+  });
+
+  useEffect(() => {
+    const updateColors = () => {
+      if (typeof window !== "undefined") {
+        const rootStyles = getComputedStyle(document.documentElement);
+
+        const grayColor =
+          rootStyles.getPropertyValue("--branch-tree-gray-color").trim() ||
+          "#4a5568";
+        const laneColors = [
+          rootStyles.getPropertyValue("--branch-tree-lane-color-1").trim() ||
+            "#38b2ac",
+          rootStyles.getPropertyValue("--branch-tree-lane-color-2").trim() ||
+            "#a78bfa",
+          rootStyles.getPropertyValue("--branch-tree-lane-color-3").trim() ||
+            "#f6ad55",
+          rootStyles.getPropertyValue("--branch-tree-lane-color-4").trim() ||
+            "#ec4899",
+        ];
+
+        setColors({ grayColor, laneColors });
+      }
+    };
+
+    // Update colors immediately
+    updateColors();
+
+    // Listen for theme changes
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (
+          mutation.type === "attributes" &&
+          mutation.attributeName === "data-theme"
+        ) {
+          updateColors();
+        }
+      });
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  return colors;
+};
 
 // --- ICONS ---
 const FullscreenIcon = () => (
@@ -119,6 +175,9 @@ export const BranchTree = () => {
   const merge = useGitStore((state) => state.merge);
   const rebase = useGitStore((state) => state.rebase);
 
+  // Use the custom hook to get colors that update with theme changes
+  const { grayColor, laneColors } = useBranchTreeColors();
+
   const [tooltip, setTooltip] = useState<TooltipData | null>(null);
   const [dragDropTooltip, setDragDropTooltip] =
     useState<DragDropTooltipData | null>(null);
@@ -140,6 +199,7 @@ export const BranchTree = () => {
     useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [isDraggingElement, setIsDraggingElement] = useState(false);
+  const [newCommitIds, setNewCommitIds] = useState<Set<string>>(new Set());
 
   const wrapperRef = useRef<HTMLDivElement>(null);
   const isPanning = useRef(false);
@@ -147,6 +207,7 @@ export const BranchTree = () => {
   const hasDragged = useRef(false);
   const initialPanSet = useRef(false);
   const hasEverBeenFullscreen = useRef(false);
+  const previousCommitCount = useRef(0);
 
   const isVertical = orientation === "vertical";
 
@@ -185,7 +246,7 @@ export const BranchTree = () => {
     const colorAssignments = new Map<string, string>(
       sortedBranchNames.map((name, i) => [
         name,
-        LANE_COLORS[i % LANE_COLORS.length],
+        laneColors[i % laneColors.length],
       ])
     );
     const commitList = Object.values(commits);
@@ -238,7 +299,7 @@ export const BranchTree = () => {
         message: commit.message,
         x: PADDING_X + (isVertical ? lane * X_STEP : depth * X_STEP),
         y: PADDING_Y + (isVertical ? depth * Y_STEP : lane * HORIZONTAL_Y_STEP),
-        color: colorAssignments.get(branchName) ?? LANE_COLORS[0],
+        color: colorAssignments.get(branchName) ?? laneColors[0],
         depth: depth,
         commitData: commit,
       };
@@ -262,7 +323,7 @@ export const BranchTree = () => {
             (isVertical
               ? existingNode.depth * Y_STEP
               : lane * HORIZONTAL_Y_STEP),
-          color: colorAssignments.get(branchName) ?? LANE_COLORS[0],
+          color: colorAssignments.get(branchName) ?? laneColors[0],
           depth: existingNode.depth,
           commitData: existingNode.commitData,
         };
@@ -280,7 +341,7 @@ export const BranchTree = () => {
         name,
         x: PADDING_X + (isVertical ? lane * X_STEP : 0),
         y: PADDING_Y + (isVertical ? 0 : lane * HORIZONTAL_Y_STEP),
-        color: colorAssignments.get(name) ?? LANE_COLORS[0],
+        color: colorAssignments.get(name) ?? laneColors[0],
         isHead: head.type === "branch" && head.name === name,
         commitId: branches[name].commitId,
       };
@@ -323,7 +384,7 @@ export const BranchTree = () => {
           calculatedEdges.push({
             key: `gray-trunk-${startNode.id}-${endNode.id}`,
             path: `M ${startNode.x} ${startNode.y} L ${endNode.x} ${endNode.y}`,
-            color: GRAY_COLOR,
+            color: grayColor,
           });
         }
       }
@@ -344,20 +405,32 @@ export const BranchTree = () => {
             (isVertical && childNode.x === parentNode.x) ||
             (!isVertical && childNode.y === parentNode.y)
           ) {
-            path = `M ${parentNode.x} ${parentNode.y} L ${childNode.x} ${childNode.y}`;
+            if (isVertical) {
+              path = `M ${parentNode.x} ${
+                parentNode.y + COMMIT_CIRCLE_RADIUS
+              } L ${childNode.x} ${childNode.y - COMMIT_CIRCLE_RADIUS}`;
+            } else {
+              path = `M ${parentNode.x + COMMIT_CIRCLE_RADIUS} ${
+                parentNode.y
+              } L ${childNode.x - COMMIT_CIRCLE_RADIUS} ${childNode.y}`;
+            }
           } else {
             if (isVertical) {
-              path = `M ${parentNode.x} ${parentNode.y} C ${parentNode.x} ${
-                parentNode.y + Y_STEP / 2
-              }, ${childNode.x} ${childNode.y - Y_STEP / 2}, ${childNode.x} ${
-                childNode.y
+              path = `M ${parentNode.x} ${
+                parentNode.y + COMMIT_CIRCLE_RADIUS
+              } C ${parentNode.x} ${parentNode.y + Y_STEP / 2}, ${
+                childNode.x
+              } ${childNode.y - Y_STEP / 2}, ${childNode.x} ${
+                childNode.y - COMMIT_CIRCLE_RADIUS
               }`;
             } else {
-              path = `M ${parentNode.x} ${parentNode.y} C ${
-                parentNode.x + X_STEP / 2
-              } ${parentNode.y}, ${childNode.x - X_STEP / 2} ${childNode.y}, ${
-                childNode.x
-              } ${childNode.y}`;
+              path = `M ${parentNode.x + COMMIT_CIRCLE_RADIUS} ${
+                parentNode.y
+              } C ${parentNode.x + X_STEP / 2} ${parentNode.y}, ${
+                childNode.x - X_STEP / 2
+              } ${childNode.y}, ${childNode.x - COMMIT_CIRCLE_RADIUS} ${
+                childNode.y
+              }`;
             }
           }
           calculatedEdges.push({
@@ -382,13 +455,17 @@ export const BranchTree = () => {
         const shouldUseColor =
           commitToBranch.get(firstNode.commitData.id) === label.name &&
           isDirectlyAdjacent;
-        const color = shouldUseColor ? label.color : GRAY_COLOR;
+        const color = shouldUseColor ? label.color : grayColor;
 
         calculatedEdges.push({
           key: `label-trunk-${label.name}`,
           path: isVertical
-            ? `M ${label.x} ${LABEL_ROW_Y} L ${firstNode.x} ${firstNode.y}`
-            : `M ${PADDING_X - 50} ${label.y} L ${firstNode.x} ${firstNode.y}`,
+            ? `M ${label.x} ${LABEL_ROW_Y} L ${firstNode.x} ${
+                firstNode.y - COMMIT_CIRCLE_RADIUS
+              }`
+            : `M ${PADDING_X - 50} ${label.y} L ${
+                firstNode.x - COMMIT_CIRCLE_RADIUS
+              } ${firstNode.y}`,
           color: color,
         });
       }
@@ -401,7 +478,35 @@ export const BranchTree = () => {
       commitToBranch,
       colorAssignments,
     };
-  }, [commits, branches, head, isVertical]);
+  }, [commits, branches, head, isVertical, grayColor, laneColors]);
+
+  // Track new commits for fade-in animation
+  useEffect(() => {
+    const currentCommitCount = Object.keys(commits).length;
+    
+    if (previousCommitCount.current > 0 && currentCommitCount > previousCommitCount.current) {
+      // New commits were added, identify them and trigger animation
+      const currentCommitIds = new Set(Object.keys(commits));
+      const previousCommitIds = new Set(
+        Object.keys(commits).slice(0, previousCommitCount.current)
+      );
+      
+      const newIds = new Set(
+        [...currentCommitIds].filter(id => !previousCommitIds.has(id))
+      );
+      
+      setNewCommitIds(newIds);
+      
+      // Clear the animation after a delay
+      if (newIds.size > 0) {
+        setTimeout(() => {
+          setNewCommitIds(new Set());
+        }, 600); // Slightly longer than animation duration
+      }
+    }
+    
+    previousCommitCount.current = currentCommitCount;
+  }, [commits]);
 
   useLayoutEffect(() => {
     if (isEnteringFullscreen && wrapperRef.current) {
@@ -837,10 +942,10 @@ export const BranchTree = () => {
             {edges.map((edge: Edge) => {
               const shouldHighlight =
                 hoveredBranch &&
-                edge.color !== GRAY_COLOR &&
+                edge.color !== grayColor &&
                 colorAssignments.get(hoveredBranch) === edge.color;
               const branchName =
-                edge.color !== GRAY_COLOR
+                edge.color !== grayColor
                   ? Array.from(colorAssignments.entries()).find(
                       ([, color]) => color === edge.color
                     )?.[0]
@@ -858,14 +963,14 @@ export const BranchTree = () => {
                       : ""
                   }
                   onMouseEnter={() => {
-                    if (edge.color !== GRAY_COLOR && branchName) {
+                    if (edge.color !== grayColor && branchName) {
                       setHoveredBranch(branchName);
                     }
                   }}
                   onMouseLeave={() => setHoveredBranch(null)}
                   onClick={(e) => {
                     if (
-                      edge.color !== GRAY_COLOR &&
+                      edge.color !== grayColor &&
                       branchName &&
                       !hasDragged.current
                     ) {
@@ -876,9 +981,8 @@ export const BranchTree = () => {
                   style={{
                     filter: shouldHighlight ? "brightness(1.2)" : "none",
                     transition: "all 0.2s ease",
-                    pointerEvents:
-                      edge.color !== GRAY_COLOR ? "stroke" : "none",
-                    cursor: edge.color !== GRAY_COLOR ? "pointer" : "default",
+                    pointerEvents: edge.color !== grayColor ? "stroke" : "none",
+                    cursor: edge.color !== grayColor ? "pointer" : "default",
                   }}
                 />
               );
@@ -908,7 +1012,7 @@ export const BranchTree = () => {
                       switchBranch(label.name);
                     }
                   }}
-                  onMouseDown={(e) => {
+                  onMouseDown={() => {
                     // e.stopPropagation(); // This was causing the tooltip bug
                   }}
                   onMouseEnter={() => setHoveredBranch(label.name)}
@@ -936,16 +1040,15 @@ export const BranchTree = () => {
               : `translate(-50%, -11px)`;
             const branchName = commitToBranch.get(node.commitData.id) || "main";
             const shouldHighlightNode = hoveredBranch === branchName;
+            const shouldAnimateNode = 
+              (shouldShowInitialAnimation && !hasEverBeenFullscreen.current) ||
+              newCommitIds.has(node.commitData.id);
             return (
               <div
                 key={node.id}
                 className={`${styles.commitNodeWrapper} ${
                   !isVertical ? styles.horizontal : ""
-                } ${
-                  shouldShowInitialAnimation && !hasEverBeenFullscreen.current
-                    ? styles.fadein
-                    : ""
-                }`}
+                } ${shouldAnimateNode ? styles.fadein : ""}`}
                 style={{
                   top: `${node.y}px`,
                   left: `${node.x}px`,
@@ -953,7 +1056,7 @@ export const BranchTree = () => {
                   cursor: "pointer",
                 }}
                 onClick={(e) => handleNodeClick(node, e)}
-                onMouseDown={(e) => {
+                onMouseDown={() => {
                   // e.stopPropagation(); // This was causing the tooltip bug
                 }}
                 draggable
@@ -1060,14 +1163,14 @@ export const BranchTree = () => {
                     <>
                       <button
                         className={styles.dragDropButton}
-                        style={{ backgroundColor: "#38b2ac" }}
+                        style={{ backgroundColor: laneColors[0] }}
                         onClick={() => executeDragDropAction("cherry-pick")}
                       >
                         Cherry-pick
                       </button>
                       <button
                         className={styles.dragDropButton}
-                        style={{ backgroundColor: "#a78bfa" }}
+                        style={{ backgroundColor: laneColors[1] }}
                         onClick={() => executeDragDropAction("switch")}
                       >
                         Switch
@@ -1077,14 +1180,14 @@ export const BranchTree = () => {
                     <>
                       <button
                         className={styles.dragDropButton}
-                        style={{ backgroundColor: "#38b2ac" }}
+                        style={{ backgroundColor: laneColors[0] }}
                         onClick={() => executeDragDropAction("merge")}
                       >
                         Merge
                       </button>
                       <button
                         className={styles.dragDropButton}
-                        style={{ backgroundColor: "#a78bfa" }}
+                        style={{ backgroundColor: laneColors[1] }}
                         onClick={() => executeDragDropAction("rebase")}
                       >
                         Rebase

@@ -26,6 +26,7 @@ export const Layout = ({ children }: LayoutProps) => {
       <Navbar />
       <main className={styles.mainWrapper}>
         <div className={styles.contentWrapper}>{children}</div>
+           <div className={styles.overlay}></div>
       </main>
 
       {isTerminalOpen && (

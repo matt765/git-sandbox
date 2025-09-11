@@ -15,8 +15,12 @@
   -webkit-backdrop-filter: var(--homepage-grid-backdrop-filter);
 }
 
+:global([data-theme="midnight"]) .grid {
+  box-shadow: var(--homepage-grid-shadow);
+}
+
 /* Box-shadow i border-radius dla jasnego trybu */
-/* :global([data-theme="snowlight"]) .grid {
+/* :global([data-theme="fairytale"]) .grid {
   box-shadow: var(--homepage-grid-shadow);
   border-radius: var(--box-border-radius);
 } */
